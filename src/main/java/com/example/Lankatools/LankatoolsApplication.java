@@ -2,12 +2,12 @@ package com.example.Lankatools;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
+@EnableScheduling
 public class LankatoolsApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(LankatoolsApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(LankatoolsApplication.class, args);
+    }
 }
