@@ -46,4 +46,35 @@ public class User {
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
+
+
+    public User(String name, String password, Role role, String email, String phone, String shopName, String shopAddress, Boolean isActive, Boolean isApproved, LocalDateTime createdAt) {
+        this.name = name;
+        this.password = password;
+        this.role = role;
+        this.email = email;
+        this.phone = phone;
+        this.shopName = shopName;
+        this.shopAddress = shopAddress;
+        this.isActive = isActive;
+        this.isApproved = isApproved;
+        this.createdAt = createdAt;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
+    public Boolean getApproved() {
+        return isApproved;
+    }
+
+    public void setApproved(Boolean approved) {
+        isApproved = approved;
+    }
+
 }
