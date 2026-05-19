@@ -37,11 +37,11 @@ public class BookingService {
         }
 
         List<Booking> overlappingBookings = bookingRepository
-                .findByToolIdAndStatusInAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+                .findOverlappingBookings(
                         toolId,
                         Arrays.asList(Bookingstatus.PENDING, Bookingstatus.CONFIRMED),
-                        endDate,
-                        startDate
+                        startDate,
+                        endDate
                 );
 
         if (!overlappingBookings.isEmpty()) {
