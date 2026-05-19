@@ -2,7 +2,7 @@ package com.example.Lankatools.entity;
 
 import java.time.LocalDate;
 
-import com.example.Lankatools.enums.Bookingstatus;
+import com.example.Lankatools.enums.BookingStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,14 +23,16 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "booking_date")
-    private LocalDate bookingDate;
+    @Column(name = "start_date")
+    private LocalDate startDate;
 
     @Column(name = "end_date")
     private LocalDate endDate;
 
+    private double totalCost;
+
     @Enumerated(EnumType.STRING)
-    private Bookingstatus status = Bookingstatus.ACTIVE;
+    private BookingStatus status = BookingStatus.PENDING;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
@@ -44,15 +46,19 @@ public class Booking {
         return id;
     }
 
-    public LocalDate getBookingDate() {
-        return bookingDate;
+    public LocalDate getStartDate() {
+        return startDate;
     }
 
     public LocalDate getEndDate() {
         return endDate;
     }
 
-    public Bookingstatus getStatus() {
+    public double getTotalCost() {
+        return totalCost;
+    }
+
+    public BookingStatus getStatus() {
         return status;
     }
 
@@ -68,15 +74,19 @@ public class Booking {
         this.id = id;
     }
 
-    public void setBookingDate(LocalDate bookingDate) {
-        this.bookingDate = bookingDate;
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
     }
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
-    public void setStatus(Bookingstatus status) {
+    public void setTotalCost(double totalCost) {
+        this.totalCost = totalCost;
+    }
+
+    public void setStatus(BookingStatus status) {
         this.status = status;
     }
 
@@ -88,3 +98,4 @@ public class Booking {
         this.tool = tool;
     }
 }
+
