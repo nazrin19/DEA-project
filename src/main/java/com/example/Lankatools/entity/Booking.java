@@ -29,6 +29,7 @@ public class Booking {
     @Column(name = "end_date")
     private LocalDate endDate;
 
+    @Column(name = "total_cost")
     private double totalCost;
 
     @Enumerated(EnumType.STRING)
