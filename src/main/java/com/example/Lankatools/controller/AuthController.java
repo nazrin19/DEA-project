@@ -14,4 +14,5 @@ public class AuthController {
     public String registerPage(){
         return "register";
     }
+
 }
