@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::main})}">
+<head>
+    <title>Bookings</title>
+</head>
+<body>
+<main class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1>Bookings</h1>
+            <p class="text-muted">Review all tool reservations and their current status.</p>
+        </div>
+        <a class="btn btn-success" th:href="@{/bookings/create}">New Booking</a>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <div th:if="${bookings.isEmpty()}">
+        <div class="alert alert-info">No bookings found yet. Create the first booking now.</div>
+    </div>
+
+    <div th:if="${!bookings.isEmpty()}">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Tool</th>
+                    <th>Customer</th>
+                    <th>Dates</th>
+                    <th>Total Cost</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="booking,iterStat : ${bookings}">
+                    <td th:text="${iterStat.count}"></td>
+                    <td th:text="${booking.tool.name}"></td>
+                    <td>
+                        <div th:text="${booking.customerName}"></div>
+                        <div class="text-muted" th:text="${booking.customerEmail}"></div>
+                    </td>
+                    <td>
+                        <div th:text="${booking.startDate}"></div>
+                        <div th:text="${booking.endDate}"></div>
+                    </td>
+                    <td th:text="${'#' + booking.totalCost}"></td>
+                    <td>
+                        <span class="badge bg-secondary" th:text="${booking.status}"></span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+</body>
+</html>

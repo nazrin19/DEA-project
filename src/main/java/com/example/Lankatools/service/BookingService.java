@@ -1,31 +1,86 @@
 package com.example.Lankatools.service;
 
+import com.example.Lankatools.entity.Booking;
+import com.example.Lankatools.entity.Tool;
+import com.example.Lankatools.enums.Bookingstatus;
+import com.example.Lankatools.enums.Toolstatus;
+import com.example.Lankatools.repository.BookingRepository;
+import com.example.Lankatools.repository.ToolRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class BookingService {
 
-    // 1. Inject your new EmailService
+    @Autowired
+    private BookingRepository bookingRepository;
+
+    @Autowired
+    private ToolRepository toolRepository;
+
     @Autowired
     private EmailService emailService;
 
-    /**
-     * Handles creating a new tool booking and sending an email alert
-     */
-    public void createBooking(String customerEmail, String toolName, String bookingDate) {
+    public Booking createBooking(Long toolId, String customerName, String customerEmail,
+                                 LocalDate startDate, LocalDate endDate) {
+        Tool tool = toolRepository.findById(toolId)
+                .orElseThrow(() -> new IllegalArgumentException("Tool not found."));
 
-        // TODO: In the next assignment step, you will add repository.save() here to save to MySQL!
-        System.out.println("Booking saved in system for tool: " + toolName);
+        if (endDate.isBefore(startDate)) {
+            throw new IllegalArgumentException("End date must be the same or after the start date.");
+        }
 
-        // 2. Automatically build and trigger the email message
-        String subject = "🛠️ Lankatools - Booking Confirmation!";
-        String body = "Dear Customer,\n\n" +
-                "Your booking for the tool '" + toolName + "' has been successfully confirmed.\n" +
-                "Date: " + bookingDate + "\n\n" +
-                "Thank you for choosing Lankatools!";
+        List<Booking> overlappingBookings = bookingRepository
+                .findByToolIdAndStatusInAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+                        toolId,
+                        Arrays.asList(Bookingstatus.PENDING, Bookingstatus.CONFIRMED),
+                        endDate,
+                        startDate
+                );
 
-        // Send it out!
-        emailService.sendSimpleEmail(customerEmail, subject, body);
+        if (!overlappingBookings.isEmpty()) {
+            throw new IllegalArgumentException("Selected dates overlap with an existing booking.");
+        }
+
+        long days = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+        double totalCost = days * tool.getDailyRate();
+
+        Booking booking = new Booking();
+        booking.setTool(tool);
+        booking.setCustomerName(customerName);
+        booking.setCustomerEmail(customerEmail);
+        booking.setStartDate(startDate);
+        booking.setEndDate(endDate);
+        booking.setStatus(Bookingstatus.PENDING);
+        booking.setTotalCost(totalCost);
+
+        Booking savedBooking = bookingRepository.save(booking);
+        sendConfirmationEmail(savedBooking);
+        return savedBooking;
+    }
+
+    public List<Booking> getAllBookings() {
+        return bookingRepository.findAll();
+    }
+
+    public List<Tool> getApprovedTools() {
+        return toolRepository.findByStatus(Toolstatus.APPROVED);
+    }
+
+    private void sendConfirmationEmail(Booking booking) {
+        String subject = "Lankatools Booking Confirmation";
+        String body = "Dear " + booking.getCustomerName() + ",\n\n" +
+                "Your booking for the tool '" + booking.getTool().getName() + "' is confirmed as pending.\n" +
+                "Booking dates: " + booking.getStartDate() + " to " + booking.getEndDate() + "\n" +
+                "Total cost: $" + booking.getTotalCost() + "\n\n" +
+                "We will contact you once the booking is finalized.\n\n" +
+                "Thank you for choosing Lankatools.";
+
+        emailService.sendSimpleEmail(booking.getCustomerEmail(), subject, body);
     }
 }

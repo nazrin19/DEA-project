@@ -1,4 +1,9 @@
 package com.example.Lankatools.enums;
 
-public class Bookingstatus {
+public enum Bookingstatus {
+    PENDING,
+    CONFIRMED,
+    CANCELLED,
+    COMPLETED
 }
+
