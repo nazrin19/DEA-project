@@ -1,5 +1,6 @@
 package com.example.Lankatools.entity;
 
+import com.example.Lankatools.enums.BookingStatus;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
@@ -11,32 +12,81 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String customerName;
-    private String customerEmail;
-    private String toolName;
-    private LocalDate bookingDate;
+    @Column(name = "start_date")
+    private LocalDate startDate;
+
+    @Column(name = "end_date")
     private LocalDate endDate;
-    private String status; // Will hold values like "ACTIVE" or "RETURNED"
+
+    @Column(name = "total_cost")
+    private double totalCost;
+
+    @Enumerated(EnumType.STRING)
+    private BookingStatus status = BookingStatus.PENDING;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)
+    private User customer;
+
+    @ManyToOne
+    @JoinColumn(name = "tool_id", nullable = false)
+    private Tool tool;
 
     // --- Getters and Setters ---
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
 
-    public String getCustomerName() { return customerName; }
-    public void setCustomerName(String customerName) { this.customerName = customerName; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getCustomerEmail() { return customerEmail; }
-    public void setCustomerEmail(String customerEmail) { this.customerEmail = customerEmail; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getToolName() { return toolName; }
-    public void setToolName(String toolName) { this.toolName = toolName; }
+    public LocalDate getStartDate() {
+        return startDate;
+    }
 
-    public LocalDate getBookingDate() { return bookingDate; }
-    public void setBookingDate(LocalDate bookingDate) { this.bookingDate = bookingDate; }
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
 
-    public LocalDate getEndDate() { return endDate; }
-    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
+    public LocalDate getEndDate() {
+        return endDate;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public double getTotalCost() {
+        return totalCost;
+    }
+
+    public void setTotalCost(double totalCost) {
+        this.totalCost = totalCost;
+    }
+
+    public BookingStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(BookingStatus status) {
+        this.status = status;
+    }
+
+    public User getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(User customer) {
+        this.customer = customer;
+    }
+
+    public Tool getTool() {
+        return tool;
+    }
+
+    public void setTool(Tool tool) {
+        this.tool = tool;
+    }
 }
