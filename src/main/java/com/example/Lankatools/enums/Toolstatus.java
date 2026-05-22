@@ -1,4 +1,7 @@
 package com.example.Lankatools.enums;
 
-public class Toolstatus {
+public enum Toolstatus {
+    PENDING,
+    APPROVED,
+    REJECTED
 }
