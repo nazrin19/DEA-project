@@ -1,5 +1,6 @@
 package com.example.Lankatools.service;
 
+import com.example.Lankatools.dto.LoginRequest;
 import com.example.Lankatools.entity.User;
 import com.example.Lankatools.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,4 +31,17 @@ public class UserService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
     }
+
+    public User login(LoginRequest loginRequest) {
+
+        User user = userRepository.findByEmail(loginRequest.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + loginRequest.getEmail()));
+
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Invalid email or password");
+        }
+
+        return user;
+    }
+
 }
