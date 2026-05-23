@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>LankaTools - Equipment Catalog</title>
+  <div th:replace="~{fragments/layout :: header-css}"></div>
+</head>
+<body class="bg-gray-50 font-sans flex flex-col min-screen-dynamic minimum-h-screen">
+
+<nav th:replace="~{fragments/layout :: header-nav}"></nav>
+
+<main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+
+  <div class="mb-8 border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between">
+    <div class="space-y-1">
+      <h1 class="text-3xl font-extrabold tracking-tight text-gray-900">Available Equipment Catalog</h1>
+      <p class="text-sm text-gray-500">Premium industrial and local tools available for dynamic immediate booking slots.</p>
+    </div>
+    <div class="mt-4 sm:mt-0">
+      <a th:href="@{/tools/add}" class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 transition duration-150">
+        <i class="fa-solid fa-plus-circle text-xs"></i> Register New Equipment
+      </a>
+    </div>
+  </div>
