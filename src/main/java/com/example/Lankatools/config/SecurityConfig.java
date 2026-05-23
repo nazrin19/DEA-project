@@ -28,9 +28,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf ->csrf.disable())
+
+                .csrf(csrf -> csrf.disable())
+
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/", "/tools", "/tools/**", "/api/tools", "/api/tools/**",
+                                "/login", "/register",
                                 "/", "/tools", "/tools/**",
                                 "/login", "/register", "/api/auth/**",
                                 "/css/**", "/js/**", "/images/**",
@@ -46,7 +50,7 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login")
                         .usernameParameter("email")
                         .passwordParameter("password")
-                        .successHandler(customAuthSuccessHandler())
+                        .defaultSuccessUrl("/",true)
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )

@@ -29,10 +29,13 @@ public class AuthController {
         return "register";
     }
 
+
+
     // 3. Handles the actual background Account Creation (API)
     @PostMapping("/api/auth/register")
     @ResponseBody
     public ResponseEntity<User> register(@Valid @RequestBody User user) {
         return ResponseEntity.ok(userService.registerUser(user));
     }
+
 }
