@@ -23,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/tools")
 public class ToolController {
+
     @Autowired
     private ToolService toolService;
 
@@ -34,7 +35,7 @@ public class ToolController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction){
+            @RequestParam(defaultValue = "asc") String direction) {
         Page<Tool> tools = toolService.getToolsWithPagination(page, size, sortBy, direction);
         return ResponseEntity.ok(tools);
     }
@@ -54,55 +55,55 @@ public class ToolController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Tool> updateTool (@PathVariable Long id, @RequestBody Tool tool) {
+    public ResponseEntity<Tool> updateTool(@PathVariable Long id, @RequestBody Tool tool) {
         Tool updated = toolService.updateTool(id, tool);
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
-        public ResponseEntity<String> deleteTool (@PathVariable Long id) {
+    public ResponseEntity<String> deleteTool(@PathVariable Long id) {
         toolService.deleteTool(id);
         return ResponseEntity.ok("Tool deleted successfully");
     }
 
     @PutMapping("/{id}/status")
-        public ResponseEntity<Tool> updateStatus (@PathVariable Long id, @RequestParam Toolstatus status) {
+    public ResponseEntity<Tool> updateStatus(@PathVariable Long id, @RequestParam Toolstatus status) { // 🌟 Matches Toolstatus
         Tool updatedTool = toolService.updateToolStatus(id, status);
         return ResponseEntity.ok(updatedTool);
     }
 
     @PostMapping("/upload-image")
-        public ResponseEntity<String> uploadImage (@RequestParam("file") MultipartFile file){
-            if (file.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File is empty!Please select an image.");
-            }
-
-            String contentType = file.getContentType();
-            List<String> allowedTypes = Arrays.asList("image/jpeg", "image/jpg", "image/png");
-            if (contentType == null || !allowedTypes.contains(contentType)) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid format! Only JPG, JPEG, and PNG are allowed.");
-            }
-
-            long maxSize = 2 * 1024 * 1024;
-            if (file.getSize() > maxSize) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File size is too large! Maximum Limit is 2MB. ");
-            }
-
-            try {
-                String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/uploads/";
-                File dir = new File(uploadDir);
-                if (!dir.exists()) {
-                    dir.mkdirs();
-                }
-
-                String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-                String filePath = Paths.get(uploadDir, fileName).toString();
-                file.transferTo(new File(filePath));
-
-                return ResponseEntity.ok("/uploads/" + fileName);
-            } catch (IOException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Image upload failed: " + e.getMessage());
-            }
+    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File is empty! Please select an image.");
         }
 
+        String contentType = file.getContentType();
+        List<String> allowedTypes = Arrays.asList("image/jpeg", "image/jpg", "image/png");
+        if (contentType == null || !allowedTypes.contains(contentType)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid format! Only JPG, JPEG, and PNG are allowed.");
+        }
+
+        long maxSize = 2 * 1024 * 1024;
+        if (file.getSize() > maxSize) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File size is too large! Maximum Limit is 2MB.");
+        }
+
+        try {
+            // Keep the upload path stable and clean inside your project folder root directory
+            String uploadDir = System.getProperty("user.dir") + "/uploads/";
+            File dir = new File(uploadDir);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            String filePath = Paths.get(uploadDir, fileName).toString();
+            file.transferTo(new File(filePath));
+
+            return ResponseEntity.ok("/uploads/" + fileName);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Image upload failed: " + e.getMessage());
+        }
     }
+}
