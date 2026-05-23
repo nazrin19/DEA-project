@@ -19,5 +19,6 @@ public class AdminStatsDto {
     public long getTotalTools() { return totalTools; }
     public long getTotalBookings() { return totalBookings; }
     public long getPendingApprovals() { return pendingApprovals; }
-
 }
+
+

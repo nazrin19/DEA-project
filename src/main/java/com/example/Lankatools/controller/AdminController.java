@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/admin/api")
 
 public class AdminController {
 
@@ -50,15 +50,6 @@ public class AdminController {
         return ResponseEntity.notFound().build();
     }
 
-    @PutMapping("/users/{id}/approve")
-    public ResponseEntity<User> approveUser(@PathVariable Long id) {
-        User approvedUser = userService.approveUser(id);
-        if (approvedUser != null) {
-            return ResponseEntity.ok(approvedUser);
-        }
-        return ResponseEntity.notFound().build();
-    }
-
     @GetMapping("/tools/pending")
     public ResponseEntity<List<Tool>> getPendingTools(){
         List<Tool> pendingTools = toolService.getToolsByStatus(Toolstatus.PENDING);
@@ -81,24 +72,29 @@ public class AdminController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/bookings")
+    @GetMapping("/bookings")
     public ResponseEntity<List<com.example.Lankatools.entity.Booking>> getAllBookings(){
         List<com.example.Lankatools.entity.Booking> allBookings = bookingRepository.findAll();
         return ResponseEntity.ok(allBookings);
     }
 
     @GetMapping("/stats")
-    public ResponseEntity<java.util.Map<String, Long>> getDashboardStats() {
-        java.util.Map<String, Long> stats = new java.util.HashMap<>();
+    public ResponseEntity<com.example.Lankatools.dto.AdminStatsDto> getDashboardStats() {
 
-        stats.put("totalTools", toolRepository.count());
-        stats.put("totalBookings", bookingRepository.countByStatus(com.example.Lankatools.enums.BookingStatus.PENDING));
-        stats.put("totalUsers", userRepository.count());
+        long totalUsers = userRepository.count();
+        long totalTools = toolRepository.count();
+        long totalBookings = bookingRepository.count(); // Uses inherited JPA count()
+        long pendingApprovals = toolService.getToolsByStatus(Toolstatus.PENDING).size();
 
-        long pendingToolsCount = toolService.getToolsByStatus(Toolstatus.PENDING).size();
-        stats.put("pendingApprovals", pendingToolsCount);
+        com.example.Lankatools.dto.AdminStatsDto stats = new com.example.Lankatools.dto.AdminStatsDto(
+                totalUsers,
+                totalTools,
+                totalBookings,
+                pendingApprovals
+        );
 
         return ResponseEntity.ok(stats);
     }
+
 }
 
