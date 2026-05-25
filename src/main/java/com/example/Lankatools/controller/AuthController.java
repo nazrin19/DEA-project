@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,34 +33,40 @@ public class AuthController {
         return "register";
     }
 
-    // 3. Handles the actual background Account Creation (API)
+
     @PostMapping("/api/auth/register")
     @ResponseBody
     public ResponseEntity<User> register(@Valid @RequestBody User user) {
         return ResponseEntity.ok(userService.registerUser(user));
     }
 
-    @PostMapping("/api/auth/login")
-    @ResponseBody
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpSession session) {
-        try {
+    
+@PostMapping("/api/auth/login")
+@ResponseBody
+public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    try {
+        User user = userService.login(loginRequest);
+        
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(user.getEmail(), null, java.util.Collections.emptyList());
 
-            User user = userService.login(loginRequest);
+        org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-            session.setAttribute("loggedInUser", user);
+        return ResponseEntity.ok(user);
 
-            return ResponseEntity.ok(user);
-        } catch (IllegalArgumentException e) {
-
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
+    } catch (IllegalArgumentException e) {
+        return ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
+}
 
     @PostMapping("/api/auth/logout")
     @ResponseBody
-    public ResponseEntity<String> logout(HttpSession session) {
-        session.invalidate(); // Clears the session
+    public ResponseEntity<String> logout() {
+        org.springframework.security.core.context.SecurityContextHolder.clearContext();
         return ResponseEntity.ok("Logged out successfully");
     }
+
+
+
 
 }
