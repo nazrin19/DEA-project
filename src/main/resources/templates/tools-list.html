@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+  <meta charset="UTF-8">
   <title>LankaTools - Equipment Catalog</title>
   <div th:replace="~{fragments/layout :: header-css}"></div>
 </head>
-<body class="bg-gray-50 font-sans flex flex-col min-screen-dynamic minimum-h-screen">
+<body class="bg-gray-50 font-sans flex flex-col min-h-screen">
 
 <nav th:replace="~{fragments/layout :: header-nav}"></nav>
 
 <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
 
   <div class="mb-8 border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between">
-    <div class="space-y-1">
+    <div>
       <h1 class="text-3xl font-extrabold tracking-tight text-gray-900">Available Equipment Catalog</h1>
-      <p class="text-sm text-gray-500">Premium industrial and local tools available for dynamic immediate booking slots.</p>
+      <p class="text-sm text-gray-500 mt-1">Premium industrial and local tools available for dynamic immediate booking slots.</p>
     </div>
     <div class="mt-4 sm:mt-0">
       <a th:href="@{/tools/add}" class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 transition duration-150">
@@ -21,3 +22,145 @@
       </a>
     </div>
   </div>
+
+  <div class="mb-8 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div class="relative rounded-xl shadow-sm">
+      <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+        <i class="fa-solid fa-magnifying-glass text-gray-400 text-sm"></i>
+      </div>
+      <input type="text" id="searchBar" placeholder="Search tools by name..."
+             class="block w-full rounded-xl border-gray-300 pl-10 text-sm focus:border-emerald-500 focus:ring-emerald-500 transition">
+    </div>
+
+    <div>
+      <select id="categoryFilter"
+              class="block w-full rounded-xl border-gray-300 text-sm focus:border-emerald-500 focus:ring-emerald-500 transition">
+        <option value="">All Categories</option>
+        <option value="Industrial">Industrial Tools</option>
+        <option value="HandTools">Hand Tools</option>
+        <option value="Electrical">Electrical Equipment</option>
+        <option value="Garden">Garden & Outdoor</option>
+      </select>
+    </div>
+
+    <div>
+      <select id="priceSorter"
+              class="block w-full rounded-xl border-gray-300 text-sm focus:border-emerald-500 focus:ring-emerald-500 transition">
+        <option value="">Sort by Price</option>
+        <option value="lowToHigh">Price: Low to High</option>
+        <option value="highToLow">Price: High to Low</option>
+      </select>
+    </div>
+  </div>
+
+  <div th:if="${#lists.isEmpty(tools)}" class="rounded-2xl border border-dashed border-gray-300 p-12 text-center bg-white my-6">
+    <i class="fa-solid fa-toolbox text-4xl text-gray-400 mb-3"></i>
+    <h3 class="text-base font-semibold text-gray-900">No equipment found</h3>
+    <p class="mt-1 text-sm text-gray-500">Get started by creating a new tool entry in the catalog database.</p>
+  </div>
+
+  <div th:unless="${#lists.isEmpty(tools)}" class="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8 my-6">
+
+    <div th:each="tool : ${tools}" class="group relative flex flex-col overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all duration-200">
+
+      <div class="aspect-w-4 aspect-h-3 bg-gray-200 group-hover:opacity-75 sm:aspect-none h-48 relative">
+        <img th:src="${tool.imageUrl != null ? tool.imageUrl : '/images/tool-placeholder.png'}"
+             alt="Equipment Dynamic Image Source"
+             class="h-full w-full object-cover object-center transition duration-200">
+      </div>
+
+      <div class="flex flex-1 flex-col p-5 space-y-3">
+
+        <div class="flex items-center justify-between gap-2">
+          <span class="js-category inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/10"
+                th:text="${tool.category}">Category</span>
+
+          <span th:class="${tool.status.name() == 'APPROVED' ? 'inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800' :
+                               (tool.status.name() == 'PENDING' ? 'inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800' :
+                               'inline-flex items-center rounded-full bg-rose-100 px-2.5 py-0.5 text-xs font-semibold text-rose-800')}"
+                th:text="${tool.status}">STATUS</span>
+        </div>
+
+        <div class="flex-1">
+          <h3 class="text-lg font-bold text-gray-900 hover:text-emerald-600 transition">
+            <a th:href="@{/tools/detail/{id}(id=${tool.id})}">
+              <span class="js-name" th:text="${tool.name}">Equipment Title</span>
+            </a>
+          </h3>
+          <p class="js-desc mt-1 text-sm text-gray-500 line-clamp-2" th:text="${tool.description}">Default catalog entry brief summary textual notes field layout.</p>
+        </div>
+
+        <div class="pt-2 border-t border-gray-100 flex items-center justify-between z-10">
+          <div>
+            <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Daily Rate</p>
+            <p class="text-lg font-black text-emerald-600">LKR <span class="js-price" th:data-price="${tool.dailyRate}" th:text="${tool.dailyRate}">0.00</span></p>
+          </div>
+          <a th:href="@{/tools/detail/{id}(id=${tool.id})}" class="inline-flex items-center justify-center rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-600 transition duration-150">
+            View details
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<script th:inline="javascript">
+  document.addEventListener('DOMContentLoaded', function () {
+    const searchBar = document.getElementById('searchBar');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const priceSorter = document.getElementById('priceSorter');
+
+    const gridContainer = document.querySelector('.grid.grid-cols-1.my-6');
+    if (!gridContainer) return;
+
+    const cards = Array.from(gridContainer.children);
+
+    function filterAndSortTools() {
+      const searchText = searchBar.value.toLowerCase().trim();
+      const selectedCategory = categoryFilter.value;
+      const selectedSort = priceSorter.value;
+
+      cards.forEach(card => {
+        // Querying elements via pure semantic layout classes safely
+        const toolName = card.querySelector('.js-name')?.textContent.toLowerCase() || '';
+        const toolDesc = card.querySelector('.js-desc')?.textContent.toLowerCase() || '';
+        const toolCategory = card.querySelector('.js-category')?.textContent.trim() || '';
+
+        const matchesSearch = toolName.includes(searchText) || toolDesc.includes(searchText);
+        const matchesCategory = !selectedCategory || toolCategory.toLowerCase() === selectedCategory.toLowerCase();
+
+        if (matchesSearch && matchesCategory) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Sorting mechanism execution tracking dataset updates
+      if (selectedSort) {
+        const visibleCards = cards.filter(card => card.style.display !== 'none');
+
+        visibleCards.sort((a, b) => {
+          const priceA = parseFloat(a.querySelector('.js-price')?.getAttribute('data-price')) || 0;
+          const priceB = parseFloat(b.querySelector('.js-price')?.getAttribute('data-price')) || 0;
+
+          return selectedSort === 'lowToHigh' ? priceA - priceB : priceB - priceA;
+        });
+
+        visibleCards.forEach(card => gridContainer.appendChild(card));
+      }
+    }
+
+    searchBar.addEventListener('input', filterAndSortTools);
+    categoryFilter.addEventListener('change', filterAndSortTools);
+    priceSorter.addEventListener('change', filterAndSortTools);
+  });
+</script>
+
+</body>
+</html>

@@ -17,25 +17,30 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
-    // 1. Serves the Login HTML Page
     @GetMapping("/login")
     public String loginPage() {
         return "login";
     }
 
-    // 2. Serves the Register HTML Page
     @GetMapping("/register")
     public String registerPage() {
         return "register";
     }
 
+<<<<<<< Updated upstream
 
 
     // 3. Handles the actual background Account Creation (API)
+=======
+>>>>>>> Stashed changes
     @PostMapping("/api/auth/register")
     @ResponseBody
     public ResponseEntity<User> register(@Valid @RequestBody User user) {
-        return ResponseEntity.ok(userService.registerUser(user));
+        User registeredUser = userService.registerUser(user);
+        return ResponseEntity.ok(registeredUser);
     }
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 }

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>LankaTools - My Equipment Inventory</title>
+    <div th:replace="~{fragments/layout :: header-css}"></div>
+</head>
+<body class="bg-gray-50 font-sans flex flex-col min-h-screen">
+
+<nav th:replace="~{fragments/layout :: header-nav}"></nav>
+
+<main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+
+    <div class="mb-8 border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between">
+        <div>
+            <h1 class="text-3xl font-black tracking-tight text-gray-900">My Registered Equipment</h1>
+            <p class="text-sm text-gray-500 mt-1">Manage your catalog items listings, tracking evaluation status, and tool modifications parameters logs.</p>
+        </div>
+        <div class="mt-4 sm:mt-0">
+            <a th:href="@{/tools/add}" class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 transition duration-150">
+                <i class="fa-solid fa-plus-circle text-xs"></i> Register New Equipment
+            </a>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(myTools)}" class="rounded-2xl border border-dashed border-gray-300 p-12 text-center bg-white my-6">
+        <i class="fa-solid fa-folder-open text-4xl text-gray-400 mb-3"></i>
+        <h3 class="text-base font-semibold text-gray-900">No equipment registered yet</h3>
+        <p class="mt-1 text-sm text-gray-500">You haven't added any tools to your dashboard profile yet. Get started by registering an item.</p>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(myTools)}" class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden my-6">
+        <table class="min-w-full divide-y divide-gray-200 text-left">
+            <thead class="bg-gray-50">
+            <tr>
+                <th scope="col" class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Equipment Details</th>
+                <th scope="col" class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Category</th>
+                <th scope="col" class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Daily Rate</th>
+                <th scope="col" class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Approval Status</th>
+                <th scope="col" class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+            </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 bg-white">
+            <tr th:each="tool : ${myTools}">
+                <td class="whitespace-nowrap px-6 py-4">
+                    <div class="flex items-center gap-4">
+                        <div class="h-12 w-12 flex-shrink-0 overflow-hidden rounded-xl border border-gray-100">
+                            <img class="h-full w-full object-cover" th:src="${tool.imageUrl != null ? tool.imageUrl : '/images/tool-placeholder.png'}" alt="Preview Source Thumbnail">
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-gray-900" th:text="${tool.name}">Equipment Name</div>
+                            <div class="text-xs text-gray-400 font-mono" th:text="'ID: #' + ${tool.id}">#000</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-600" th:text="${tool.category}">Category</td>
+                <td class="whitespace-nowrap px-6 py-4 text-sm font-black text-emerald-600">LKR <span th:text="${tool.dailyRate}">0.00</span></td>
+                <td class="whitespace-nowrap px-6 py-4">
+            <span th:class="${tool.status.name() == 'APPROVED' ? 'inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-800' :
+                             (tool.status.name() == 'PENDING' ? 'inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-bold text-amber-800' :
+                             'inline-flex items-center rounded-full bg-rose-100 px-2.5 py-0.5 text-xs font-bold text-rose-800')}"
+                  th:text="${tool.status}">STATUS</span>
+                </td>
+                <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-bold space-x-3">
+                    <a th:href="@{/tools/edit/{id}(id=${tool.id})}" class="text-emerald-600 hover:text-emerald-500 transition"><i class="fa-solid fa-edit"></i> Edit</a>
+                    <a th:href="@{/tools/delete/{id}(id=${tool.id})}" class="text-rose-600 hover:text-rose-500 transition" onclick="return confirm('Are you sure you want to remove this tool listing completely from database catalog?')"><i class="fa-solid fa-trash"></i> Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>
