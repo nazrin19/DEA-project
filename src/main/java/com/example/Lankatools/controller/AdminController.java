@@ -9,6 +9,7 @@ import com.example.Lankatools.repository.ToolRepository;
 import com.example.Lankatools.repository.UserRepository;
 import com.example.Lankatools.service.ToolService;
 import com.example.Lankatools.service.UserService;
+import com.example.Lankatools.service.EmailService; // 🌟 Imported your EmailService
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin/api")
-
 public class AdminController {
 
     @Autowired
@@ -34,6 +34,9 @@ public class AdminController {
 
     @Autowired
     private ToolService toolService;
+
+    @Autowired
+    private EmailService emailService; // 🌟 Injected your EmailService
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers(@RequestParam(required = false) Role role) {
@@ -60,7 +63,20 @@ public class AdminController {
     public ResponseEntity<Tool> approveTool(@PathVariable Long id) {
         return toolRepository.findById(id).map(tool -> {
             tool.setStatus(Toolstatus.APPROVED);
-            return ResponseEntity.ok(toolRepository.save(tool));
+            Tool savedTool = toolRepository.save(tool);
+
+            // 🌟 Extract the owner's email and trigger your notification
+            if (savedTool.getOwner() != null && savedTool.getOwner().getEmail() != null) {
+                String ownerEmail = savedTool.getOwner().getEmail();
+                String subject = "🎉 Your Listed Tool Has Been Approved!";
+                String body = "Dear " + savedTool.getOwner().getName() + ",\n\n" +
+                        "Good news! Your tool '" + savedTool.getName() + "' has been successfully reviewed and approved by the administrator. It is now live and available for rent on Lankatools.\n\n" +
+                        "Thank you for listing with us!\nBest Regards,\nLankatools Admin Team";
+
+                emailService.sendSimpleEmail(ownerEmail, subject, body);
+            }
+
+            return ResponseEntity.ok(savedTool);
         }).orElse(ResponseEntity.notFound().build());
     }
 
@@ -68,7 +84,7 @@ public class AdminController {
     public ResponseEntity<Tool> rejectTool(@PathVariable Long id){
         return toolRepository.findById(id).map(tool -> {
             tool.setStatus(Toolstatus.REJECTED);
-            return ResponseEntity.ok(toolRepository.save(tool)); // Fixed: changed .find to .ok
+            return ResponseEntity.ok(toolRepository.save(tool));
         }).orElse(ResponseEntity.notFound().build());
     }
 
@@ -80,10 +96,9 @@ public class AdminController {
 
     @GetMapping("/stats")
     public ResponseEntity<com.example.Lankatools.dto.AdminStatsDto> getDashboardStats() {
-
         long totalUsers = userRepository.count();
         long totalTools = toolRepository.count();
-        long totalBookings = bookingRepository.count(); // Uses inherited JPA count()
+        long totalBookings = bookingRepository.count();
         long pendingApprovals = toolService.getToolsByStatus(Toolstatus.PENDING).size();
 
         com.example.Lankatools.dto.AdminStatsDto stats = new com.example.Lankatools.dto.AdminStatsDto(
@@ -95,6 +110,4 @@ public class AdminController {
 
         return ResponseEntity.ok(stats);
     }
-
 }
-
