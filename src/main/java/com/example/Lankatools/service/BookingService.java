@@ -3,58 +3,58 @@ package com.example.Lankatools.service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.Lankatools.entity.Booking;
 
 @Service
 public class BookingService {
 
-    @Autowired
-    private EmailService emailService;
-
-    public void createBooking(String customerEmail, String toolName, String bookingDate) {
-        System.out.println("Booking saved in system for tool: " + toolName);
-        String subject = "🛠️ Lankatools - Booking Confirmation!";
-        String body = "Dear Customer,\n\nYour booking for '" + toolName + "' has been successfully confirmed.";
-        emailService.sendSimpleEmail(customerEmail, subject, body);
-    }
+    // An in-memory database storage for bookings
+    private final List<Booking> bookingStorage = new ArrayList<>();
 
     public Booking createBooking(String customerName, Long toolId, LocalDate startDate, LocalDate endDate) {
-        Booking mockBooking = new Booking();
-        mockBooking.setId(toolId);
-        return mockBooking;
+        Booking booking = new Booking();
+        booking.setId(toolId);
+        System.out.println("Creating booking for customer: " + customerName + " from " + startDate + " to " + endDate);
+        bookingStorage.add(booking);
+        return booking;
     }
 
     public Booking confirmBooking(Long id, String username) {
-        Booking mockBooking = new Booking();
-        mockBooking.setId(id);
-        return mockBooking;
+        System.out.println("Booking ID " + id + " confirmed by owner: " + username);
+        Booking booking = new Booking();
+        booking.setId(id);
+        return booking;
     }
 
     public Booking rejectBooking(Long id, String username) {
-        Booking mockBooking = new Booking();
-        mockBooking.setId(id);
-        return mockBooking;
+        System.out.println("Booking ID " + id + " rejected by owner: " + username);
+        Booking booking = new Booking();
+        booking.setId(id);
+        return booking;
     }
 
     public Booking cancelBooking(Long id, String username) {
-        Booking mockBooking = new Booking();
-        mockBooking.setId(id);
-        return mockBooking;
+        System.out.println("Booking ID " + id + " cancelled by user: " + username);
+        Booking booking = new Booking();
+        booking.setId(id);
+        return booking;
     }
 
     public Booking markReturned(Long id, String username) {
-        Booking mockBooking = new Booking();
-        mockBooking.setId(id);
-        return mockBooking;
+        System.out.println("Tool for booking ID " + id + " marked returned by user: " + username);
+        Booking booking = new Booking();
+        booking.setId(id);
+        return booking;
     }
 
     public List<Booking> getBookingsForCustomer(String username) {
-        return new ArrayList<>();
+        System.out.println("Fetching bookings for customer: " + username);
+        return bookingStorage;
     }
 
     public List<Booking> getBookingsForToolOwner(String username) {
-        return new ArrayList<>();
+        System.out.println("Fetching tool inventory bookings for owner: " + username);
+        return bookingStorage;
     }
 }
