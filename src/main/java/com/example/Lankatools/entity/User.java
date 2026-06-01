@@ -23,7 +23,7 @@ public class User {
     private String name;
 
     @Email(message = "Enter a valid email")
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length=255)
     private String email;
 
     @NotBlank(message = "Password is required")
@@ -36,10 +36,17 @@ public class User {
     private String shopAddress;
     private String phone;
 
-    private Boolean isApproved = false;
-    private Boolean isActive = true;
+    // Keeps DB column as 'is_approved' but fixes Lombok method name to getApproved()
+    @Column(name = "is_approved", nullable = false)
+    @Builder.Default
+    private Boolean approved = false;
 
-    @Column(updatable = false)
+    // Keeps DB column as 'is_active' but fixes Lombok method name to getActive()
+    @Column(name = "is_active", nullable = false)
+    @Builder.Default
+    private Boolean active = true;
+
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
@@ -47,8 +54,8 @@ public class User {
         this.createdAt = LocalDateTime.now();
     }
 
-
-    public User(String name, String password, Role role, String email, String phone, String shopName, String shopAddress, Boolean isActive, Boolean isApproved, LocalDateTime createdAt) {
+    // Custom constructor safely matching the new fields
+    public User(String name, String password, Role role, String email, String phone, String shopName, String shopAddress, Boolean active, Boolean approved, LocalDateTime createdAt) {
         this.name = name;
         this.password = password;
         this.role = role;
@@ -56,25 +63,8 @@ public class User {
         this.phone = phone;
         this.shopName = shopName;
         this.shopAddress = shopAddress;
-        this.isActive = isActive;
-        this.isApproved = isApproved;
+        this.active = active;
+        this.approved = approved;
         this.createdAt = createdAt;
     }
-
-    public Boolean getActive() {
-        return isActive;
-    }
-
-    public void setActive(Boolean active) {
-        isActive = active;
-    }
-
-    public Boolean getApproved() {
-        return isApproved;
-    }
-
-    public void setApproved(Boolean approved) {
-        isApproved = approved;
-    }
-
 }
