@@ -16,13 +16,12 @@ public interface ToolRepository extends JpaRepository<Tool, Long> {
 
     List<Tool> findByOwner(User owner);
 
-    // Overloaded with Pageable to support clean pagination across category selections
+
     Page<Tool> findByCategoryContainingIgnoreCase(String category, Pageable pageable);
 
-    // Overloaded with Pageable to support clean pagination across search queries
     Page<Tool> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
-    // Kept standard list variants if you still need them elsewhere in your project
+
     List<Tool> findByNameContainingIgnoreCase(String name);
     List<Tool> findByCategoryContainingIgnoreCase(String category);
 }

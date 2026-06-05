@@ -90,7 +90,7 @@ public class ToolController {
         }
 
         try {
-            // Keep the upload path stable and clean inside your project folder root directory
+
             String uploadDir = System.getProperty("user.dir") + "/uploads/";
             File dir = new File(uploadDir);
             if (!dir.exists()) {

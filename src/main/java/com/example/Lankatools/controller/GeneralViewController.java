@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class GeneralViewController {
 
-    // REMOVED: @GetMapping("/") because HomeController already handles the landing page index view
 
     @GetMapping("/customer/dashboard")
     public String showCustomerDashboard() {

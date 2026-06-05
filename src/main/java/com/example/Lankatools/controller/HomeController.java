@@ -22,10 +22,9 @@ public class HomeController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             Model model) {
 
-        int pageSize = 6; // Dictates max visibility elements rendered on your screen card grids
+        int pageSize = 6;
         Page<Tool> toolPage;
 
-        // 1. Core logical validation sequence determining matching pagination engines
         if (query != null && !query.trim().isEmpty()) {
             toolPage = toolService.searchToolsByNamePaginated(query.trim(), page, pageSize);
             model.addAttribute("searchQuery", query);
@@ -36,10 +35,8 @@ public class HomeController {
             toolPage = toolService.getToolsWithPagination(page, pageSize, "id", "asc");
         }
 
-        // 2. Load total tracking counters for the summary info dashboard
         long totalAvailableTools = toolService.countAvailableTools();
 
-        // 3. Mount context attributes directly into Thymeleaf pipeline scope bindings
         model.addAttribute("tools", toolPage.getContent()); // Collects list content assigned strictly to this index view
         model.addAttribute("totalTools", totalAvailableTools);
         model.addAttribute("activeToolsCount", toolPage.getNumberOfElements());

@@ -82,21 +82,13 @@ public class ToolService {
         return toolRepository.count();
     }
 
-    // =========================================================================
-    // NEW PAGINATED SEGMENTS FOR INTEGRATED LAYOUT ROUTING
-    // =========================================================================
 
-    /**
-     * Extracts a targeted slice of data records containing matching category parameters.
-     */
     public Page<Tool> getToolsByCategoryPaginated(String category, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
         return toolRepository.findByCategoryContainingIgnoreCase(category, pageable);
     }
 
-    /**
-     * Extracts a targeted slice of data records matching string text search inputs.
-     */
+
     public Page<Tool> searchToolsByNamePaginated(String name, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
         return toolRepository.findByNameContainingIgnoreCase(name, pageable);

@@ -1,7 +1,7 @@
 package com.example.Lankatools.config;
 
 import com.example.Lankatools.service.CustomUserDetailsService;
-import com.example.Lankatools.controller.AuthSuccessHandler; // Double check this import matches where AuthSuccessHandler is
+import com.example.Lankatools.config.AuthSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,10 +15,9 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
-    // Declare the success handler as a final dependency
     private final AuthSuccessHandler authSuccessHandler;
 
-    // Inject dependencies through the constructor so Spring handles its lifecycle
+
     public SecurityConfig(CustomUserDetailsService customUserDetailsService, AuthSuccessHandler authSuccessHandler) {
         this.customUserDetailsService = customUserDetailsService;
         this.authSuccessHandler = authSuccessHandler;
@@ -37,7 +36,6 @@ public class SecurityConfig {
                 .userDetailsService(customUserDetailsService)
 
                 .authorizeHttpRequests(auth -> auth
-                        // Public pathways visible to everyone (guests & logged-in users)
                         .requestMatchers(
                                 "/", "/tools", "/tools/detail/**", "/login", "/register",
                                 "/api/auth/**",
@@ -45,7 +43,7 @@ public class SecurityConfig {
                                 "/uploads/**", "/static/**"
                         ).permitAll()
 
-                        // Strict role-based guard rails
+
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/owner/**").hasRole("SHOP_OWNER") // <-- Updated to /owner/**
                         .requestMatchers("/customer/**").hasRole("CUSTOMER")
