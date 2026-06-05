@@ -1,10 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
-</body>
-</html>
+// Traditional Form POST fallback
+@PostMapping("/register")
+public String handleFormRegistration(@Valid @ModelAttribute("user") User user,
+BindingResult result,
+Model model) {
+if (result.hasErrors()) {
+return "register"; // Sends them back to the form with error tags displayed
+}
+
+try {
+userService.registerUser(user);
+return "redirect:/login?registered=true"; // Seamlessly routes them to log in!
+} catch (Exception e) {
+model.addAttribute("errorMessage", e.getMessage());
+return "register";
+}
+}

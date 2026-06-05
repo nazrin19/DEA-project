@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Owner Dashboard - Lankatools</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-50 font-sans text-slate-800">
+
+<div class="flex min-h-screen">
+    <aside class="w-64 bg-emerald-900 text-emerald-200 flex flex-col shadow-xl">
+        <div class="p-5 border-b border-emerald-800">
+            <h1 class="text-xl font-bold tracking-wider text-white">Lankatools</h1>
+            <span class="text-xs text-emerald-300 font-semibold uppercase tracking-widest block mt-1">Merchant Hub</span>
+        </div>
+
+        <nav class="flex-1 p-4 space-y-2 text-sm">
+            <a href="/owner/dashboard" class="flex items-center space-x-3 bg-emerald-800 text-white p-3 rounded-lg font-medium transition">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Shop Overview</span>
+            </a>
+            <a href="/owner/my-tools" class="flex items-center space-x-3 text-emerald-300 hover:bg-emerald-800 hover:text-white p-3 rounded-lg transition">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                <span>My Inventory</span>
+            </a>
+            <a href="/owner/tools/add" class="flex items-center space-x-3 text-emerald-300 hover:bg-emerald-800 hover:text-white p-3 rounded-lg transition">
+                <i class="fa-solid fa-circle-plus"></i>
+                <span>List New Tool</span>
+            </a>
+            <a href="/owner/rental-requests" class="flex items-center space-x-3 text-emerald-300 hover:bg-emerald-800 hover:text-white p-3 rounded-lg transition">
+                <i class="fa-solid fa-hand-holding-hand"></i>
+                <span>Rental Requests</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-emerald-800">
+            <form th:action="@{/logout}" method="POST" class="m-0">
+                <button type="submit" class="w-full flex items-center justify-center space-x-2 bg-emerald-950 hover:bg-red-800 text-emerald-200 hover:text-white p-2.5 rounded-lg transition">
+                    <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                    <span class="text-xs font-semibold">Logout</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="flex-1 p-8">
+        <header class="flex justify-between items-center pb-6 border-b border-slate-200 mb-8">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-900">Store Management Desk</h2>
+                <p class="text-sm text-slate-500">Track operations, manage equipment catalog, and fulfill active customer orders.</p>
+            </div>
+        </header>
+
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/60 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Listed Tools</p>
+                    <h3 class="text-3xl font-extrabold text-slate-900">0</h3>
+                </div>
+                <div class="bg-emerald-50 text-emerald-600 p-4 rounded-xl">
+                    <i class="fa-solid fa-screwdriver-wrench text-2xl"></i>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/60 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Pending Approvals</p>
+                    <h3 class="text-3xl font-extrabold text-slate-900">0</h3>
+                </div>
+                <div class="bg-amber-50 text-amber-600 p-4 rounded-xl">
+                    <i class="fa-solid fa-hourglass-half text-2xl"></i>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/60 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Monthly Earnings</p>
+                    <h3 class="text-3xl font-extrabold text-slate-900">LKR 0.00</h3>
+                </div>
+                <div class="bg-indigo-50 text-indigo-600 p-4 rounded-xl">
+                    <i class="fa-solid fa-wallet text-2xl"></i>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
+            <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                <h4 class="font-bold text-slate-900 text-sm tracking-wide">Live Shop Inventory</h4>
+                <a href="/owner/tools/add" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3 py-1.5 rounded-lg transition">
+                    + Add First Tool
+                </a>
+            </div>
+            <div class="p-8 text-center text-slate-400 text-sm">
+                <i class="fa-solid fa-boxes-open text-4xl text-slate-200 mb-3 block"></i>
+                <p>Your shop vault is currently empty. List items to let customers rent them out!</p>
+            </div>
+        </section>
+    </main>
+</div>
+
+</body>
+</html>

@@ -1,9 +1,7 @@
 package com.example.Lankatools.controller;
 
 import com.example.Lankatools.enums.Toolstatus;
-import com.example.Lankatools.repository.BookingRepository;
-import com.example.Lankatools.repository.ToolRepository;
-import com.example.Lankatools.repository.UserRepository;
+import com.example.Lankatools.repository.*;
 import com.example.Lankatools.service.ToolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,33 +13,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/admin")
 public class AdminViewController {
 
-    @Autowired
-    private UserRepository userRepository;
+    @Autowired private UserRepository userRepository;
+    @Autowired private ToolRepository toolRepository;
+    @Autowired private BookingRepository bookingRepository;
+    @Autowired private ToolService toolService;
 
-    @Autowired
-    private ToolRepository toolRepository;
-
-    @Autowired
-    private BookingRepository bookingRepository;
-
-    @Autowired
-    private ToolService toolService;
-
+    // 1. Admin Main Overview Dashboard
     @GetMapping("/dashboard")
     public String showAdminDashboard(Model model) {
-        // 1. Fetch count summary metrics for the Thymeleaf view dashboard cards
-        long totalUsers = userRepository.count();
-        long totalTools = toolRepository.count();
-        long totalBookings = bookingRepository.count();
-        long pendingApprovals = toolService.getToolsByStatus(Toolstatus.PENDING).size();
-
-        // 2. Map metrics into the Thymeleaf Model Attribute Engine
-        model.addAttribute("totalUsers", totalUsers);
-        model.addAttribute("totalTools", totalTools);
-        model.addAttribute("totalBookings", totalBookings);
-        model.addAttribute("pendingApprovals", pendingApprovals);
-
-        // 3. Looks for 'src/main/resources/templates/admin/dashboard.html'
+        model.addAttribute("totalUsers", userRepository.count());
+        model.addAttribute("totalTools", toolRepository.count());
+        model.addAttribute("totalBookings", bookingRepository.count());
+        model.addAttribute("pendingApprovals", toolService.getToolsByStatus(Toolstatus.PENDING).size());
         return "admin/dashboard";
+    }
+
+    // 2. Separate page where Admin reviews Shop Owner accounts and details
+    @GetMapping("/shops-list")
+    public String showRegisteredShops() {
+        return "admin/shops-list"; // Maps to templates/admin/shops-list.html
+    }
+
+    // 3. Separate page where Admin approves/rejects uploaded tools
+    @GetMapping("/tools-moderation")
+    public String showToolsModeration() {
+        return "admin/tools-moderation"; // Maps to templates/admin/tools-moderation.html
     }
 }

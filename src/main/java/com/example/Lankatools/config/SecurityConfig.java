@@ -1,6 +1,7 @@
 package com.example.Lankatools.config;
 
 import com.example.Lankatools.service.CustomUserDetailsService;
+import com.example.Lankatools.controller.AuthSuccessHandler; // Double check this import matches where AuthSuccessHandler is
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,9 +15,13 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
+    // Declare the success handler as a final dependency
+    private final AuthSuccessHandler authSuccessHandler;
 
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
+    // Inject dependencies through the constructor so Spring handles its lifecycle
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService, AuthSuccessHandler authSuccessHandler) {
         this.customUserDetailsService = customUserDetailsService;
+        this.authSuccessHandler = authSuccessHandler;
     }
 
     @Bean
@@ -32,15 +37,17 @@ public class SecurityConfig {
                 .userDetailsService(customUserDetailsService)
 
                 .authorizeHttpRequests(auth -> auth
+                        // Public pathways visible to everyone (guests & logged-in users)
                         .requestMatchers(
-                                "/", "/login", "/register",
+                                "/", "/tools", "/tools/detail/**", "/login", "/register",
                                 "/api/auth/**",
                                 "/css/**", "/js/**", "/images/**",
                                 "/uploads/**", "/static/**"
                         ).permitAll()
 
+                        // Strict role-based guard rails
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/shop/**").hasRole("SHOP_OWNER")
+                        .requestMatchers("/owner/**").hasRole("SHOP_OWNER") // <-- Updated to /owner/**
                         .requestMatchers("/customer/**").hasRole("CUSTOMER")
 
                         .anyRequest().authenticated()
@@ -51,7 +58,8 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login")
                         .usernameParameter("email")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/", true)
+                        // Reference the Spring-managed bean instance here
+                        .successHandler(authSuccessHandler)
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )
