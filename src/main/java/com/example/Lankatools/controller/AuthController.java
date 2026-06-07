@@ -27,20 +27,12 @@ public class AuthController {
         return "register";
     }
 
-<<<<<<< Updated upstream
 
-
-    // 3. Handles the actual background Account Creation (API)
-=======
->>>>>>> Stashed changes
     @PostMapping("/api/auth/register")
     @ResponseBody
     public ResponseEntity<User> register(@Valid @RequestBody User user) {
         User registeredUser = userService.registerUser(user);
         return ResponseEntity.ok(registeredUser);
     }
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
 }
