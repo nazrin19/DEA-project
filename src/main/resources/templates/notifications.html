@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>Lankatools | Shop Notifications</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
@@ -8,10 +9,11 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand" href="#">Lankatools Dashboard</a>
+        <a class="navbar-brand" th:href="@{/}">Lankatools Dashboard</a>
         <div class="navbar-nav ms-auto">
-            <a class="nav-link active" href="/notifications">
-                🔔 Notifications <span class="badge bg-danger" th:text="${notificationCount}">0</span>
+            <a class="nav-link active position-relative" th:href="@{/notifications}">
+                🔔 Notifications
+                <span class="badge bg-danger ms-1" th:if="${unreadCount > 0}" th:text="${unreadCount}">0</span>
             </a>
         </div>
     </div>
@@ -20,22 +22,31 @@
 <div class="container mt-5">
     <h2 class="mb-4">📋 Pending Shop Requests</h2>
 
-    <div th:if="${bookings.isEmpty()}" class="alert alert-success shadow-sm">
+    <div th:if="${#lists.isEmpty(bookings)}" class="alert alert-success shadow-sm">
         🎉 All caught up! There are no pending tool requests right now.
     </div>
 
-    <div th:unless="${bookings.isEmpty()}" class="row">
+    <div th:unless="${#lists.isEmpty(bookings)}" class="row">
         <div th:each="booking : ${bookings}" class="col-md-6 mb-3">
             <div class="card shadow-sm border-start border-warning border-4">
                 <div class="card-body">
-                    <h5 class="card-title text-primary" th:text="${booking.toolName != null ? booking.toolName : 'Tool Request'}">Tool Name</h5>
+                    <h5 class="card-title text-primary"
+                        th:text="${booking.tool != null ? booking.tool.name : 'Unknown Tool'}">Tool Name</h5>
+
                     <p class="card-text">
+                        <strong>Customer:</strong> <span th:text="${booking.customer != null ? booking.customer.name : 'Unknown Customer'}">Customer Name</span><br>
                         <strong>Status:</strong> <span class="badge bg-warning text-dark" th:text="${booking.status}">PENDING</span><br>
                         <strong>Booking ID:</strong> <span th:text="${booking.id}">ID</span>
                     </p>
+
                     <div class="d-flex gap-2 mt-3">
-                        <button class="btn btn-success btn-sm px-3">Approve</button>
-                        <button class="btn btn-danger btn-sm px-3">Reject</button>
+                        <form th:action="@{/owner/bookings/approve/{id}(id=${booking.id})}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-success btn-sm px-3">Approve</button>
+                        </form>
+
+                        <form th:action="@{/owner/bookings/reject/{id}(id=${booking.id})}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-danger btn-sm px-3">Reject</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -43,5 +54,27 @@
     </div>
 </div>
 
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="actionToast" class="toast align-items-center text-white bg-dark border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" th:if="${successMessage}">
+        <div class="d-flex">
+            <div class="toast-body" th:text="${successMessage}">
+                Action notification message appears here!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script th:if="${successMessage}">
+    document.addEventListener("DOMContentLoaded", function() {
+        var toastEl = document.getElementById('actionToast');
+        if (toastEl) {
+            var toast = new bootstrap.Toast(toastEl, { delay: 4000 }); // Automatically hides after 4 seconds
+            toast.show();
+        }
+    });
+</script>
 </body>
 </html>
