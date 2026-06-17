@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -87,3 +88,25 @@
 </script>
 </body>
 </html>>
+=======
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+
+// Traditional Form POST fallback
+@PostMapping("/register")
+public String handleFormRegistration(@Valid @ModelAttribute("user") User user,
+BindingResult result,
+Model model) {
+if (result.hasErrors()) {
+return "register"; // Sends them back to the form with error tags displayed
+}
+
+try {
+userService.registerUser(user);
+return "redirect:/login?registered=true"; // Seamlessly routes them to log in!
+} catch (Exception e) {
+model.addAttribute("errorMessage", e.getMessage());
+return "register";
+}
+}
+>>>>>>> f68ff1f4a5cb55257066455f41874c95e985b0bd

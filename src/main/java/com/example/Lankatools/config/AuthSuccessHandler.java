@@ -3,10 +3,15 @@ package com.example.Lankatools.config;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import java.io.IOException;
+import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Component
 public class AuthSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
@@ -15,16 +20,21 @@ public class AuthSuccessHandler implements AuthenticationSuccessHandler {
                                         Authentication authentication)
             throws IOException {
 
-        if (authentication.getAuthorities().contains(
-                new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+        Set<String> roles = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
+
+        System.out.println("🚀 User logged in with roles: " + roles);
+
+        if (roles.contains("ROLE_ADMIN")) {
             response.sendRedirect("/admin/dashboard");
-
-        } else if (authentication.getAuthorities().contains(
-                new SimpleGrantedAuthority("ROLE_SHOP_OWNER"))) {
+        } else if (roles.contains("ROLE_SHOP_OWNER")) {
             response.sendRedirect("/owner/dashboard");
-
+        } else if (roles.contains("ROLE_CUSTOMER")) {
+            response.sendRedirect("/customer/dashboard");
         } else {
-            response.sendRedirect("/tools");
+
+            response.sendRedirect("/");
         }
     }
 }

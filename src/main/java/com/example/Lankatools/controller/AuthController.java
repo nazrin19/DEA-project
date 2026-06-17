@@ -17,6 +17,7 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
+
     @GetMapping("/login")
     public String loginPage() {
         return "login";
@@ -31,8 +32,7 @@ public class AuthController {
     @PostMapping("/api/auth/register")
     @ResponseBody
     public ResponseEntity<User> register(@Valid @RequestBody User user) {
-        User registeredUser = userService.registerUser(user);
-        return ResponseEntity.ok(registeredUser);
+        return ResponseEntity.ok(userService.registerUser(user));
     }
 
 }

@@ -15,6 +15,7 @@ import java.util.Optional;
 
 @Service
 public class ToolService {
+
     @Autowired
     private ToolRepository toolRepository;
 
@@ -46,7 +47,6 @@ public class ToolService {
         }).orElseThrow(() -> new RuntimeException("Tool not found with id: " + id));
     }
 
-
     public Tool updateToolStatus(Long id, Toolstatus status) {
         return toolRepository.findById(id).map(tool -> {
             tool.setStatus(status);
@@ -69,6 +69,28 @@ public class ToolService {
     public void deleteTool(Long id) {
         toolRepository.deleteById(id);
     }
-}
 
-    
+    public List<Tool> getToolsByCategory(String category) {
+        return toolRepository.findByCategoryContainingIgnoreCase(category);
+    }
+
+    public List<Tool> getFeaturedTools() {
+        return toolRepository.findAll();
+    }
+
+    public long countAvailableTools() {
+        return toolRepository.count();
+    }
+
+
+    public Page<Tool> getToolsByCategoryPaginated(String category, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        return toolRepository.findByCategoryContainingIgnoreCase(category, pageable);
+    }
+
+
+    public Page<Tool> searchToolsByNamePaginated(String name, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        return toolRepository.findByNameContainingIgnoreCase(name, pageable);
+    }
+}
