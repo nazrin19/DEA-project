@@ -1,20 +1,239 @@
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Lankatools</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #0d6efd;
+            --hover-blue: #0b5ed7;
+            --navy-dark: #0f172a;
+            --midnight-black: #020617;
+            --light-bg: #f8fafc;
+        }
+        body {
+            background: linear-gradient(to bottom, #020617 0%, #0d6efd 35%, #eff6ff 70%, #ffffff 100%) no-repeat fixed;
+            min-height: 100vh;
+            margin: 0;
+            position: relative;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .register-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 15px;
+            position: relative;
+            z-index: 10;
+        }
+        .register-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            width: 100%;
+            max-width: 600px;
+            border: 1px solid rgba(255,255,255,0.8);
+            backdrop-filter: blur(10px);
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+        }
+        .btn-register {
+            background-color: var(--midnight-black);
+            border-color: var(--midnight-black);
+            color: white;
+            font-weight: 600;
+            padding: 12px;
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-register:hover {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
+            color: white;
+        }
+    </style>
+</head>
+<body>
 
-// Traditional Form POST fallback
-@PostMapping("/register")
-public String handleFormRegistration(@Valid @ModelAttribute("user") User user,
-BindingResult result,
-Model model) {
-if (result.hasErrors()) {
-return "register"; // Sends them back to the form with error tags displayed
-}
+<div class="register-container">
+    <div class="register-card">
 
-try {
-userService.registerUser(user);
-return "redirect:/login?registered=true"; // Seamlessly routes them to log in!
-} catch (Exception e) {
-model.addAttribute("errorMessage", e.getMessage());
-return "register";
-}
-}
+        <div class="text-center pt-4 pb-2 px-4">
+            <h4 class="fw-bold text-dark mb-1">Create Account</h4>
+            <p class="text-muted small mb-0">Join Lankatools Industrial Equipment Pool</p>
+        </div>
+        
+        <div class="card-body p-4 pt-2">
+            <div id="generalError" class="alert alert-danger d-none rounded-3 mb-3 py-2" role="alert"></div>
+
+            <form id="registerForm" novalidate>
+                <div class="row g-3">
+                    <!-- Name -->
+                    <div class="col-12">
+                        <label for="name" class="form-label text-muted small fw-semibold">Full Name</label>
+                        <input type="text" class="form-control bg-light rounded-3 py-2" id="name" placeholder="John Doe" required />
+                        <div id="nameFeedback" class="invalid-feedback"></div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="col-md-6">
+                        <label for="email" class="form-label text-muted small fw-semibold">Email Address</label>
+                        <input type="email" class="form-control bg-light rounded-3 py-2" id="email" placeholder="name@example.com" required />
+                        <div id="emailFeedback" class="invalid-feedback"></div>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="col-md-6">
+                        <label for="phone" class="form-label text-muted small fw-semibold">Phone Number</label>
+                        <input type="tel" class="form-control bg-light rounded-3 py-2" id="phone" placeholder="0771234567" required />
+                        <div id="phoneFeedback" class="invalid-feedback"></div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="col-12">
+                        <label for="password" class="form-label text-muted small fw-semibold">Password</label>
+                        <input type="password" class="form-control bg-light rounded-3 py-2" id="password" placeholder="Choose a strong password" required />
+                        <div id="passwordFeedback" class="invalid-feedback"></div>
+                    </div>
+
+                    <!-- Role -->
+                    <div class="col-12">
+                        <label for="role" class="form-label text-muted small fw-semibold">Select Account Role</label>
+                        <select class="form-select bg-light rounded-3 py-2" id="role" required>
+                            <option value="CUSTOMER">Customer (Rent Equipment)</option>
+                            <option value="SHOP_OWNER">Shop Owner (List Equipment for Rent)</option>
+                        </select>
+                        <div id="roleFeedback" class="invalid-feedback"></div>
+                    </div>
+
+                    <!-- Shop details (Conditional, hidden by default) -->
+                    <div id="shopFields" class="col-12 d-none">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="shopName" class="form-label text-muted small fw-semibold">Shop Name</label>
+                                <input type="text" class="form-control bg-light rounded-3 py-2" id="shopName" placeholder="Lanka Hardware Depot" />
+                                <div id="shopNameFeedback" class="invalid-feedback"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="shopAddress" class="form-label text-muted small fw-semibold">Shop Physical Address</label>
+                                <input type="text" class="form-control bg-light rounded-3 py-2" id="shopAddress" placeholder="123 Galle Road, Colombo" />
+                                <div id="shopAddressFeedback" class="invalid-feedback"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="col-12 mt-3">
+                        <button type="submit" id="submitBtn" class="btn btn-register w-100 rounded-3">
+                            <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
+                            Register Account
+                        </button>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="text-center mt-4">
+                <p class="text-muted small mb-0">Already have an account? <a href="/login" class="text-primary fw-bold text-decoration-none">Sign In</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const roleSelect = document.getElementById('role');
+    const shopFields = document.getElementById('shopFields');
+    const shopNameInput = document.getElementById('shopName');
+    const shopAddressInput = document.getElementById('shopAddress');
+
+    roleSelect.addEventListener('change', function() {
+        if (this.value === 'SHOP_OWNER') {
+            shopFields.classList.remove('d-none');
+            shopNameInput.required = true;
+            shopAddressInput.required = true;
+        } else {
+            shopFields.classList.add('d-none');
+            shopNameInput.required = false;
+            shopAddressInput.required = false;
+            shopNameInput.value = '';
+            shopAddressInput.value = '';
+        }
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        const submitBtn = document.getElementById('submitBtn');
+        const spinner = submitBtn.querySelector('.spinner-border');
+        const generalError = document.getElementById('generalError');
+        
+        generalError.classList.add('d-none');
+        document.querySelectorAll('.form-control, .form-select').forEach(input => {
+            input.classList.remove('is-invalid');
+        });
+        document.querySelectorAll('.invalid-feedback').forEach(feedback => {
+            feedback.textContent = '';
+            feedback.style.display = 'none';
+        });
+
+        submitBtn.disabled = true;
+        spinner.classList.remove('d-none');
+
+        const payload = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value,
+            phone: document.getElementById('phone').value,
+            role: roleSelect.value
+        };
+
+        if (roleSelect.value === 'SHOP_OWNER') {
+            payload.shopName = shopNameInput.value;
+            payload.shopAddress = shopAddressInput.value;
+        }
+
+        fetch('/api/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.href = '/login?registered=true';
+            } else if (response.status === 400) {
+                return response.json().then(errors => {
+                    Object.keys(errors).forEach(field => {
+                        const inputField = document.getElementById(field);
+                        if (inputField) {
+                            inputField.classList.add('is-invalid');
+                            const feedback = document.getElementById(field + 'Feedback');
+                            if (feedback) {
+                                feedback.textContent = errors[field];
+                                feedback.style.display = 'block';
+                            }
+                        }
+                    });
+                    throw new Error("Validation failed. Please correct form fields.");
+                });
+            } else {
+                throw new Error("Registration failed due to a server error. Please try again.");
+            }
+        })
+        .catch(err => {
+            generalError.textContent = err.message;
+            generalError.classList.remove('d-none');
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            spinner.classList.add('d-none');
+        });
+    });
+</script>
+</body>
+</html>

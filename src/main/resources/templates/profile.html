@@ -1,0 +1,174 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::#profile-content})}">
+<head>
+    <title>My Profile | Lankatools</title>
+</head>
+<body>
+<div id="profile-content" class="container my-5">
+    <div class="row g-4">
+        <!-- Sidebar Summary Card -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden text-center bg-white h-100">
+                <div class="py-5 px-4 text-white" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);">
+                    <div class="position-relative d-inline-block mb-3">
+                        <div class="bg-white text-dark rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width: 90px; height: 90px; border: 4px solid rgba(255,255,255,0.2);">
+                            <span class="fs-1 fw-bold text-primary" th:text="${#strings.substring(user.name, 0, 1).toUpperCase()}">U</span>
+                        </div>
+                    </div>
+                    <h4 class="fw-bold mb-1" th:text="${user.name}">User Name</h4>
+                    <p class="text-white-50 mb-3" th:text="${user.email}">user@example.com</p>
+                    <div>
+                        <!-- Role Badges -->
+                        <span th:if="${user.role.name() == 'ADMIN'}" class="badge bg-danger px-3 py-2 text-uppercase tracking-wider font-monospace small">Administrator</span>
+                        <span th:if="${user.role.name() == 'SHOP_OWNER'}" class="badge bg-warning text-dark px-3 py-2 text-uppercase tracking-wider font-monospace small">Shop Owner</span>
+                        <span th:if="${user.role.name() == 'CUSTOMER'}" class="badge bg-info text-dark px-3 py-2 text-uppercase tracking-wider font-monospace small">Customer</span>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between border-bottom py-3">
+                        <span class="text-muted small">Account Status</span>
+                        <span th:if="${user.active}" class="badge bg-success-subtle text-success px-2 py-1">Active</span>
+                        <span th:unless="${user.active}" class="badge bg-danger-subtle text-danger px-2 py-1">Suspended</span>
+                    </div>
+                    <div th:if="${user.role.name() == 'SHOP_OWNER'}" class="d-flex justify-content-between border-bottom py-3">
+                        <span class="text-muted small">Merchant Status</span>
+                        <span th:if="${user.approved}" class="badge bg-success-subtle text-success px-2 py-1">Approved</span>
+                        <span th:unless="${user.approved}" class="badge bg-warning-subtle text-warning px-2 py-1">Pending Approval</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-3">
+                        <span class="text-muted small">Member Since</span>
+                        <span class="text-dark fw-medium small" th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}">2026-06-21</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Cards -->
+        <div class="col-lg-8">
+            <div class="d-flex flex-column gap-4">
+                <!-- Personal Info Card -->
+                <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+                    <div class="border-bottom pb-3 mb-4">
+                        <h5 class="fw-bold text-dark mb-0">Account Details</h5>
+                        <p class="text-muted small mb-0">Your registration credentials and personal records.</p>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="text-muted small fw-semibold d-block mb-1">Full Name</label>
+                            <div class="p-3 bg-light rounded-3 text-dark fw-medium" th:text="${user.name}">John Doe</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small fw-semibold d-block mb-1">Email Address</label>
+                            <div class="p-3 bg-light rounded-3 text-dark fw-medium" th:text="${user.email}">john@example.com</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small fw-semibold d-block mb-1">Phone Number</label>
+                            <div class="p-3 bg-light rounded-3 text-dark fw-medium" th:text="${user.phone != null && user.phone != '' ? user.phone : 'Not Specified'}">0771234567</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small fw-semibold d-block mb-1">Account Role Type</label>
+                            <div class="p-3 bg-light rounded-3 text-dark fw-medium" th:text="${user.role}">CUSTOMER</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shop Info Card (only for SHOP_OWNER) -->
+                <div th:if="${user.role.name() == 'SHOP_OWNER'}" class="card border-0 shadow-sm rounded-4 bg-white p-4">
+                    <div class="border-bottom pb-3 mb-4">
+                        <h5 class="fw-bold text-dark mb-0">Shop Vault Credentials</h5>
+                        <p class="text-muted small mb-0">Your registered physical shop storefront information.</p>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="text-muted small fw-semibold d-block mb-1">Registered Shop Name</label>
+                            <div class="p-3 bg-light rounded-3 text-dark fw-medium" th:text="${user.shopName}">Lanka Tools Hub</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small fw-semibold d-block mb-1">Store Address</label>
+                            <div class="p-3 bg-light rounded-3 text-dark fw-medium" th:text="${user.shopAddress}">Colombo, Sri Lanka</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security / Change Password Card -->
+                <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+                    <div class="border-bottom pb-3 mb-4">
+                        <h5 class="fw-bold text-dark mb-0">Security Settings</h5>
+                        <p class="text-muted small mb-0">Update your account authentication credentials below.</p>
+                    </div>
+
+                    <div id="passwordAlert" class="alert d-none rounded-3" role="alert"></div>
+
+                    <form id="changePasswordForm" class="row g-3 align-items-end">
+                        <input type="hidden" id="userId" th:value="${user.id}"/>
+                        <div class="col-md-8">
+                            <label for="newPassword" class="text-muted small fw-semibold d-block mb-2">New Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="text-muted" viewBox="0 0 16 16"><path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
+                                </span>
+                                <input type="password" id="newPassword" class="form-control bg-light border-start-0" placeholder="Minimum 6 characters" required minlength="6"/>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" id="submitBtn" class="btn btn-primary w-100 rounded-3 py-2 fw-medium transition-all" style="background-color: var(--primary-blue); border-color: var(--primary-blue);">
+                                <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
+                                Update Password
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('changePasswordForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        const userId = document.getElementById('userId').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const submitBtn = document.getElementById('submitBtn');
+        const spinner = submitBtn.querySelector('.spinner-border');
+        const alertBox = document.getElementById('passwordAlert');
+        
+        // Show loading spinner
+        submitBtn.disabled = true;
+        spinner.classList.remove('d-none');
+        alertBox.classList.add('d-none');
+        
+        fetch(`/api/users/${userId}/password`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ password: newPassword })
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.text();
+            } else {
+                throw new Error("Unable to update password. Please check backend requirements.");
+            }
+        })
+        .then(message => {
+            alertBox.className = "alert alert-success rounded-3";
+            alertBox.textContent = message || "Password updated successfully.";
+            alertBox.classList.remove('d-none');
+            document.getElementById('newPassword').value = '';
+        })
+        .catch(err => {
+            alertBox.className = "alert alert-danger rounded-3";
+            alertBox.textContent = err.message;
+            alertBox.classList.remove('d-none');
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            spinner.classList.add('d-none');
+        });
+    });
+</script>
+</body>
+</html>
