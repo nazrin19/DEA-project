@@ -15,7 +15,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     // --- Core Engine Methods (Your Branch) ---
     List<Booking> findByCustomer(User customer);
 
-    List<Booking> findByToolOwner(User owner);
+    List<Booking> findByTool_Owner(User owner);
 
     boolean existsByToolAndStatusNotInAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
             Tool tool,

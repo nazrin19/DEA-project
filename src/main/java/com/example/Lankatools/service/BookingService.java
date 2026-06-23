@@ -103,7 +103,7 @@ public class BookingService {
 
     public List<Booking> getBookingsForToolOwner(String email) {
         User owner = userService.getUserByEmail(email);
-        return bookingRepository.findByToolOwner(owner);
+        return bookingRepository.findByTool_Owner(owner);
     }
 
     public List<Tool> getApprovedTools() {
@@ -136,8 +136,7 @@ public class BookingService {
     public Booking markReturned(Long id, String username) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Booking reference not found."));
-        // Assuming you have a COMPLETED or RETURNED status tag, or update as needed
-        booking.setStatus(BookingStatus.CONFIRMED);
+        booking.setStatus(BookingStatus.RETURNED);
         return bookingRepository.save(booking);
     }
 
