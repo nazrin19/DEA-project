@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::content})}">
 <head>
-    <title>Tools Moderation Queue | Lankatools</title>
+    <title>Manage Shops | Lankatools</title>
     <style>
         :root {
             --nc-brand-blue: #0f2e5a;
@@ -53,15 +53,15 @@
         <div class="col-12">
             <div class="card theme-hero-banner p-4 border-0 d-flex flex-column justify-content-center">
                 <div>
-                    <span class="badge bg-white text-dark mb-2 px-3 py-1.5 fw-bold font-monospace" style="font-size:0.7rem; letter-spacing: 0.05em;">QUALITY CONTROLLER</span>
-                    <h1 class="fw-bold mb-1 text-white" style="letter-spacing: -0.02em; font-size: 2rem;">Hardware Asset Moderation</h1>
-                    <p class="mb-0 text-white-50 small">Verify newly listed marketplace inventory components before public catalog registry listing.</p>
+                    <span class="badge bg-white text-dark mb-2 px-3 py-1.5 fw-bold font-monospace" style="font-size:0.7rem; letter-spacing: 0.05em;">PARTNER DIRECTORY</span>
+                    <h1 class="fw-bold mb-1 text-white" style="letter-spacing: -0.02em; font-size: 2rem;">Registered Shop Outlets</h1>
+                    <p class="mb-0 text-white-50 small">Approve storefront creation pipelines, audit documentation, and toggle active merchant endpoints.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Moderation Table Container -->
+    <!-- Main Data Table Container -->
     <div class="row">
         <div class="col-12">
             <div class="card nc-card p-4">
@@ -69,42 +69,38 @@
                     <table class="table align-middle table-premium mb-0">
                         <thead>
                         <tr>
-                            <th>Tool Model / Inventory Asset</th>
-                            <th>Category Node</th>
-                            <th>Base Rental Price</th>
-                            <th>Merchant Outsource Store</th>
-                            <th class="text-center">Action Framework</th>
+                            <th>Shop Identity</th>
+                            <th>Proprietor Details</th>
+                            <th>Contact Line</th>
+                            <th>Operational Address</th>
+                            <th>System Status</th>
+                            <th class="text-center">Administrative Actions</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="tool : ${pendingTools}">
+                        <tr th:each="user : ${shops}">
                             <td>
-                                <div class="fw-bold text-dark fs-6" th:text="${tool.name}">Tool Item Name</div>
-                                <small class="text-muted text-truncate d-block" style="max-width: 300px;" th:text="${tool.description}">Asset description summary details...</small>
+                                <strong class="text-primary font-monospace fs-6" style="color: var(--nc-accent-blue) !important;" th:text="${user.shopName}">Shop Name</strong>
                             </td>
                             <td>
-                                <span class="badge bg-light text-secondary border font-monospace" th:text="${tool.category}">Category</span>
+                                <div class="fw-bold text-dark" th:text="${user.name}">Owner Name</div>
+                                <small class="text-muted font-monospace" th:text="${user.email}">owner@email.com</small>
                             </td>
                             <td>
-                                <strong class="text-dark font-monospace" th:text="'LKR ' + ${tool.pricePerDay} + ' / day'">LKR 0.00</strong>
+                                <span class="font-monospace text-dark" th:text="${user.phone}">0777123456</span>
                             </td>
                             <td>
-                                <span class="text-secondary fw-semibold" th:text="${tool.user.shopName}">Owner Outlet Shop</span>
+                                <small class="text-secondary" th:text="${user.shopAddress}">Warehouse Address Data</small>
+                            </td>
+                            <td>
+                                <span th:if="${user.approved}" class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">Active Store</span>
+                                <span th:unless="${user.approved}" class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1">Pending Audit</span>
                             </td>
                             <td class="text-center">
-                                <div class="d-flex gap-2 justify-content-center">
-                                    <form th:action="@{/admin/tools/approve/{id}(id=${tool.id})}" method="POST" class="d-inline">
-                                        <button type="submit" class="btn btn-sm btn-success fw-bold px-3 shadow-sm">Verify Item</button>
-                                    </form>
-                                    <form th:action="@{/admin/tools/reject/{id}(id=${tool.id})}" method="POST" class="d-inline">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger fw-bold px-3">Decline</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr th:if="${#lists.isEmpty(pendingTools)}">
-                            <td colspan="5" class="text-center py-5 text-muted font-monospace">
-                                ✨ Everything is up to date. No hardware assets pending verification.
+                                <form th:unless="${user.approved}" th:action="@{/admin/shops/approve/{id}(id=${user.id})}" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-success fw-bold px-3 shadow-sm">Approve Store</button>
+                                </form>
+                                <span th:if="${user.approved}" class="text-muted small font-monospace">✔ Fully Verified</span>
                             </td>
                         </tr>
                         </tbody>
