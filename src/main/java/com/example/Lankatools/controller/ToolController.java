@@ -40,7 +40,7 @@ public class ToolController {
         return ResponseEntity.ok(tools);
     }
 
-    @PostMapping("/save")
+    @PostMapping
     public ResponseEntity<?> saveTool(@RequestBody Tool tool) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String currentUserEmail = auth.getName();

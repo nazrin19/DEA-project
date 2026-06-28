@@ -1,77 +1,75 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::#content})}">
+
 <head>
-    <meta charset="UTF-8">
     <title>LankaTools - My Equipment Inventory</title>
-    <div th:replace="~{fragments/layout :: header-css}"></div>
 </head>
-<body class="bg-gray-50 font-sans flex flex-col min-h-screen">
 
-<nav th:replace="~{fragments/layout :: header-nav}"></nav>
+<body>
+<div id="content">
 
-<main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+    <div class="container py-5">
 
-    <div class="mb-8 border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between">
-        <div>
-            <h1 class="text-3xl font-black tracking-tight text-gray-900">My Registered Equipment</h1>
-            <p class="text-sm text-gray-500 mt-1">Manage your catalog items listings, tracking evaluation status, and tool modifications parameters logs.</p>
-        </div>
-        <div class="mt-4 sm:mt-0">
-            <a th:href="@{/tools/add}" class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 transition duration-150">
-                <i class="fa-solid fa-plus-circle text-xs"></i> Register New Equipment
+        <div class="mb-4 border-bottom pb-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h1 class="fw-bold mb-1">My Registered Equipment</h1>
+                <p class="text-muted mb-0">Manage your catalog items listings, tracking evaluation status, and tool modification logs.</p>
+            </div>
+            <a th:href="@{/tools/add}" class="btn btn-success rounded-3 fw-medium px-3">
+                + Register New Equipment
             </a>
         </div>
-    </div>
 
-    <div th:if="${#lists.isEmpty(myTools)}" class="rounded-2xl border border-dashed border-gray-300 p-12 text-center bg-white my-6">
-        <i class="fa-solid fa-folder-open text-4xl text-gray-400 mb-3"></i>
-        <h3 class="text-base font-semibold text-gray-900">No equipment registered yet</h3>
-        <p class="mt-1 text-sm text-gray-500">You haven't added any tools to your dashboard profile yet. Get started by registering an item.</p>
-    </div>
+        <div th:if="${#lists.isEmpty(myTools)}" class="bg-white rounded-3 border border-dashed p-5 text-center my-4">
+            <h3 class="fw-semibold">No equipment registered yet</h3>
+            <p class="text-muted mt-2">You haven't added any tools to your dashboard profile yet. Get started by registering an item.</p>
+        </div>
 
-    <div th:unless="${#lists.isEmpty(myTools)}" class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden my-6">
-        <table class="min-w-full divide-y divide-gray-200 text-left">
-            <thead class="bg-gray-50">
-            <tr>
-                <th scope="col" class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Equipment Details</th>
-                <th scope="col" class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Category</th>
-                <th scope="col" class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Daily Rate</th>
-                <th scope="col" class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Approval Status</th>
-                <th scope="col" class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Actions</th>
-            </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200 bg-white">
-            <tr th:each="tool : ${myTools}">
-                <td class="whitespace-nowrap px-6 py-4">
-                    <div class="flex items-center gap-4">
-                        <div class="h-12 w-12 flex-shrink-0 overflow-hidden rounded-xl border border-gray-100">
-                            <img class="h-full w-full object-cover" th:src="${tool.imageUrl != null ? tool.imageUrl : '/images/tool-placeholder.png'}" alt="Preview Source Thumbnail">
+        <div th:unless="${#lists.isEmpty(myTools)}" class="bg-white rounded-3 border shadow-sm overflow-hidden my-4">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th class="text-uppercase small fw-bold text-muted">Equipment Details</th>
+                    <th class="text-uppercase small fw-bold text-muted">Category</th>
+                    <th class="text-uppercase small fw-bold text-muted">Daily Rate</th>
+                    <th class="text-uppercase small fw-bold text-muted">Approval Status</th>
+                    <th class="text-uppercase small fw-bold text-muted text-end">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="tool : ${myTools}">
+                    <td>
+                        <div class="d-flex align-items-center gap-3">
+                            <img class="rounded-3 border"
+                                 style="width: 48px; height: 48px; object-fit: cover;"
+                                 th:src="${tool.imageUrl != null ? tool.imageUrl : '/images/tool-placeholder.png'}"
+                                 alt="Tool Thumbnail">
+                            <div>
+                                <div class="fw-bold small" th:text="${tool.name}">Equipment Name</div>
+                                <div class="text-muted small font-monospace" th:text="'ID: #' + ${tool.id}">#000</div>
+                            </div>
                         </div>
-                        <div>
-                            <div class="text-sm font-bold text-gray-900" th:text="${tool.name}">Equipment Name</div>
-                            <div class="text-xs text-gray-400 font-mono" th:text="'ID: #' + ${tool.id}">#000</div>
-                        </div>
-                    </div>
-                </td>
-                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-600" th:text="${tool.category}">Category</td>
-                <td class="whitespace-nowrap px-6 py-4 text-sm font-black text-emerald-600">LKR <span th:text="${tool.dailyRate}">0.00</span></td>
-                <td class="whitespace-nowrap px-6 py-4">
-            <span th:class="${tool.status.name() == 'APPROVED' ? 'inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-800' :
-                             (tool.status.name() == 'PENDING' ? 'inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-bold text-amber-800' :
-                             'inline-flex items-center rounded-full bg-rose-100 px-2.5 py-0.5 text-xs font-bold text-rose-800')}"
-                  th:text="${tool.status}">STATUS</span>
-                </td>
-                <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-bold space-x-3">
-                    <a th:href="@{/tools/edit/{id}(id=${tool.id})}" class="text-emerald-600 hover:text-emerald-500 transition"><i class="fa-solid fa-edit"></i> Edit</a>
-                    <a th:href="@{/tools/delete/{id}(id=${tool.id})}" class="text-rose-600 hover:text-rose-500 transition" onclick="return confirm('Are you sure you want to remove this tool listing completely from database catalog?')"><i class="fa-solid fa-trash"></i> Delete</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+                    </td>
+                    <td class="small fw-medium text-secondary" th:text="${tool.category}">Category</td>
+                    <td class="small fw-bold text-success">LKR <span th:text="${tool.dailyRate}">0.00</span></td>
+                    <td>
+                        <span th:if="${tool.status.name() == 'APPROVED'}" class="badge bg-success-subtle text-success rounded-pill">APPROVED</span>
+                        <span th:if="${tool.status.name() == 'PENDING'}" class="badge bg-warning-subtle text-warning-emphasis rounded-pill">PENDING</span>
+                        <span th:if="${tool.status.name() == 'REJECTED'}" class="badge bg-danger-subtle text-danger rounded-pill">REJECTED</span>
+                    </td>
+                    <td class="text-end">
+                        <a th:href="@{/tools/edit/{id}(id=${tool.id})}" class="btn btn-sm btn-outline-success me-2">Edit</a>
+                        <a th:href="@{/tools/delete/{id}(id=${tool.id})}"
+                           class="btn btn-sm btn-outline-danger"
+                           onclick="return confirm('Are you sure you want to remove this tool listing completely from the catalog?')">Delete</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
     </div>
-</main>
 
-<footer th:replace="~{fragments/layout :: footer}"></footer>
-
+</div>
 </body>
 </html>

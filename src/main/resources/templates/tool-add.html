@@ -1,199 +1,118 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::#content})}">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LankaTools - Register New Equipment</title>
-
-    <th:block th:replace="~{fragments/layout :: header-css}"></th:block>
 </head>
 
-<body class="bg-gray-50 font-sans flex flex-col min-h-screen">
+<body>
+<div id="content">
 
-<nav th:replace="~{fragments/layout :: header-nav}"></nav>
+    <div class="container py-5" style="max-width: 700px;">
 
-<main class="flex-grow max-w-3xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10">
+        <div class="mb-4 text-center">
+            <h1 class="fw-bold">Register New Equipment</h1>
+            <p class="text-muted">Add your tools to the marketplace and start earning through rentals.</p>
+        </div>
 
-    <div class="mb-8 text-center">
-        <h1 class="text-3xl font-black text-gray-900 tracking-tight">
-            Register New Equipment
-        </h1>
+        <form th:action="@{/tools/add}"
+              th:object="${tool}"
+              method="post"
+              enctype="multipart/form-data"
+              class="bg-white p-4 p-md-5 rounded-3 border shadow-sm">
 
-        <p class="text-sm text-gray-500 mt-2">
-            Add your tools to the marketplace and start earning through rentals.
-        </p>
+            <div class="mb-4">
+                <label class="form-label fw-bold text-uppercase small">Equipment Photo</label>
+
+                <div class="border border-2 border-dashed rounded-3 p-4 text-center bg-light position-relative" style="cursor: pointer;">
+
+                    <input type="file"
+                           name="imageFile"
+                           id="imageFile"
+                           accept="image/png,image/jpeg"
+                           required
+                           class="position-absolute top-0 start-0 w-100 h-100 opacity-0"
+                           style="cursor: pointer;">
+
+                    <div id="uploadPlaceholder">
+                        <p class="text-muted small mb-0">Click to upload JPG or PNG (Maximum 5MB)</p>
+                    </div>
+
+                    <img id="imagePreview" src="#" alt="Preview" class="d-none w-100 rounded-3 shadow-sm" style="height: 200px; object-fit: cover;">
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+
+                <div class="col-sm-6">
+                    <label for="name" class="form-label fw-bold small">Tool Name</label>
+                    <input type="text" id="name" th:field="*{name}" required
+                           placeholder="e.g. Industrial Drill Machine"
+                           class="form-control">
+                </div>
+
+                <div class="col-sm-6">
+                    <label for="category" class="form-label fw-bold small">Category</label>
+                    <select id="category" th:field="*{category}" required class="form-select">
+                        <option value="">Select Category</option>
+                        <option value="Industrial Tools">Industrial Tools</option>
+                        <option value="Hand Tools">Hand Tools</option>
+                        <option value="Electrical Equipment">Electrical Equipment</option>
+                        <option value="Garden & Outdoor">Garden & Outdoor</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="mb-4">
+                <label for="dailyRate" class="form-label fw-bold small">Daily Rental Rate (LKR)</label>
+                <div class="input-group">
+                    <span class="input-group-text">Rs.</span>
+                    <input type="number" id="dailyRate" th:field="*{dailyRate}" required min="0" step="0.01"
+                           placeholder="0.00" class="form-control fw-bold text-success">
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="description" class="form-label fw-bold small">Description</label>
+                <textarea id="description" th:field="*{description}" rows="4" required
+                          placeholder="Describe the tool condition, specifications, and rental information..."
+                          class="form-control"></textarea>
+            </div>
+
+            <div class="d-flex gap-3 pt-2">
+                <button type="submit" class="btn btn-success flex-grow-1 rounded-3 py-2 fw-bold">
+                    Submit for Approval
+                </button>
+                <a th:href="@{/tools}" class="btn btn-outline-secondary rounded-3 px-4">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+
     </div>
 
-    <form th:action="@{/tools/add}"
-          th:object="${tool}"
-          method="post"
-          enctype="multipart/form-data"
-          class="bg-white p-8 rounded-3xl border border-gray-200 shadow-xl space-y-6">
+    <script>
+        document.getElementById('imageFile').addEventListener('change', function () {
+            const file = this.files[0];
+            if (!file) return;
 
-        <div class="space-y-4">
+            if (file.size > 5 * 1024 * 1024) {
+                alert("File is too large. Maximum size is 5MB.");
+                this.value = "";
+                return;
+            }
 
-            <label class="block text-sm font-bold text-gray-700 uppercase tracking-wider">
-                Equipment Photo
-            </label>
+            const preview = document.getElementById('imagePreview');
+            const placeholder = document.getElementById('uploadPlaceholder');
 
-            <div class="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-3xl p-6 bg-gray-50 hover:bg-gray-100 transition cursor-pointer relative overflow-hidden group">
+            preview.src = URL.createObjectURL(file);
+            preview.classList.remove('d-none');
+            placeholder.classList.add('d-none');
+        });
+    </script>
 
-                <input type="file"
-                       name="imageFile"
-                       id="imageFile"
-                       accept="image/png,image/jpeg"
-                       required
-                       class="absolute inset-0 opacity-0 cursor-pointer z-10">
-
-                <div id="uploadPlaceholder" class="text-center space-y-2">
-                    <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-400 group-hover:text-emerald-500 transition"></i>
-
-                    <p class="text-xs text-gray-500">
-                        Click to upload JPG or PNG (Maximum 5MB)
-                    </p>
-                </div>
-
-                <img id="imagePreview"
-                     src="#"
-                     alt="Preview"
-                     class="hidden h-48 w-full object-cover rounded-2xl shadow-md">
-            </div>
-
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-
-            <div>
-                <label for="name"
-                       class="block text-sm font-bold text-gray-700 mb-2">
-                    Tool Name
-                </label>
-
-                <input type="text"
-                       id="name"
-                       th:field="*{name}"
-                       required
-                       placeholder="e.g. Industrial Drill Machine"
-                       class="block w-full rounded-xl border-gray-300 shadow-sm text-sm focus:border-emerald-500 focus:ring-emerald-500">
-            </div>
-
-            <div>
-                <label for="category"
-                       class="block text-sm font-bold text-gray-700 mb-2">
-                    Category
-                </label>
-
-                <select id="category"
-                        th:field="*{category}"
-                        required
-                        class="block w-full rounded-xl border-gray-300 shadow-sm text-sm focus:border-emerald-500 focus:ring-emerald-500">
-
-                    <option value="">Select Category</option>
-                    <option value="Industrial Tools">Industrial Tools</option>
-                    <option value="Hand Tools">Hand Tools</option>
-                    <option value="Electrical Equipment">Electrical Equipment</option>
-                    <option value="Garden & Outdoor">Garden & Outdoor</option>
-
-                </select>
-            </div>
-
-        </div>
-
-        <div>
-
-            <label for="dailyRate"
-                   class="block text-sm font-bold text-gray-700 mb-2">
-                Daily Rental Rate (LKR)
-            </label>
-
-            <div class="relative">
-
-                <div class="absolute inset-y-0 left-0 flex items-center pl-4">
-                    <span class="text-gray-500 font-bold">
-                        Rs.
-                    </span>
-                </div>
-
-                <input type="number"
-                       id="dailyRate"
-                       th:field="*{dailyRate}"
-                       required
-                       min="0"
-                       step="0.01"
-                       placeholder="0.00"
-                       class="block w-full rounded-xl border-gray-300 pl-12 text-sm font-bold text-emerald-600 focus:border-emerald-500 focus:ring-emerald-500">
-
-            </div>
-
-        </div>
-
-        <div>
-
-            <label for="description"
-                   class="block text-sm font-bold text-gray-700 mb-2">
-                Description
-            </label>
-
-            <textarea id="description"
-                      th:field="*{description}"
-                      rows="4"
-                      required
-                      placeholder="Describe the tool condition, specifications, and rental information..."
-                      class="block w-full rounded-xl border-gray-300 shadow-sm text-sm focus:border-emerald-500 focus:ring-emerald-500"></textarea>
-
-        </div>
-
-        <div class="pt-4 flex gap-4">
-
-            <button type="submit"
-                    class="flex-1 rounded-xl bg-emerald-600 px-4 py-3 text-base font-bold text-white shadow-lg hover:bg-emerald-500 transition">
-
-                Submit for Approval
-
-            </button>
-
-            <a th:href="@{/tools}"
-               class="px-6 py-3 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50">
-
-                Cancel
-
-            </a>
-
-        </div>
-
-    </form>
-
-</main>
-
-<footer th:replace="~{fragments/layout :: footer}"></footer>
-
-<script>
-    document.getElementById('imageFile').addEventListener('change', function () {
-
-        const file = this.files[0];
-
-        if (!file) return;
-
-        if (file.size > 5 * 1024 * 1024) {
-
-            alert("File is too large. Maximum size is 5MB.");
-
-            this.value = "";
-
-            return;
-        }
-
-        const preview = document.getElementById('imagePreview');
-        const placeholder = document.getElementById('uploadPlaceholder');
-
-        preview.src = URL.createObjectURL(file);
-        preview.classList.remove('hidden');
-
-        placeholder.classList.add('hidden');
-    });
-</script>
-
+</div>
 </body>
 </html>
-
