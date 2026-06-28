@@ -19,6 +19,14 @@
 - Implemented session storage after login
 - Implemented logout functionality
 
+### Person 2
+- Finished assigned frontend work as of June 21st
+- Completed on the frontend:
+  - Tool catalog page
+  - Tool detail view page
+  - General UI improvements
+- Pulled the latest changes after completing the work
+
 ---
 
 ## Notes / Blockers
@@ -29,6 +37,7 @@
 ## Next Steps
 - Continue tracking frontend progress across the team
 - Confirm Person-1's login/register pages integrate cleanly with the rest of the navbar/layout work already in progress
+- Confirm Person-2's tool catalog/detail pages integrate cleanly with Person-3's booking form (tool detail page work may overlap between them)
 - Continue daily check-ins
 
 ---
