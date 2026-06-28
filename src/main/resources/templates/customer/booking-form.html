@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Rental - LankaTools</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen font-sans flex flex-col justify-between">
+
+<div class="max-w-xl mx-auto w-full px-4 py-12">
+    <!-- Back Navigation & Title -->
+    <div class="mb-6">
+        <a href="/index" class="text-sm font-semibold text-blue-600 hover:underline flex items-center gap-1 mb-2">
+            <i class="fa-solid fa-arrow-left text-xs"></i> Return to Marketplace
+        </a>
+        <h1 class="text-2xl font-black text-slate-900 tracking-tight">Confirm Rental Duration</h1>
+        <p class="text-slate-500 text-sm mt-0.5">Specify your operational dates to complete checkout.</p>
+    </div>
+
+    <!-- Selection Card Summary Box -->
+    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-md mb-6 flex items-start gap-4">
+        <img th:src="${tool.imageUrl != null ? tool.imageUrl : '/uploads/default-placeholder.png'}"
+             class="w-16 h-16 object-cover rounded-lg bg-slate-100 border border-slate-200"
+             onerror="this.src='/uploads/default-placeholder.png'">
+        <div>
+            <span class="px-2 py-0.5 text-[10px] font-bold bg-blue-100 text-blue-800 rounded-full uppercase tracking-wider" th:text="${tool.category}">Category</span>
+            <h2 class="text-lg font-bold text-slate-900 mt-1" th:text="${tool.name}">Equipment Name</h2>
+            <p class="text-emerald-600 font-extrabold text-sm mt-0.5">Rs. <span th:text="${tool.dailyRate}">0.00</span> / day</p>
+        </div>
+    </div>
+
+    <!-- The Booking Submission Form -->
+    <form th:action="@{/customer/bookings/create}" method="POST" class="bg-white p-6 rounded-xl border border-slate-200 shadow-md space-y-5">
+        <!-- Hidden context reference mapping parameter -->
+        <input type="hidden" name="toolId" th:value="${tool.id}"/>
+
+        <div>
+            <label class="block text-xs uppercase font-bold tracking-wider text-slate-500 mb-2">Start Date</label>
+            <div class="relative">
+                <input type="date" name="startDate" required
+                       class="w-full border border-slate-200 rounded-lg p-2.5 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/50">
+                <i class="fa-regular fa-calendar-plus absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-xs uppercase font-bold tracking-wider text-slate-500 mb-2">End Date</label>
+            <div class="relative">
+                <input type="date" name="endDate" required
+                       class="w-full border border-slate-200 rounded-lg p-2.5 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/50">
+                <i class="fa-regular fa-calendar-minus absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+            </div>
+        </div>
+
+        <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 font-medium">
+            <span>Payment processed securely</span>
+            <span>LankaTools Guarantee 🛡️</span>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-sm transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer">
+            <i class="fa-solid fa-credit-card"></i>
+            <span>Confirm & Pay</span>
+        </button>
+    </form>
+</div>
+
+</body>
+</html>

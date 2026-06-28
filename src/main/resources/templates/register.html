@@ -1,20 +1,104 @@
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LankaTools - Create Account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#025a91',
+                            700: '#0369a1',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4 antialiased">
 
-// Traditional Form POST fallback
-@PostMapping("/register")
-public String handleFormRegistration(@Valid @ModelAttribute("user") User user,
-BindingResult result,
-Model model) {
-if (result.hasErrors()) {
-return "register"; // Sends them back to the form with error tags displayed
-}
+<div class="bg-white w-full max-w-lg rounded-2xl shadow-xl border border-slate-100 overflow-hidden transition-all duration-300 hover:shadow-2xl">
+    <div class="bg-gradient-to-r from-brand-700 to-brand-900 px-8 py-6 text-white text-center">
+        <h1 class="text-3xl font-extrabold tracking-tight mb-1">🛠️ LankaTools</h1>
+        <p class="text-brand-100 text-sm font-medium">Join our peer-to-peer tool sharing community</p>
+    </div>
 
-try {
-userService.registerUser(user);
-return "redirect:/login?registered=true"; // Seamlessly routes them to log in!
-} catch (Exception e) {
-model.addAttribute("errorMessage", e.getMessage());
-return "register";
-}
-}
+    <form th:action="@{/register}" method="POST" class="p-8 space-y-5">
+
+        <div th:if="${param.error}" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg text-sm text-red-700">
+            <span class="font-bold">Registration Failed:</span> Please check your input details and try again.
+        </div>
+
+        <div>
+            <label for="name" class="block text-sm font-semibold text-slate-700 mb-1">Full Name</label>
+            <input type="text" id="name" name="name" required placeholder="John Doe"
+                   class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all">
+        </div>
+
+        <div>
+            <label for="email" class="block text-sm font-semibold text-slate-700 mb-1">Email Address</label>
+            <input type="email" id="email" name="email" required placeholder="yourname@domain.com"
+                   class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label for="phone" class="block text-sm font-semibold text-slate-700 mb-1">Phone Number</label>
+                <input type="tel" id="phone" name="phone" required placeholder="07XXXXXXXX"
+                       class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all">
+            </div>
+            <div>
+                <label for="password" class="block text-sm font-semibold text-slate-700 mb-1">Password</label>
+                <input type="password" id="password" name="password" required placeholder="••••••••"
+                       class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all">
+            </div>
+        </div>
+
+        <hr class="border-slate-100 my-2" />
+
+        <div class="bg-brand-50 border border-brand-100 p-4 rounded-xl space-y-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-sm font-bold text-brand-900">Are you a Tool Provider?</h3>
+                    <p class="text-xs text-slate-500">Fill this out if you plan to lease tools out to others</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div>
+                    <label for="shopName" class="block text-xs font-semibold text-slate-600 mb-1">Shop Name (Optional)</label>
+                    <input type="text" id="shopName" name="shopName" placeholder="Lanka Hardware"
+                           class="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all">
+                </div>
+                <div>
+                    <label for="shopAddress" class="block text-xs font-semibold text-slate-600 mb-1">Shop Address (Optional)</label>
+                    <input type="text" id="shopAddress" name="shopAddress" placeholder="Colombo, Sri Lanka"
+                           class="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all">
+                </div>
+            </div>
+        </div>
+
+        <button type="submit"
+                class="w-full py-3 bg-brand-600 text-white font-bold rounded-lg shadow-md hover:bg-brand-700 active:bg-brand-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 transition-all cursor-pointer">
+            Create Free Account
+        </button>
+
+        <div class="text-center text-sm text-slate-500 pt-2">
+            Already have an account?
+            <a th:href="@{/login}" class="text-brand-600 font-semibold hover:text-brand-700 hover:underline transition-colors">Log In here</a>
+        </div>
+
+    </form>
+</div>
+
+</body>
+</html>

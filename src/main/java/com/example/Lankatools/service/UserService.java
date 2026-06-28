@@ -18,20 +18,45 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public User registerUser(User user){
+    /**
+     * Registers a new user with secure password hashing.
+     * Dynamically assigns appropriate platform access levels based on input parameters.
+     */
+    public User registerUser(User user) {
+        // 1. Hash the raw incoming text password string exactly once
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
+
+        // 2. Base platform accessibility state profiles
         user.setActive(true);
-        user.setApproved(false);
+
+        // 3. Evaluate conditional routing paths based on Tool Provider criteria
+        if (user.getShopName() != null && !user.getShopName().trim().isEmpty()) {
+            user.setRole(Role.SHOP_OWNER);
+            user.setApproved(false); // Vendor shops require standard admin review
+        } else {
+            user.setRole(Role.CUSTOMER);
+            user.setApproved(true);  // Consumer client profiles are auto-approved immediately
+        }
+
         return userRepository.save(user);
     }
+
+    /**
+     * Filters and collects users from persistent storage based on application access rules.
+     */
     public List<User> getAllUsers(Role role) {
         if (role != null) {
-            return userRepository.findAll().stream().filter(user -> user.getRole() == role).toList();
+            return userRepository.findAll().stream()
+                    .filter(user -> user.getRole() == role)
+                    .toList();
         }
         return userRepository.findAll();
     }
 
+    /**
+     * Toggles account accessibility status to handle policy violations or platform suspensions.
+     */
     public User toggleUserSuspension(Long id) {
         return userRepository.findById(id).map(user -> {
             user.setActive(!user.getActive());
@@ -39,7 +64,10 @@ public class UserService {
         }).orElse(null);
     }
 
-    public User approveUser(Long id){
+    /**
+     * Authorizes pending tool vendor storefront profiles for operational hosting clearance.
+     */
+    public User approveUser(Long id) {
         return userRepository.findById(id).map(user -> {
             user.setApproved(true);
             return userRepository.save(user);
@@ -47,7 +75,7 @@ public class UserService {
     }
 
     /**
-     * 🟢 ADD THIS METHOD: Finds a user by their email address
+     * Resolves and extracts complete user information matching a unique identification email.
      */
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
