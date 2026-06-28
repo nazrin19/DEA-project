@@ -1,0 +1,40 @@
+<!--
+    ================================================================
+    EMPTY STATE FRAGMENT
+    ================================================================
+    Usage from any page (Thymeleaf th:replace):
+
+      <div th:replace="~{fragments/empty-state :: empty-state(
+              icon='🔧',
+              title='No tools found',
+              message='Try a different search term or category.',
+              actionText=null,
+              actionUrl=null)}">
+      </div>
+
+    With an action button (e.g. customer dashboard with no bookings):
+
+      <div th:replace="~{fragments/empty-state :: empty-state(
+              icon='📅',
+              title='No bookings yet',
+              message='Once you book a tool, it will show up here.',
+              actionText='Browse Tools',
+              actionUrl=@{/tools})}">
+      </div>
+    ================================================================
+-->
+<div xmlns:th="http://www.thymeleaf.org">
+
+    <div th:fragment="empty-state(icon, title, message, actionText, actionUrl)" class="empty-state">
+        <div class="empty-state-icon"><span th:text="${icon}">🔧</span></div>
+        <h5 th:text="${title}">Nothing here yet</h5>
+        <p class="text-muted mb-3" th:text="${message}">There's nothing to show right now.</p>
+        <a th:if="${actionText != null and actionUrl != null}"
+           th:href="${actionUrl}"
+           th:text="${actionText}"
+           class="btn empty-state-btn px-4">
+            Take action
+        </a>
+    </div>
+
+</div>
