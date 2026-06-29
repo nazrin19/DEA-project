@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rental Requests - LankaTools</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-50 font-sans text-slate-800">
+
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <div class="mb-8">
+        <a href="/owner/dashboard" class="text-sm font-semibold text-blue-600 hover:underline flex items-center gap-1 mb-2">
+            <i class="fa-solid fa-arrow-left text-xs"></i> Back to Dashboard
+        </a>
+        <h1 class="text-2xl font-black text-slate-900">Incoming Rental Bookings</h1>
+    </div>
+
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                <tr class="bg-slate-100 text-slate-600 text-xs uppercase font-bold tracking-wider border-b border-slate-200">
+                    <th class="p-4">Rented Equipment</th>
+                    <th class="p-4">Client Contact</th>
+                    <th class="p-4">Rental Duration</th>
+                    <th class="p-4">Financial Total</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 text-sm">
+                <tr th:if="${bookings == null || bookings.empty}">
+                    <td colspan="4" class="p-8 text-center text-slate-400 italic">
+                        No active booking context profiles registered for your tools yet.
+                    </td>
+                </tr>
+                <tr th:each="booking : ${bookings}" class="hover:bg-slate-50/80 transition-colors">
+                    <td class="p-4">
+                        <span class="font-bold text-slate-900 block" th:text="${booking.tool.name}">Demolition Jackhammer</span>
+                        <span class="text-xs text-slate-400" th:text="${booking.tool.category}">Power Tools</span>
+                    </td>
+                    <td class="p-4">
+                        <span class="font-semibold text-slate-800 block" th:text="${booking.user.name}">Customer Name</span>
+                        <span class="text-xs text-slate-400" th:text="${booking.user.email}">email@example.com</span>
+                    </td>
+                    <td class="p-4">
+                        <div class="text-slate-700 font-medium">
+                            <i class="fa-regular fa-calendar text-xs text-slate-400 mr-1"></i>
+                            <span th:text="${booking.startDate}">2026-06-28</span> to <span th:text="${booking.endDate}">2026-06-30</span>
+                        </div>
+                    </td>
+                    <td class="p-4 font-bold text-emerald-600">
+                        Rs. <span th:text="${booking.totalPrice != null ? booking.totalPrice : '0.00'}">0.00</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -25,10 +25,10 @@ public class BookingService {
     private ToolRepository toolRepository;
 
     @Autowired
-    private UserService userService; // Injected to retrieve the User entity by email
+    private UserService userService;
 
     @Autowired
-    private EmailService emailService;
+    private EmailService emailService; // Using your dedicated central email service handler
 
     /**
      * Creates a tool booking after validating overlap checks, updates database, and emails confirmation.
@@ -50,8 +50,7 @@ public class BookingService {
             throw new IllegalArgumentException("End date must be the same or after the start date.");
         }
 
-        // 4. Match the exact Boolean check method written in your BookingRepository
-        // Exclude cancelled/rejected orders from blocking new bookings
+        // 4. Overlap configuration check
         List<BookingStatus> excludedStatuses = Arrays.asList(BookingStatus.REJECTED, BookingStatus.CANCELLED);
 
         boolean hasOverlap = bookingRepository.existsByToolAndStatusNotInAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
@@ -82,7 +81,7 @@ public class BookingService {
         Booking savedBooking = bookingRepository.save(booking);
         System.out.println("🚀 Success: Booking record stored cleanly for " + tool.getName());
 
-        // 8. Safely pass to the email engine
+        // 8. Centralized call to our notification sender dispatcher
         try {
             sendConfirmationEmail(savedBooking);
         } catch (Exception e) {
@@ -136,7 +135,6 @@ public class BookingService {
     public Booking markReturned(Long id, String username) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Booking reference not found."));
-        // Assuming you have a COMPLETED or RETURNED status tag, or update as needed
         booking.setStatus(BookingStatus.CONFIRMED);
         return bookingRepository.save(booking);
     }
@@ -145,21 +143,21 @@ public class BookingService {
      * Dispatcher helper utilizing your internal EmailService layer
      */
     private void sendConfirmationEmail(Booking booking) {
-        String subject = "🛠️ Lankatools - Booking Confirmation!";
+        String subject = "🛠️ LankaTools - Booking Request Received!";
 
-        // This is 100% correct because Lombok generates getName() from 'private String name;'
         String body = "Dear " + booking.getCustomer().getName() + ",\n\n" +
-                "Your booking request for the tool '" + booking.getTool().getName() + "' has been filed as PENDING.\n" +
-                "Duration: " + booking.getStartDate() + " to " + booking.getEndDate() + "\n" +
-                "Estimated Total: $" + booking.getTotalCost() + "\n\n" +
-                "Thank you for choosing Lankatools.";
+                "Your booking request for '" + booking.getTool().getName() + "' has been placed successfully and is currently PENDING review.\n\n" +
+                "📋 RENTAL DETAILS:\n" +
+                "• Booking Reference ID: #" + booking.getId() + "\n" +
+                "• Rental Window: " + booking.getStartDate() + " to " + booking.getEndDate() + "\n" +
+                "• Estimated Total Cost: Rs. " + String.format("%.2Fi", booking.getTotalCost()) + "\n\n" +
+                "The tool owner will evaluate your rental status request shortly. Thank you for using LankaTools!";
 
         try {
-            // This is 100% correct because Lombok generates getEmail() from 'private String email;'
             emailService.sendSimpleEmail(booking.getCustomer().getEmail(), subject, body);
             System.out.println("📬 Notification dispatched to user checkout mailbox.");
         } catch (Exception e) {
-            System.err.println("❌ Could not send email: " + e.getMessage());
+            System.err.println("❌ Could not send email via EmailService: " + e.getMessage());
         }
     }
 }
