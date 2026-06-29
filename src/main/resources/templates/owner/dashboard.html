@@ -19,7 +19,9 @@
                 <a href="/owner/upload-tool" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-all">
                     <i class="fa-solid fa-plus mr-1"></i> Add New Tool
                 </a>
-                <a href="/logout" class="text-sm font-medium text-slate-600 hover:text-slate-900">Logout</a>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button type="submit" class="text-sm font-semibold text-slate-600 hover:text-slate-900 cursor-pointer bg-transparent border-0 p-0">Logout</button>
+                </form>
             </div>
         </div>
     </div>
