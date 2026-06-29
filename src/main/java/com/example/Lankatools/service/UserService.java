@@ -53,4 +53,11 @@ public class UserService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
     }
+    public void approveShopOwner(Long id) {
+        this.approveUser(id);
+    }
+
+    public void suspend(Long id) {
+        this.toggleUserSuspension(id);
+    }
 }

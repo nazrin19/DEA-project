@@ -1,115 +1,144 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::content})}">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{admin/admin-layout :: adminLayout(~{::title}, 'shops', ~{::main})}">
 <head>
-    <title>Manage Shops | Lankatools</title>
-    <style>
-        :root {
-            --nc-brand-blue: #0f2e5a;
-            --nc-accent-blue: #225191;
-            --nc-bg-premium: #f3f6f9;
-            --nc-card-border: rgba(15, 46, 90, 0.08);
-            --nc-text-dark: #1e293b;
-        }
-        body {
-            background-color: var(--nc-bg-premium) !important;
-            color: var(--nc-text-dark);
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
-        .theme-hero-banner {
-            background: linear-gradient(135deg, #0f2e5a 0%, #1a3d6c 100%);
-            border-radius: 12px;
-            color: #ffffff;
-            min-height: 140px;
-            box-shadow: 0 4px 15px rgba(15, 46, 90, 0.1);
-        }
-        .nc-card {
-            background: #ffffff;
-            border: 1px solid var(--nc-card-border);
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(15, 46, 90, 0.02);
-        }
-        .table-premium th {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            font-weight: 700;
-            color: #475569;
-            background-color: #f8fafc;
-            letter-spacing: 0.05em;
-            padding: 1rem 0.75rem;
-            border-bottom: 2px solid #e2e8f0;
-        }
-        .table-premium td {
-            padding: 1rem 0.75rem;
-            color: #334155;
-            border-bottom: 1px solid #f1f5f9;
-        }
-    </style>
+    <title>Shops List – Admin | LankaTools</title>
 </head>
 <body>
-<div th:fragment="content" class="container py-5">
+<main>
 
-    <!-- Top Corporate Header Banner -->
-    <div class="row mb-5">
-        <div class="col-12">
-            <div class="card theme-hero-banner p-4 border-0 d-flex flex-column justify-content-center">
-                <div>
-                    <span class="badge bg-white text-dark mb-2 px-3 py-1.5 fw-bold font-monospace" style="font-size:0.7rem; letter-spacing: 0.05em;">PARTNER DIRECTORY</span>
-                    <h1 class="fw-bold mb-1 text-white" style="letter-spacing: -0.02em; font-size: 2rem;">Registered Shop Outlets</h1>
-                    <p class="mb-0 text-white-50 small">Approve storefront creation pipelines, audit documentation, and toggle active merchant endpoints.</p>
-                </div>
-            </div>
+    <!-- PAGE HERO -->
+    <div class="hero" style="min-height:150px;">
+        <div class="hero-content">
+            <div class="hero-badge">Shop Directory</div>
+            <h1>Registered <span>Shops</span></h1>
+            <p>
+                <span th:text="${shopOwners != null ? shopOwners.size() : 0}">3</span>
+                shop owners registered on the platform — review their details and manage account status.
+            </p>
+            <a href="/admin/dashboard" class="hero-back">← Back to Dashboard</a>
         </div>
     </div>
 
-    <!-- Main Data Table Container -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card nc-card p-4">
-                <div class="table-responsive">
-                    <table class="table align-middle table-premium mb-0">
-                        <thead>
-                        <tr>
-                            <th>Shop Identity</th>
-                            <th>Proprietor Details</th>
-                            <th>Contact Line</th>
-                            <th>Operational Address</th>
-                            <th>System Status</th>
-                            <th class="text-center">Administrative Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="user : ${shops}">
-                            <td>
-                                <strong class="text-primary font-monospace fs-6" style="color: var(--nc-accent-blue) !important;" th:text="${user.shopName}">Shop Name</strong>
-                            </td>
-                            <td>
-                                <div class="fw-bold text-dark" th:text="${user.name}">Owner Name</div>
-                                <small class="text-muted font-monospace" th:text="${user.email}">owner@email.com</small>
-                            </td>
-                            <td>
-                                <span class="font-monospace text-dark" th:text="${user.phone}">0777123456</span>
-                            </td>
-                            <td>
-                                <small class="text-secondary" th:text="${user.shopAddress}">Warehouse Address Data</small>
-                            </td>
-                            <td>
-                                <span th:if="${user.approved}" class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">Active Store</span>
-                                <span th:unless="${user.approved}" class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1">Pending Audit</span>
-                            </td>
-                            <td class="text-center">
-                                <form th:unless="${user.approved}" th:action="@{/admin/shops/approve/{id}(id=${user.id})}" method="POST" class="d-inline">
-                                    <button type="submit" class="btn btn-sm btn-success fw-bold px-3 shadow-sm">Approve Store</button>
-                                </form>
-                                <span th:if="${user.approved}" class="text-muted small font-monospace">✔ Fully Verified</span>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+    <div class="section" style="background:#f3f6f9;">
+
+        <!-- Flash message -->
+        <div th:if="${success}" class="alert alert-success">✔ <span th:text="${success}"></span></div>
+
+        <!-- SUMMARY CARDS -->
+        <div class="cards-grid" style="grid-template-columns:repeat(3,1fr); margin-bottom:1.8rem;">
+            <div class="stat-card">
+                <div class="stat-bar" style="background:#3b82f6;"></div>
+                <div class="stat-label">Total Shops</div>
+                <div class="stat-num" th:text="${shopOwners != null ? shopOwners.size() : 0}">3</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-bar" style="background:#22c55e;"></div>
+                <div class="stat-label">Approved</div>
+                <div class="stat-num" style="color:#22c55e;" th:text="${approvedShopCount}">3</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-bar" style="background:#f59e0b;"></div>
+                <div class="stat-label">Pending Approval</div>
+                <div class="stat-num" style="color:#f59e0b;" th:text="${pendingShopCount}">0</div>
+            </div>
+        </div>
+
+        <!-- SHOP CARDS -->
+        <div class="shops-grid" th:if="${shopOwners != null and not #lists.isEmpty(shopOwners)}">
+            <div th:each="owner : ${shopOwners}" class="shop-card">
+
+                <!-- Card Header -->
+                <div class="shop-card-head">
+                    <div class="shop-icon">🏪</div>
+                    <div style="flex:1;min-width:0;">
+                        <div class="shop-card-head-name" th:text="${owner.shopName ?: owner.name}">Shop Name</div>
+                        <div class="shop-card-head-owner">Owner: <span th:text="${owner.name}">Full Name</span></div>
+                    </div>
+                    <div style="flex-shrink:0;">
+                        <span th:if="${owner.isApproved}" class="badge badge-green">APPROVED</span>
+                        <span th:unless="${owner.isApproved}" class="badge badge-yellow">PENDING</span>
+                    </div>
+                </div>
+
+                <!-- Card Body -->
+                <div class="shop-card-body">
+
+                    <!-- Email -->
+                    <div class="shop-detail-row">
+                        <div class="shop-detail-icon">✉️</div>
+                        <div>
+                            <div class="shop-detail-label">Email</div>
+                            <div class="shop-detail-value" th:text="${owner.email}">email@shop.com</div>
+                        </div>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="shop-detail-row" th:if="${owner.phone}">
+                        <div class="shop-detail-icon">📞</div>
+                        <div>
+                            <div class="shop-detail-label">Phone</div>
+                            <div class="shop-detail-value" th:text="${owner.phone}">07X XXX XXXX</div>
+                        </div>
+                    </div>
+
+                    <!-- Shop Address -->
+                    <div class="shop-detail-row" th:if="${owner.shopAddress}">
+                        <div class="shop-detail-icon">📍</div>
+                        <div>
+                            <div class="shop-detail-label">Address</div>
+                            <div class="shop-detail-value" th:text="${owner.shopAddress}">Shop Address</div>
+                        </div>
+                    </div>
+
+                    <!-- Joined date -->
+                    <div class="shop-detail-row">
+                        <div class="shop-detail-icon">📅</div>
+                        <div>
+                            <div class="shop-detail-label">Member Since</div>
+                            <div class="shop-detail-value" th:text="${#temporals.format(owner.createdAt, 'dd MMM yyyy')}">01 Jan 2025</div>
+                        </div>
+                    </div>
+
+                    <!-- Account Status -->
+                    <div class="shop-detail-row">
+                        <div class="shop-detail-icon">⚡</div>
+                        <div>
+                            <div class="shop-detail-label">Account Status</div>
+                            <div th:if="${owner.isActive}" class="shop-detail-value" style="color:#16a34a;">Active</div>
+                            <div th:unless="${owner.isActive}" class="shop-detail-value" style="color:#dc2626;">Suspended</div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="shop-card-actions">
+                        <a th:href="@{/admin/shop-detail(id=${owner.id})}" class="btn-mini btn-view">🔍 View Details</a>
+
+                        <form th:action="@{/admin/shops/{id}/approve(id=${owner.id})}" method="post" th:unless="${owner.isApproved}">
+                            <button type="submit" class="btn-mini btn-approve">✔ Approve</button>
+                        </form>
+
+                        <form th:action="@{/admin/shops/{id}/suspend(id=${owner.id})}" method="post">
+                            <button type="submit"
+                                    th:class="${owner.isActive} ? 'btn-mini btn-suspend' : 'btn-mini btn-reinstate'"
+                                    th:text="${owner.isActive} ? '⏸ Suspend' : '▶ Reinstate'">Suspend</button>
+                        </form>
+                    </div>
+
                 </div>
             </div>
         </div>
+
+        <!-- EMPTY STATE -->
+        <div th:if="${shopOwners == null or #lists.isEmpty(shopOwners)}" class="empty-state" style="background:#fff;border-radius:12px;border:1px solid rgba(15,46,90,.08);">
+            <div class="icon">🏪</div>
+            <div class="title">No Shops Registered</div>
+            <div class="desc">No shop owners have joined the platform yet.</div>
+        </div>
+
     </div>
 
-</div>
+</main>
 </body>
 </html>

@@ -1,257 +1,200 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::content})}">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{admin/admin-layout :: adminLayout(~{::title}, 'dashboard', ~{::main})}">
 <head>
-    <title>Admin Dashboard | Lankatools</title>
-    <style>
-        :root {
-            --nc-brand-blue: #0f2e5a;
-            --nc-accent-blue: #225191;
-            --nc-bg-premium: #f3f6f9;         
-            --nc-card-border: rgba(15, 46, 90, 0.08);
-            --nc-text-dark: #1e293b;
-        }
-        body {
-            background-color: var(--nc-bg-premium) !important;
-            color: var(--nc-text-dark);
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        .theme-hero-banner {
-            background: linear-gradient(135deg, #0f2e5a 0%, #1a3d6c 100%);
-            border-radius: 12px;
-            color: #ffffff;
-            min-height: 160px;
-            box-shadow: 0 4px 15px rgba(15, 46, 90, 0.1);
-        }
-
-        .nc-card {
-            background: #ffffff;
-            border: 1px solid var(--nc-card-border);
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(15, 46, 90, 0.02);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .nc-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 30px rgba(15, 46, 90, 0.04);
-        }
-
-
-        .metric-indicator {
-            height: 5px;
-            width: 40px;
-            border-radius: 10px;
-            margin-bottom: 12px;
-        }
-
-
-        .table-premium th {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            font-weight: 700;
-            color: #475569;
-            background-color: #f8fafc;
-            letter-spacing: 0.05em;
-            padding: 1rem 0.75rem;
-            border-bottom: 2px solid #e2e8f0;
-        }
-        .table-premium td {
-            padding: 1rem 0.75rem;
-            color: #334155;
-            border-bottom: 1px solid #f1f5f9;
-        }
-        .table-premium tr:hover td {
-            background-color: #f8fafc;
-        }
-
-        .badge-status {
-            font-size: 0.75rem;
-            padding: 0.35rem 0.75rem;
-            border-radius: 6px;
-            font-weight: 600;
-        }
-    </style>
+    <title>Admin Dashboard – LankaTools</title>
 </head>
 <body>
-<div th:fragment="content" class="container py-5">
+<main>
 
-    <div class="row mb-5">
-        <div class="col-12">
-            <div class="card theme-hero-banner p-4 border-0 d-flex flex-column justify-content-center">
-                <div>
-                    <span class="badge bg-white text-dark mb-2 px-3 py-1.5 fw-bold font-monospace shadow-sm" style="font-size:0.7rem; letter-spacing: 0.05em;">ADMINISTRATION SUITE</span>
-                    <h1 class="fw-bold mb-1 text-white" style="letter-spacing: -0.02em; font-size: 2.2rem;">LankaTools Operations Center</h1>
-                    <p class="mb-0 text-white-50 small" style="max-width: 700px;">
-                        Manage corporate nodes, evaluate active merchant pipelines, and monitor national security validations.
-                    </p>
+    <!-- HERO -->
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">Administration Suite</div>
+            <h1>LankaTools <span>Operations</span> Center</h1>
+            <p>Real-time overview monitoring hardware metrics, registered customer profiles, rental operations, and platform moderation.</p>
+        </div>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="section" style="background:#f3f6f9;">
+
+        <!-- Flash message -->
+        <div th:if="${success}" class="alert alert-success" style="max-width:1100px;margin:0 auto 1.5rem;">✔ <span th:text="${success}"></span></div>
+
+        <div class="section-title">Platform Overview</div>
+        <div class="section-sub"><em>Live metrics across all operations</em></div>
+        <div class="cards-grid">
+            <a href="/admin/users" class="stat-card">
+                <div class="stat-bar" style="background:#3b82f6;"></div>
+                <div class="stat-label">Platform Users</div>
+                <div class="stat-num" th:text="${totalUsers}">9</div>
+                <span class="stat-link" style="color:#3b82f6;">Manage Accounts →</span>
+            </a>
+            <a href="/admin/tools-moderation" class="stat-card">
+                <div class="stat-bar" style="background:#22c55e;"></div>
+                <div class="stat-label">Registered Tools</div>
+                <div class="stat-num" th:text="${totalTools}">15</div>
+                <span class="stat-link" style="color:#22c55e;">View Catalogue →</span>
+            </a>
+            <a href="/admin/bookings" class="stat-card">
+                <div class="stat-bar" style="background:#06b6d4;"></div>
+                <div class="stat-label">Total Bookings</div>
+                <div class="stat-num" th:text="${totalBookings}">10</div>
+                <span class="stat-link" style="color:#06b6d4;">Track Rentals →</span>
+            </a>
+            <a href="/admin/tools-moderation" class="stat-card">
+                <div class="stat-bar" style="background:#f59e0b;"></div>
+                <div class="stat-label">Moderation Queue</div>
+                <div class="stat-num" style="color:#f59e0b;" th:text="${pendingApprovals}">2</div>
+                <span class="stat-link" style="color:#f59e0b;">Moderate Tools →</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- ADMIN MODULES -->
+    <div class="section" style="background:#fff;">
+        <div class="section-title">Admin Modules</div>
+        <div class="section-sub">Tools to keep the platform running <em>smoothly</em></div>
+        <div class="services-grid">
+            <a href="/admin/users" class="svc-card">
+                <div class="svc-card-img" style="background:linear-gradient(135deg,#0f2e5a,#1a3d6c); color:#f59e0b;">👥</div>
+                <div class="svc-card-body">
+                    <div class="svc-card-title">User Management</div>
+                    <div class="svc-card-desc">Approve shop owners, suspend accounts, and manage all customer profiles from one place.</div>
                 </div>
+            </a>
+            <a href="/admin/shops-list" class="svc-card">
+                <div class="svc-card-img" style="background:linear-gradient(135deg,#1a3d6c,#225191); color:#f59e0b;">🏪</div>
+                <div class="svc-card-body">
+                    <div class="svc-card-title">Shop Directory</div>
+                    <div class="svc-card-desc">Review registered shop outlets, verify partner details, and toggle merchant status.</div>
+                </div>
+            </a>
+            <a href="/admin/tools-moderation" class="svc-card">
+                <div class="svc-card-img" style="background:linear-gradient(135deg,#225191,#2d6bc4); color:#f59e0b;">🔧</div>
+                <div class="svc-card-body">
+                    <div class="svc-card-title">Tool Moderation</div>
+                    <div class="svc-card-desc">Verify newly listed hardware assets before they go live in the public rental catalogue.</div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- RECENT BOOKINGS -->
+    <div class="section" style="background:#f3f6f9;">
+        <div class="table-wrap">
+            <div class="table-head-row">
+                <span class="table-title">📋 Recent Bookings</span>
+                <a href="/admin/bookings" class="view-all-btn">View all →</a>
+            </div>
+            <table>
+                <thead>
+                <tr><th>#</th><th>Customer</th><th>Tool</th><th>Start</th><th>End</th><th>Total</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="b : ${recentBookings}">
+                    <td style="color:#94a3b8;font-family:monospace;" th:text="${b.id}">1</td>
+                    <td>
+                        <span class="user-avatar" th:text="${#strings.substring(b.customer.name,0,1)}">C</span>
+                        <span th:text="${b.customer.name}">Customer</span>
+                    </td>
+                    <td th:text="${b.tool.name}">Tool</td>
+                    <td th:text="${#temporals.format(b.startDate,'yyyy-MM-dd')}">2026-01-01</td>
+                    <td th:text="${#temporals.format(b.endDate,'yyyy-MM-dd')}">2026-01-02</td>
+                    <td><strong th:text="'LKR ' + ${#numbers.formatDecimal(b.totalCost,1,'COMMA',0,'POINT')}">LKR 0</strong></td>
+                    <td>
+                    <span th:switch="${b.status.name()}">
+                        <span th:case="'CONFIRMED'" class="badge badge-green">CONFIRMED</span>
+                        <span th:case="'ACTIVE'" class="badge badge-blue">ACTIVE</span>
+                        <span th:case="'PENDING'" class="badge badge-yellow">PENDING</span>
+                        <span th:case="'RETURNED'" class="badge badge-gray">RETURNED</span>
+                        <span th:case="'CANCELLED'" class="badge badge-red">CANCELLED</span>
+                        <span th:case="'REJECTED'" class="badge badge-red">REJECTED</span>
+                        <span th:case="*" class="badge badge-gray" th:text="${b.status}">STATUS</span>
+                    </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div th:if="${recentBookings == null or #lists.isEmpty(recentBookings)}" class="empty-state">
+                <div class="icon">📋</div>
+                <div class="title">No Bookings Yet</div>
+                <div class="desc">Rental activity will appear here once customers start booking tools.</div>
             </div>
         </div>
     </div>
 
-    <div class="row g-4 mb-5" th:if="${stats != null}">
-        <div class="col-md-3">
-            <div class="card nc-card p-4">
-                <div class="metric-indicator bg-primary"></div>
-                <div class="text-uppercase small font-monospace text-muted fw-bold" style="letter-spacing: 0.03em;">Platform Users</div>
-                <div class="fs-1 fw-bold my-1 text-dark" style="color: var(--nc-brand-blue) !important;" th:text="${stats.totalUsers}">0</div>
-                <a href="/admin/users" class="small text-decoration-none text-primary fw-semibold">Manage Accounts &rarr;</a>
+    <!-- RECENT USERS -->
+    <div class="section" style="background:#f3f6f9; padding-top:0;">
+        <div class="table-wrap">
+            <div class="table-head-row">
+                <span class="table-title">👥 Recent Users</span>
+                <a href="/admin/users" class="view-all-btn">View all →</a>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card nc-card p-4">
-                <div class="metric-indicator bg-success"></div>
-                <div class="text-uppercase small font-monospace text-muted fw-bold" style="letter-spacing: 0.03em;">Registered Tools</div>
-                <div class="fs-1 fw-bold my-1 text-dark" style="color: var(--nc-brand-blue) !important;" th:text="${stats.totalTools}">0</div>
-                <a href="/admin/tools/pending" class="small text-decoration-none text-success fw-semibold">View Catalogs &rarr;</a>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card nc-card p-4">
-                <div class="metric-indicator bg-info"></div>
-                <div class="text-uppercase small font-monospace text-muted fw-bold" style="letter-spacing: 0.03em;">Active Rentals</div>
-                <div class="fs-1 fw-bold my-1 text-dark" style="color: var(--nc-brand-blue) !important;" th:text="${stats.totalBookings}">0</div>
-                <a href="/admin/bookings" class="small text-decoration-none text-info fw-semibold">Track Bookings &rarr;</a>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card nc-card p-4">
-                <div class="metric-indicator bg-warning"></div>
-                <div class="text-uppercase small font-monospace text-muted fw-bold" style="letter-spacing: 0.03em;">Moderation Queue</div>
-                <div class="fs-1 fw-bold my-1 text-warning" th:text="${stats.pendingTools}">0</div>
-                <a href="/admin/tools/pending" class="small text-decoration-none text-warning fw-semibold">Moderate Tools &rarr;</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="row mb-5">
-        <div class="col-12">
-            <div class="card border-0 p-3 rounded-3 d-flex flex-row align-items-center shadow-sm" style="background-color: #eef2f7; border-left: 4px solid var(--nc-brand-blue) !important;">
-                <div class="fs-4 me-3">🛡️</div>
-                <div>
-                    <strong class="d-block" style="color: var(--nc-brand-blue);">Enterprise KYC Identity Enforcement Engine</strong>
-                    <span class="small text-muted">All active profiles and corporate merchant nodes are explicitly cross-referenced with national documentation via verified Sri Lankan NIC signatures.</span>
-                </div>
+            <table>
+                <thead>
+                <tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="u : ${recentUsers}">
+                    <td style="color:#94a3b8;font-family:monospace;" th:text="${u.id}">1</td>
+                    <td>
+                        <span class="user-avatar" th:text="${#strings.substring(u.name,0,1)}">U</span>
+                        <span th:text="${u.name}">Name</span>
+                    </td>
+                    <td style="color:#64748b;font-family:monospace;font-size:0.75rem;" th:text="${u.email}">email@example.com</td>
+                    <td style="font-family:monospace;" th:text="${u.phone}">0700000000</td>
+                    <td>
+                    <span th:switch="${u.role.name()}">
+                        <span th:case="'ADMIN'" class="badge badge-admin">ADMIN</span>
+                        <span th:case="'SHOP_OWNER'" class="badge badge-owner">SHOP OWNER</span>
+                        <span th:case="'CUSTOMER'" class="badge badge-cust">CUSTOMER</span>
+                        <span th:case="*" class="badge badge-gray" th:text="${u.role}">ROLE</span>
+                    </span>
+                    </td>
+                    <td>
+                        <span th:if="${u.isActive}" class="badge badge-green">Active</span>
+                        <span th:unless="${u.isActive}" class="badge badge-red">Suspended</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div th:if="${recentUsers == null or #lists.isEmpty(recentUsers)}" class="empty-state">
+                <div class="icon">👥</div>
+                <div class="title">No Users Yet</div>
+                <div class="desc">Registered accounts will appear here.</div>
             </div>
         </div>
     </div>
 
-    <div class="row g-4 mb-5">
-        <div class="col-12">
-            <div class="card nc-card p-4">
-                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
-                    <div>
-                        <h4 class="fw-bold mb-1" style="color: var(--nc-brand-blue);">Registered Merchant Storefronts</h4>
-                        <p class="text-muted small mb-0">Active commercial profiles registered under retail business credentials.</p>
-                    </div>
-                    <span class="badge bg-light text-dark border font-monospace rounded-2 px-3 py-2 fs-7">Role: SHOP_OWNER</span>
-                </div>
+    <!-- ABOUT -->
+    <div class="section" style="background:#fff;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:2.5rem; align-items:center; max-width:900px; margin:0 auto;">
+            <div>
+                <h2 style="font-size:1.4rem;font-weight:800;color:#0f2e5a;margin-bottom:0.3rem;">About LankaTools</h2>
+                <em style="color:#0f2e5a;font-style:italic;font-size:0.88rem;font-weight:600;display:block;margin-bottom:1rem;">Sri Lanka's trusted tool rental platform</em>
+                <p style="font-size:0.82rem;color:#475569;line-height:1.7;">LankaTools connects verified shop owners with customers across the island. The admin suite gives you full visibility to manage accounts, moderate listings, and ensure every rental transaction runs smoothly from start to finish.</p>
+            </div>
+            <div style="border-radius:12px;overflow:hidden;height:220px;background:#1e3a5f url('https://images.unsplash.com/photo-1581094288338-2314dddb7ece?w=600&q=80') center/cover;"></div>
+        </div>
+    </div>
 
-                <div class="table-responsive">
-                    <table class="table align-middle table-premium mb-0">
-                        <thead>
-                        <tr>
-                            <th>Owner Name & KYC Info</th>
-                            <th>Official Shop Identity</th>
-                            <th>Contact Information</th>
-                            <th>Physical Warehouse Address</th>
-                            <th class="text-center">Verification State</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="user : ${users}" th:if="${user.role.name() == 'SHOP_OWNER'}">
-                            <td>
-                                <div class="fw-bold text-dark fs-6" th:text="${user.name}">Proprietor Name</div>
-                                <div class="small font-monospace text-muted mt-1" style="font-size: 0.8rem;">
-                                    <span>NIC:</span>
-                                    <span th:if="${user.id == 2}" class="text-dark fw-bold">198834109V</span>
-                                    <span th:if="${user.id == 3}" class="text-dark fw-bold">199578432V</span>
-                                    <span th:if="${user.id == 4}" class="text-dark fw-bold">200012489341</span>
-                                    <span th:if="${user.id != 2 and user.id != 3 and user.id != 4}" th:text="'199' + (30000 + user.id) + '22V'" class="text-dark">19934022V</span>
-                                </div>
-                            </td>
-                            <td>
-                                <span class="fw-bold text-primary font-monospace" style="color: var(--nc-accent-blue) !important;" th:text="${user.shopName}">Shop Name</span>
-                            </td>
-                            <td>
-                                <div class="text-dark font-monospace mb-0" th:text="${user.phone}">0777654321</div>
-                                <small class="text-muted font-monospace" th:text="${user.email}">merchant@shop.com</small>
-                            </td>
-                            <td>
-                                <small class="text-secondary" th:text="${user.shopAddress}">12 Galle Road, Colombo 03</small>
-                            </td>
-                            <td class="text-center">
-                                <span th:if="${user.approved}" class="badge bg-success text-white badge-status">Store Verified</span>
-                                <span th:unless="${user.approved}" class="badge bg-warning text-dark badge-status">Pending Audit</span>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
+    <!-- SHORTCUTS -->
+    <div class="section" style="background:#f3f6f9; padding-top:0;">
+        <div style="background:#fff;border-radius:12px;border:1px solid rgba(15,46,90,0.08);padding:2rem;text-align:center;">
+            <h5 style="font-size:1rem;font-weight:700;color:#0f2e5a;margin-bottom:0.4rem;">Operational Shortcuts</h5>
+            <p style="font-size:0.78rem;color:#64748b;margin-bottom:1.2rem;">Direct control endpoints for platform administration.</p>
+            <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:0.75rem;">
+                <a class="btn-mini" style="color:#3b82f6;border:1.5px solid #3b82f6;background:transparent;padding:8px 18px;" href="/admin/users">👥 User Management</a>
+                <a class="btn-mini" style="color:#64748b;border:1.5px solid #cbd5e1;background:transparent;padding:8px 18px;" href="/admin/shops-list">🏪 Registered Shops</a>
+                <a class="btn-mini" style="color:#f59e0b;border:1.5px solid #f59e0b;background:transparent;padding:8px 18px;" href="/admin/tools-moderation">🔧 Tools Moderation</a>
+                <a class="btn-mini" style="color:#06b6d4;border:1.5px solid #06b6d4;background:transparent;padding:8px 18px;" href="/admin/bookings">📋 Rental Ledger</a>
             </div>
         </div>
     </div>
 
-    <div class="row g-4">
-        <div class="col-12">
-            <div class="card nc-card p-4">
-                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
-                    <div>
-                        <h4 class="fw-bold mb-1" style="color: var(--nc-brand-blue);">Master Account Registration Index</h4>
-                        <p class="text-muted small mb-0">System management listing tracking structural permissions across nodes.</p>
-                    </div>
-                    <span class="badge bg-dark text-white font-monospace rounded-2 px-3 py-2 fs-7" th:text="${#lists.size(users)} + ' Nodes Found'">0 Nodes Found</span>
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table align-middle table-premium mb-0">
-                        <thead>
-                        <tr>
-                            <th>User ID</th>
-                            <th>Profile Identity & Document Validation</th>
-                            <th>Email Communication</th>
-                            <th>Security Role</th>
-                            <th>Account Status</th>
-                            <th>Registration Date</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="user : ${users}">
-                            <td class="font-monospace text-muted fw-bold" th:text="'#USR-' + ${user.id}">#USR-01</td>
-                            <td>
-                                <div class="fw-bold text-dark" th:text="${user.name}">User Account Name</div>
-                                <div class="small font-monospace text-muted mt-0.5" style="font-size: 0.8rem;">
-                                    <span>NIC:</span>
-                                    <span th:if="${user.id == 1}" class="text-dark">198511204V</span>
-                                    <span th:if="${user.id == 2}" class="text-dark">198834109V</span>
-                                    <span th:if="${user.id == 3}" class="text-dark">199578432V</span>
-                                    <span th:if="${user.id == 4}" class="text-dark">200012489341</span>
-                                    <span th:if="${user.id == 5}" class="text-dark">199923847V</span>
-                                    <span th:if="${user.id == 6}" class="text-dark">200288473210</span>
-                                    <span th:if="${user.id > 6}" th:text="'199' + (40000 + user.id) + '11V'" class="text-dark">19940011V</span>
-                                </div>
-                            </td>
-                            <td class="font-monospace" th:text="${user.email}">user@lankatools.com</td>
-                            <td>
-                                <span th:if="${user.role.name() == 'ADMIN'}" class="badge bg-danger text-white rounded-1 font-monospace px-2 py-1" style="font-size:0.7rem;">SYSTEM ADMIN</span>
-                                <span th:if="${user.role.name() == 'SHOP_OWNER'}" class="badge bg-warning text-dark rounded-1 font-monospace px-2 py-1" style="font-size:0.7rem;">MERCHANT OUTLET</span>
-                                <span th:if="${user.role.name() == 'CUSTOMER'}" class="badge bg-info text-dark rounded-1 font-monospace px-2 py-1" style="font-size:0.7rem;">CLIENT ENDPOINT</span>
-                            </td>
-                            <td>
-                                <span th:if="${user.active}" class="text-success fw-bold small">● Active Node</span>
-                                <span th:unless="${user.active}" class="text-danger fw-bold small">✕ Suspended</span>
-                            </td>
-                            <td>
-                                <small class="text-muted font-monospace" th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}">2025-01-01 08:00</small>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>
+</main>
 </body>
 </html>
