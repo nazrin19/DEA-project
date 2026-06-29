@@ -1,175 +1,87 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{admin/admin-layout :: adminLayout(~{::title}, 'tools', ~{::main})}">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Tool Moderation – Admin | LankaTools</title>
+    <meta charset="UTF-8">
+    <title>LankaTools Admin - Tool Moderation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #ebf3f9; font-family: 'Segoe UI', system-ui, sans-serif; }
+        .custom-navbar { background-color: #0d335d; padding: 0.85rem 2rem; }
+        .navbar-brand-admin { font-weight: bold; color: #ffffff !important; text-decoration: none; }
+        .nav-link-custom { color: rgba(255, 255, 255, 0.75) !important; font-weight: 500; text-decoration: none; margin-left: 1.5rem; }
+        .nav-link-custom:hover { color: #ffffff !important; }
+        .nav-link-custom.active { color: #ffffff !important; border-bottom: 2px solid #ffffff; }
+        .operations-hero { background-color: #143e6c; border-radius: 12px; color: #ffffff; padding: 2.5rem; margin-top: 2rem; margin-bottom: 2rem; }
+        .content-section { background: #ffffff; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); }
+    </style>
 </head>
 <body>
-<main>
 
-    <!-- PAGE HERO -->
-    <div class="hero" style="min-height:150px;">
-        <div class="hero-content">
-            <div class="hero-badge">Equipment Moderation</div>
-            <h1>Tool <span>Moderation</span> Desk</h1>
-            <p>Review, approve, or reject every tool listing submitted by shop owners across the platform.</p>
-            <a href="/admin/dashboard" class="hero-back">← Back to Dashboard</a>
-        </div>
+<nav class="custom-navbar d-flex align-items-center justify-content-between shadow-sm">
+    <div class="d-flex align-items-center">
+        <a class="navbar-brand-admin" href="/admin/dashboard">🛠 LANKATOOLS ADMIN</a>
+    </div>
+    <div class="d-flex align-items-center">
+        <a href="/admin/dashboard" class="nav-link-custom">Dashboard</a>
+        <a href="/admin/users" class="nav-link-custom">Users</a>
+        <a href="/admin/shops" class="nav-link-custom">Shops</a>
+        <a href="/admin/tools-moderation" class="nav-link-custom active">Tools</a>
+        <a href="/admin/bookings" class="nav-link-custom">Bookings</a>
+    </div>
+</nav>
+
+<div class="container mb-5">
+
+    <div class="operations-hero shadow-sm">
+        <h1 class="fw-bold m-0">Equipment Moderation Desk</h1>
+        <p class="text-white-50 m-0 mt-2">Review submissions using the exact <code>Tool</code> entity configuration properties.</p>
     </div>
 
-    <div class="section" style="background:#f3f6f9;">
+    <div th:if="${success}" class="alert alert-success border-0 shadow-sm mb-4" th:text="${success}"></div>
 
-        <!-- Flash messages -->
-        <div th:if="${success}" class="alert alert-success">✔ <span th:text="${success}"></span></div>
-        <div th:if="${error}" class="alert alert-error">✖ <span th:text="${error}"></span></div>
-
-        <!-- STAT CARDS -->
-        <div class="cards-grid" style="margin-bottom:1.8rem;">
-            <div class="stat-card">
-                <div class="stat-bar" style="background:#3b82f6;"></div>
-                <div class="stat-label">Total Tools</div>
-                <div class="stat-num" th:text="${tools != null ? tools.size() : 0}">15</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-bar" style="background:#22c55e;"></div>
-                <div class="stat-label">Approved</div>
-                <div class="stat-num" style="color:#22c55e;" th:text="${approvedCount}">11</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-bar" style="background:#f59e0b;"></div>
-                <div class="stat-label">Pending Review</div>
-                <div class="stat-num" style="color:#f59e0b;" th:text="${pendingCount}">2</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-bar" style="background:#ef4444;"></div>
-                <div class="stat-label">Rejected</div>
-                <div class="stat-num" style="color:#ef4444;" th:text="${rejectedCount}">2</div>
-            </div>
-        </div>
-
-        <!-- FILTER TABS -->
-        <div class="filter-tabs">
-            <button onclick="filterTools('ALL')" id="tab-ALL" class="filter-tab active">All Tools</button>
-            <button onclick="filterTools('PENDING')" id="tab-PENDING" class="filter-tab">
-                ⏳ Pending <span class="count" th:if="${pendingCount > 0}" th:text="'(' + ${pendingCount} + ')'"></span>
-            </button>
-            <button onclick="filterTools('APPROVED')" id="tab-APPROVED" class="filter-tab">✔ Approved</button>
-            <button onclick="filterTools('REJECTED')" id="tab-REJECTED" class="filter-tab">✖ Rejected</button>
-        </div>
-
-        <!-- TOOLS TABLE -->
-        <div class="table-wrap">
-            <div class="table-head-row">
-                <span class="table-title">🔧 All Tool Listings</span>
-            </div>
-            <table id="toolsTable">
+    <div class="content-section">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
                 <thead>
-                <tr>
-                    <th>#</th><th>Tool Name</th><th>Category</th><th>Shop Owner</th>
-                    <th>Description</th><th style="text-align:right;">Daily Rate</th><th style="text-align:center;">Status</th><th style="text-align:center;">Actions</th>
+                <tr class="text-uppercase font-monospace text-muted small">
+                    <th>Hardware Designation</th>
+                    <th>Classification</th>
+                    <th>Rental Assessment Rate</th>
+                    <th class="text-end">Moderation Decisions</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="tool, iter : ${tools}" th:attr="data-status=${tool.status}">
-                    <td style="color:#94a3b8;font-family:monospace;" th:text="${iter.count}">1</td>
+                <tr th:each="pt : ${pendingTools}">
                     <td>
-                        <span class="user-avatar" style="background:#dbeafe;color:#1e40af;">🔧</span>
-                        <span style="font-weight:600;color:#0f2e5a;" th:text="${tool.name}">Tool Name</span>
+                        <div class="fw-bold text-dark fs-5" th:text="${pt.name}">Asset Title</div>
+                        <small class="text-muted d-block text-truncate" style="max-width: 450px;" th:text="${pt.description}">Description</small>
                     </td>
-                    <td><span class="badge badge-gray" th:text="${tool.category}">Category</span></td>
                     <td>
-                        <div style="font-weight:600;color:#0f2e5a;" th:text="${tool.user?.shopName ?: 'N/A'}">Shop Name</div>
-                        <div style="font-size:0.7rem;color:#94a3b8;" th:text="${tool.user?.name}">Owner Name</div>
-                        <div style="font-size:0.68rem;color:#cbd5e1;" th:text="${tool.user?.email}">owner@shop.com</div>
+                        <span class="badge bg-secondary-subtle text-secondary px-2 py-1.5 rounded-2" th:text="${pt.category}">Category</span>
                     </td>
-                    <td style="max-width:220px;">
-                        <div style="overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;color:#64748b;" th:text="${tool.description}">Description</div>
+                    <td>
+                        <span class="fw-bold text-primary font-monospace" th:text="'LKR ' + ${pt.dailyRate} + ' / Day'">LKR 0.00</span>
                     </td>
-                    <td style="text-align:right;white-space:nowrap;">
-                        <strong th:text="'Rs. ' + ${#numbers.formatDecimal(tool.dailyRate,1,'COMMA',0,'POINT')}">Rs. 0</strong>
-                        <div style="font-size:0.65rem;color:#94a3b8;">/day</div>
-                    </td>
-                    <td style="text-align:center;">
-                        <span th:if="${tool.status.name() == 'APPROVED'}" class="badge badge-green">✔ APPROVED</span>
-                        <span th:if="${tool.status.name() == 'PENDING'}" class="badge badge-yellow">⏳ PENDING</span>
-                        <span th:if="${tool.status.name() == 'REJECTED'}" class="badge badge-red">✖ REJECTED</span>
-                    </td>
-                    <td style="text-align:center;">
-                        <div class="action-row">
-                            <form th:action="@{/admin/tools/{id}/approve(id=${tool.id})}" method="post" th:unless="${tool.status.name() == 'APPROVED'}">
-                                <button type="submit" class="btn-mini btn-approve" onclick="return confirm('Approve this tool?')">✔ Approve</button>
+                    <td class="text-end">
+                        <div class="d-inline-flex gap-2">
+                            <form th:action="@{/admin/tools/{id}/approve(id=${pt.id})}" method="post" class="m-0">
+                                <button type="submit" class="btn btn-sm btn-success fw-semibold px-3">✔ Approve</button>
                             </form>
-                            <form th:action="@{/admin/tools/{id}/reject(id=${tool.id})}" method="post" th:unless="${tool.status.name() == 'REJECTED'}">
-                                <button type="submit" class="btn-mini btn-reject" onclick="return confirm('Reject this tool?')">✖ Reject</button>
+                            <form th:action="@{/admin/tools/{id}/reject(id=${pt.id})}" method="post" class="m-0">
+                                <button type="submit" class="btn btn-sm btn-outline-danger px-3">✖ Reject</button>
                             </form>
                         </div>
                     </td>
                 </tr>
+                <tr th:if="${pendingTools == null or #lists.isEmpty(pendingTools)}">
+                    <td colspan="4" class="text-center py-5 text-muted font-monospace">
+                        ✨ Verification pipeline clear. No hardware assets require attention right now.
+                    </td>
+                </tr>
                 </tbody>
             </table>
-
-            <div th:if="${tools == null or #lists.isEmpty(tools)}" class="empty-state">
-                <div class="icon">🔧</div>
-                <div class="title">No Tools Found</div>
-                <div class="desc">No tool listings available for moderation.</div>
-            </div>
-
-            <div id="noFilterResults" class="empty-state" style="display:none;border-top:1px solid #f1f5f9;">
-                <div class="icon">🔍</div>
-                <div class="desc">No tools match this filter.</div>
-            </div>
         </div>
-
-        <!-- PENDING SPOTLIGHT -->
-        <div th:if="${pendingCount > 0}" style="margin-top:1.8rem;">
-            <h3 style="font-size:0.95rem;font-weight:700;color:#0f2e5a;margin-bottom:0.9rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                <span class="badge badge-yellow" style="font-size:0.75rem;padding:5px 12px;">⏳ <span th:text="${pendingCount}">2</span> Awaiting Review</span>
-                <span style="font-size:0.78rem;font-weight:400;color:#94a3b8;">— Click Approve or Reject above to take action</span>
-            </h3>
-            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;">
-                <div th:each="pt : ${pendingTools}" style="background:#fffbeb;border:1px solid #fde68a;border-left:4px solid #f59e0b;border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px;">
-                    <div style="font-size:1.4rem;">🔧</div>
-                    <div style="flex:1;min-width:0;">
-                        <div style="font-size:0.85rem;font-weight:700;color:#0f2e5a;" th:text="${pt.name}">Tool</div>
-                        <div style="font-size:0.7rem;color:#94a3b8;" th:text="${pt.user?.shopName}">Shop</div>
-                        <div style="font-size:0.78rem;font-weight:700;color:#d97706;">Rs. <span th:text="${#numbers.formatDecimal(pt.dailyRate,1,'COMMA',0,'POINT')}">0</span>/day</div>
-                    </div>
-                    <div style="display:flex;flex-direction:column;gap:5px;">
-                        <form th:action="@{/admin/tools/{id}/approve(id=${pt.id})}" method="post">
-                            <button type="submit" class="btn-mini btn-approve" style="width:72px;" onclick="return confirm('Approve?')">✔ Approve</button>
-                        </form>
-                        <form th:action="@{/admin/tools/{id}/reject(id=${pt.id})}" method="post">
-                            <button type="submit" class="btn-mini btn-reject" style="width:72px;" onclick="return confirm('Reject?')">✖ Reject</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </div>
-
-    <script>
-        function filterTools(status) {
-            ['ALL','PENDING','APPROVED','REJECTED'].forEach(function(s) {
-                var btn = document.getElementById('tab-' + s);
-                if (btn) btn.classList.remove('active');
-            });
-            var active = document.getElementById('tab-' + status);
-            if (active) active.classList.add('active');
-
-            var rows = document.querySelectorAll('#toolsTable tbody tr');
-            var visible = 0;
-            rows.forEach(function(row) {
-                var show = status === 'ALL' || row.getAttribute('data-status') === status;
-                row.style.display = show ? '' : 'none';
-                if (show) visible++;
-            });
-            var noRes = document.getElementById('noFilterResults');
-            if (noRes) noRes.style.display = visible === 0 ? 'block' : 'none';
-        }
-    </script>
-
-</main>
+</div>
 </body>
 </html>
