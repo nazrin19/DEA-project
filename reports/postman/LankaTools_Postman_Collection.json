@@ -1,1 +1,374 @@
+{
+  "info": {
+    "name": "LankaTools - Full API Collection",
+    "description": "Complete Postman collection for the LankaTools DEA Project, covering Auth, Tools, Bookings, Admin, and File Upload endpoints. Prepared by Person 6.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" }
+  ],
+  "item": [
+    {
+      "name": "Auth (Person 1)",
+      "item": [
+        {
+          "name": "Register - Customer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "name", "value": "Test Customer" },
+                { "key": "email", "value": "testcustomer999@gmail.com" },
+                { "key": "password", "value": "password123" },
+                { "key": "role", "value": "CUSTOMER" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/register", "host": ["{{baseUrl}}"], "path": ["register"] }
+          }
+        },
+        {
+          "name": "Register - Shop Owner",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "name", "value": "Dinesh Perera" },
+                { "key": "email", "value": "dinesh@shop.com" },
+                { "key": "password", "value": "password123" },
+                { "key": "role", "value": "SHOP_OWNER" },
+                { "key": "shopName", "value": "Dinesh Power Tools" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/register", "host": ["{{baseUrl}}"], "path": ["register"] }
+          }
+        },
+        {
+          "name": "Register - Validation Error",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "name", "value": "" },
+                { "key": "email", "value": "abc#" },
+                { "key": "password", "value": "123" },
+                { "key": "role", "value": "CUSTOMER" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/register", "host": ["{{baseUrl}}"], "path": ["register"] },
+            "description": "Expects 302 redirect to /register?error due to invalid email/short password"
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "email", "value": "nimal@gmail.com" },
+                { "key": "password", "value": "password123" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/login", "host": ["{{baseUrl}}"], "path": ["login"] },
+            "description": "Expects 302 redirect to /customer/dashboard with JSESSIONID cookie set"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/logout", "host": ["{{baseUrl}}"], "path": ["logout"] },
+            "description": "Expects 302 redirect to /login?logout=true and clears JSESSIONID"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tools (Person 2)",
+      "item": [
+        {
+          "name": "Get All Tools",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/tools?page=0&size=10&sort=dailyRate,asc",
+              "host": ["{{baseUrl}}"], "path": ["api","tools"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" },
+                { "key": "sort", "value": "dailyRate,asc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Tools By Name/Category",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/tools?query=drill&category=Drilling",
+              "host": ["{{baseUrl}}"], "path": ["api","tools"],
+              "query": [
+                { "key": "query", "value": "drill" },
+                { "key": "category", "value": "Drilling" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Tool By Id",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/tools/1", "host": ["{{baseUrl}}"], "path": ["api","tools","1"] }
+          }
+        },
+        {
+          "name": "Add Tool",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Hammer\",\n  \"description\": \"Steel hammer\",\n  \"category\": \"TOOLS\",\n  \"dailyRate\": 200\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/tools/save", "host": ["{{baseUrl}}"], "path": ["api","tools","save"] },
+            "description": "Verified: actual URL is /api/tools/save (not /api/tools as originally specced). Returns 201 Created."
+          }
+        },
+        {
+          "name": "Edit Tool",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dailyRate\": 950\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/tools/1", "host": ["{{baseUrl}}"], "path": ["api","tools","1"] }
+          }
+        },
+        {
+          "name": "Delete Tool",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/api/tools/1", "host": ["{{baseUrl}}"], "path": ["api","tools","1"] }
+          }
+        },
+        {
+          "name": "Upload Tool Image",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "src": "" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/api/tools/upload-image", "host": ["{{baseUrl}}"], "path": ["api","tools","upload-image"] }
+          }
+        },
+        {
+          "name": "My Tools (Shop Owner)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/tools/my", "host": ["{{baseUrl}}"], "path": ["api","tools","my"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bookings (Person 3)",
+      "item": [
+        {
+          "name": "Create Booking",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"toolId\": 1,\n  \"startDate\": \"2026-07-05\",\n  \"endDate\": \"2026-07-07\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/bookings", "host": ["{{baseUrl}}"], "path": ["api","bookings"] }
+          }
+        },
+        {
+          "name": "Get My Bookings (Customer)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/bookings/my", "host": ["{{baseUrl}}"], "path": ["api","bookings","my"] }
+          }
+        },
+        {
+          "name": "Get Owner Bookings (Shop Owner)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/bookings/owner", "host": ["{{baseUrl}}"], "path": ["api","bookings","owner"] }
+          }
+        },
+        {
+          "name": "Confirm Booking",
+          "request": {
+            "method": "PUT",
+            "url": { "raw": "{{baseUrl}}/api/bookings/1/confirm", "host": ["{{baseUrl}}"], "path": ["api","bookings","1","confirm"] }
+          }
+        },
+        {
+          "name": "Reject Booking",
+          "request": {
+            "method": "PUT",
+            "url": { "raw": "{{baseUrl}}/api/bookings/1/reject", "host": ["{{baseUrl}}"], "path": ["api","bookings","1","reject"] }
+          }
+        },
+        {
+          "name": "Cancel Booking",
+          "request": {
+            "method": "PUT",
+            "url": { "raw": "{{baseUrl}}/api/bookings/1/cancel", "host": ["{{baseUrl}}"], "path": ["api","bookings","1","cancel"] }
+          }
+        },
+        {
+          "name": "Mark Returned",
+          "request": {
+            "method": "PUT",
+            "url": { "raw": "{{baseUrl}}/api/bookings/1/return", "host": ["{{baseUrl}}"], "path": ["api","bookings","1","return"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin (Person 4)",
+      "item": [
+        {
+          "name": "Get All Tools (Admin)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/admin/tools", "host": ["{{baseUrl}}"], "path": ["api","admin","tools"] }
+          }
+        },
+        {
+          "name": "Get Pending Tools",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/admin/tools/pending", "host": ["{{baseUrl}}"], "path": ["api","admin","tools","pending"] }
+          }
+        },
+        {
+          "name": "Approve Tool",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/api/admin/tools/1/approve", "host": ["{{baseUrl}}"], "path": ["api","admin","tools","1","approve"] },
+            "description": "Verified: actual method is POST, not PUT as originally specced"
+          }
+        },
+        {
+          "name": "Reject Tool",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/api/admin/tools/1/reject", "host": ["{{baseUrl}}"], "path": ["api","admin","tools","1","reject"] },
+            "description": "Verified: actual method is POST, not PUT as originally specced"
+          }
+        },
+        {
+          "name": "Get All Shops",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/admin/shops", "host": ["{{baseUrl}}"], "path": ["api","admin","shops"] },
+            "description": "Not in original spec - found via testing. Lists all shop owner accounts."
+          }
+        },
+        {
+          "name": "Approve Shop Owner",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/api/admin/shops/2/approve", "host": ["{{baseUrl}}"], "path": ["api","admin","shops","2","approve"] },
+            "description": "Not in original spec - found via testing"
+          }
+        },
+        {
+          "name": "Suspend Shop",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/api/admin/shops/2/suspend", "host": ["{{baseUrl}}"], "path": ["api","admin","shops","2","suspend"] },
+            "description": "Not in original spec - found via testing"
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users?role=CUSTOMER",
+              "host": ["{{baseUrl}}"], "path": ["api","admin","users"],
+              "query": [{ "key": "role", "value": "CUSTOMER" }]
+            }
+          }
+        },
+        {
+          "name": "Suspend User",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/api/admin/users/1/suspend", "host": ["{{baseUrl}}"], "path": ["api","admin","users","1","suspend"] },
+            "description": "Verified: actual method is POST, not PUT as originally specced"
+          }
+        },
+        {
+          "name": "Approve Owner (User-level)",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/api/admin/users/1/approve-owner", "host": ["{{baseUrl}}"], "path": ["api","admin","users","1","approve-owner"] },
+            "description": "Not in original spec - found via testing"
+          }
+        },
+        {
+          "name": "Get All Bookings",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/admin/bookings", "host": ["{{baseUrl}}"], "path": ["api","admin","bookings"] }
+          }
+        },
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/admin/stats", "host": ["{{baseUrl}}"], "path": ["api","admin","stats"] }
+          }
+        },
+        {
+          "name": "Export Bookings CSV",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/admin/export/bookings", "host": ["{{baseUrl}}"], "path": ["api","admin","export","bookings"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications (Person 5)",
+      "item": [
+        {
+          "name": "Get Notifications",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/notifications", "host": ["{{baseUrl}}"], "path": ["notifications"] }
+          }
+        },
+        {
+          "name": "Owner Approve Booking",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/owner/bookings/approve/1", "host": ["{{baseUrl}}"], "path": ["owner","bookings","approve","1"] },
+            "description": "Alternate booking approval route used in the notifications/owner flow"
+          }
+        }
+      ]
+    }
+  ]
+}
 
