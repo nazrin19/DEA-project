@@ -41,7 +41,7 @@
                 </tr>
                 <tr th:each="tool : ${tools}" class="hover:bg-slate-50/80 transition-colors">
                     <td class="p-4 flex items-center gap-3">
-                        <img th:src="${tool.imageUrl != null ? tool.imageUrl : '/uploads/default-placeholder.png'}"
+                        <img th:src="${tool.imageUrl != null && !tool.imageUrl.empty} ? ${tool.imageUrl} : '/uploads/default-placeholder.png'"
                              class="w-12 h-12 object-cover rounded-lg bg-slate-100 border border-slate-200"
                              onerror="this.src='/uploads/default-placeholder.png'">
                         <div>
@@ -52,11 +52,11 @@
                     <td class="p-4 text-slate-600" th:text="${tool.category}">Power Tools</td>
                     <td class="p-4 font-bold text-slate-900">Rs. <span th:text="${tool.dailyRate}">0.00</span></td>
                     <td class="p-4">
-                                <span class="px-2.5 py-1 text-xs font-bold rounded-full"
-                                      th:classappend="${tool.status.name() == 'APPROVED'} ? 'bg-emerald-100 text-emerald-800' : (${tool.status.name() == 'PENDING'} ? 'bg-amber-100 text-amber-800' : 'bg-rose-100 text-rose-800')"
-                                      th:text="${tool.status}">
-                                    PENDING
-                                </span>
+                        <span class="px-2.5 py-1 text-xs font-bold rounded-full"
+                              th:classappend="${#strings.toString(tool.status) == 'APPROVED'} ? 'bg-emerald-100 text-emerald-800' : (${#strings.toString(tool.status) == 'PENDING'} ? 'bg-amber-100 text-amber-800' : 'bg-rose-100 text-rose-800')"
+                              th:text="${tool.status}">
+                            PENDING
+                        </span>
                     </td>
                 </tr>
                 </tbody>

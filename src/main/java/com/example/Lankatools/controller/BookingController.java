@@ -64,6 +64,8 @@ public class BookingController {
         return "redirect:/customer/bookings"; // Redirects customer straight to their history after booking!
     }
 
+
+
     /**
      * 🎯 DEDICATED THYMELEAF VIEW ROUTE
      * Maps the "Track Rentals & History" arrow click from your dashboard to the UI template.
