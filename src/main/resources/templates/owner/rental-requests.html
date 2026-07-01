@@ -36,12 +36,12 @@
                 </tr>
                 <tr th:each="booking : ${bookings}" class="hover:bg-slate-50/80 transition-colors">
                     <td class="p-4">
-                        <span class="font-bold text-slate-900 block" th:text="${booking.tool.name}">Demolition Jackhammer</span>
-                        <span class="text-xs text-slate-400" th:text="${booking.tool.category}">Power Tools</span>
+                        <span class="font-bold text-slate-900 block" th:text="${booking.tool != null ? booking.tool.name : 'Unknown Equipment'}">Demolition Jackhammer</span>
+                        <span class="text-xs text-slate-400" th:text="${booking.tool != null ? booking.tool.category : 'General'}">Power Tools</span>
                     </td>
                     <td class="p-4">
-                        <span class="font-semibold text-slate-800 block" th:text="${booking.user.name}">Customer Name</span>
-                        <span class="text-xs text-slate-400" th:text="${booking.user.email}">email@example.com</span>
+                        <span class="font-semibold text-slate-800 block" th:text="${booking.customer != null ? booking.customer.name : 'Guest User'}">Customer Name</span>
+                        <span class="text-xs text-slate-400" th:text="${booking.customer != null ? booking.customer.email : 'N/A'}">email@example.com</span>
                     </td>
                     <td class="p-4">
                         <div class="text-slate-700 font-medium">
@@ -50,7 +50,7 @@
                         </div>
                     </td>
                     <td class="p-4 font-bold text-emerald-600">
-                        Rs. <span th:text="${booking.totalPrice != null ? booking.totalPrice : '0.00'}">0.00</span>
+                        Rs. <span th:text="${booking.totalCost}">0.00</span>
                     </td>
                 </tr>
                 </tbody>
