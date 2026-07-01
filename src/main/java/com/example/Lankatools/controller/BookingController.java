@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.thymeleaf.context.Context;
 
 import com.example.Lankatools.entity.Booking;
 import com.example.Lankatools.service.BookingService;
@@ -34,7 +35,15 @@ public class BookingController {
                                    Principal principal) {
         LocalDate parsedStart = LocalDate.parse(startDate);
         LocalDate parsedEnd = LocalDate.parse(endDate);
-        bookingService.createBooking(principal.getName(), toolId, parsedStart, parsedEnd);
+        Booking newBooking = bookingService.createBooking(principal.getName(), toolId, parsedStart, parsedEnd);
+
+        // FIX: Replaced .getUser() with .getOwner() to match the Tool entity
+        if (newBooking != null && newBooking.getTool() != null && newBooking.getTool().getOwner() != null) {
+            Context context = new Context();
+            context.setVariable("toolName", newBooking.getTool().getName());
+            String ownerEmail = newBooking.getTool().getOwner().getEmail();
+            emailService.sendEmail(ownerEmail, "🔔 New Booking Request Pending Approval", "new-booking", context);
+        }
         return "redirect:/";
     }
 
@@ -46,17 +55,13 @@ public class BookingController {
 
         Booking newBooking = bookingService.createBooking(principal.getName(), request.getToolId(), startDate, endDate);
 
-        if (newBooking != null) {
-            String ownerEmail = "owner-placeholder@gmail.com";
-            String subject = "🔔 New Booking Request Pending Approval";
-            String body = """
-                    Dear Partner,
-                    
-                    A customer has requested to rent a tool from your inventory.
-                    Please log into your LankaTools Dashboard to process this request.
-                    
-                    LankaTools System""";
-            emailService.sendSimpleEmail(ownerEmail, subject, body);
+        // FIX: Replaced .getUser() with .getOwner() to match the Tool entity
+        if (newBooking != null && newBooking.getTool() != null && newBooking.getTool().getOwner() != null) {
+            Context context = new Context();
+            context.setVariable("toolName", newBooking.getTool().getName());
+
+            String ownerEmail = newBooking.getTool().getOwner().getEmail();
+            emailService.sendEmail(ownerEmail, "🔔 New Booking Request Pending Approval", "new-booking", context);
         }
         return newBooking;
     }
@@ -78,18 +83,12 @@ public class BookingController {
     public Booking confirmBooking(@PathVariable Long id, Principal principal) {
         Booking confirmedBooking = bookingService.confirmBooking(id, principal.getName());
 
-        if (confirmedBooking != null) {
-            String customerEmail = principal.getName();
-            String subject = "🛠️ LankaTools - Booking Confirmed!";
-            String body = """
-                    Dear Customer,
-                    
-                    Your booking request has been APPROVED.
-                    Please check your dashboard schedule details.
-                    
-                    Thank you!
-                    LankaTools Team""";
-            emailService.sendSimpleEmail(customerEmail, subject, body);
+        if (confirmedBooking != null && confirmedBooking.getCustomer() != null) {
+            Context context = new Context();
+            context.setVariable("toolName", confirmedBooking.getTool().getName());
+
+            String customerEmail = confirmedBooking.getCustomer().getEmail();
+            emailService.sendEmail(customerEmail, "🛠️ LankaTools - Booking Confirmed!", "booking-confirmed", context);
         }
         return confirmedBooking;
     }
@@ -99,18 +98,12 @@ public class BookingController {
     public Booking rejectBooking(@PathVariable Long id, Principal principal) {
         Booking rejectedBooking = bookingService.rejectBooking(id, principal.getName());
 
-        if (rejectedBooking != null) {
-            String customerEmail = principal.getName();
-            String subject = "❌ LankaTools - Booking Update";
-            String body = """
-                    Dear Customer,
-                    
-                    We regret to inform you that your booking request was declined.
-                    Please check the dashboard to explore alternative available tools.
-                    
-                    Best regards,
-                    LankaTools Team""";
-            emailService.sendSimpleEmail(customerEmail, subject, body);
+        if (rejectedBooking != null && rejectedBooking.getCustomer() != null) {
+            Context context = new Context();
+            context.setVariable("toolName", rejectedBooking.getTool().getName());
+
+            String customerEmail = rejectedBooking.getCustomer().getEmail();
+            emailService.sendEmail(customerEmail, "❌ LankaTools - Booking Update", "booking-rejected", context);
         }
         return rejectedBooking;
     }
@@ -127,7 +120,6 @@ public class BookingController {
         return bookingService.markReturned(id, principal.getName());
     }
 
-    // Adding this annotation satisfies the Lombok inspection entirely!
     @lombok.Getter
     @lombok.Setter
     public static class BookingRequest {

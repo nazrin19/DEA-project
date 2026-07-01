@@ -40,11 +40,12 @@ public class RentalReminderScheduler {
                     context.setVariable("toolName", booking.getTool().getName());
                     context.setVariable("dueDate", tomorrow.toString());
 
-                    emailService.sendHtmlTemplateEmail(
+                    // FIX: Changed to match your EmailService method name and parameter order
+                    emailService.sendEmail(
                             customerEmail,
                             "Tool Return Reminder: Due Tomorrow!",
-                            context,
-                            "rental-reminder-email"
+                            "rental-reminder-email",
+                            context
                     );
                 }
             }

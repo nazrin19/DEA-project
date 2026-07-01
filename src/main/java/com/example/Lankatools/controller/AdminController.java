@@ -1,20 +1,22 @@
 package com.example.Lankatools.controller;
 
-import com.example.Lankatools.entity.Tool;
-import com.example.Lankatools.entity.User;
-import com.example.Lankatools.enums.Role;
-import com.example.Lankatools.enums.Toolstatus;
-import com.example.Lankatools.repository.BookingRepository;
-import com.example.Lankatools.repository.ToolRepository;
-import com.example.Lankatools.repository.UserRepository;
-import com.example.Lankatools.service.ToolService;
-import com.example.Lankatools.service.UserService;
-import com.example.Lankatools.service.EmailService; // 🌟 Imported your EmailService
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.context.Context;
 
-import java.util.List;
+import com.example.Lankatools.entity.User;
+import com.example.Lankatools.entity.Tool;
+// FIX: Imported from the correct enums package path based on your error log
+import com.example.Lankatools.enums.Role;
+import com.example.Lankatools.enums.Toolstatus;
+import com.example.Lankatools.repository.ToolRepository;
+import com.example.Lankatools.repository.UserRepository;
+import com.example.Lankatools.repository.BookingRepository;
+import com.example.Lankatools.service.UserService;
+import com.example.Lankatools.service.ToolService;
+import com.example.Lankatools.service.EmailService;
 
 @RestController
 @RequestMapping("/admin/api")
@@ -36,7 +38,7 @@ public class AdminController {
     private ToolService toolService;
 
     @Autowired
-    private EmailService emailService; // 🌟 Injected your EmailService
+    private EmailService emailService;
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers(@RequestParam(required = false) Role role) {
@@ -65,15 +67,15 @@ public class AdminController {
             tool.setStatus(Toolstatus.APPROVED);
             Tool savedTool = toolRepository.save(tool);
 
-            // 🌟 Extract the owner's email and trigger your notification
+            // Trigger HTML email template notification when admin approves a tool
             if (savedTool.getOwner() != null && savedTool.getOwner().getEmail() != null) {
                 String ownerEmail = savedTool.getOwner().getEmail();
-                String subject = "🎉 Your Listed Tool Has Been Approved!";
-                String body = "Dear " + savedTool.getOwner().getName() + ",\n\n" +
-                        "Good news! Your tool '" + savedTool.getName() + "' has been successfully reviewed and approved by the administrator. It is now live and available for rent on Lankatools.\n\n" +
-                        "Thank you for listing with us!\nBest Regards,\nLankatools Admin Team";
 
-                emailService.sendSimpleEmail(ownerEmail, subject, body);
+                Context context = new Context();
+                context.setVariable("ownerName", savedTool.getOwner().getName());
+                context.setVariable("toolName", savedTool.getName());
+
+                emailService.sendEmail(ownerEmail, "🎉 Your Listed Tool Has Been Approved!", "tool-approved", context);
             }
 
             return ResponseEntity.ok(savedTool);
