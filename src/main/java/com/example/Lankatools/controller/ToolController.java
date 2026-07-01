@@ -40,8 +40,6 @@ public class ToolController {
         return ResponseEntity.ok(tools);
     }
 
-    @PostMapping
-    public ResponseEntity<?> saveTool(@RequestBody Tool tool) {
     /**
      * Unified Tool Registration Gateway
      * Accepts text properties alongside binary image streams simultaneously.
