@@ -58,7 +58,7 @@ public class AdminController {
     }
 
     // USERS MANAGEMENT
-    @GetMapping("/users")
+    @GetMapping({"/users", "/manage-users"})
     public String allUsers(
             @RequestParam(required = false) String role,
             Model model) {
@@ -74,7 +74,7 @@ public class AdminController {
             users = userRepository.findAll();
         }
         model.addAttribute("users", users);
-        model.addAttribute("selectedRole", role);
+        model.addAttribute("selectedRole", role != null ? role : "");
         return "admin/users";
     }
 
@@ -82,25 +82,43 @@ public class AdminController {
     public String suspendUser(@PathVariable Long id, RedirectAttributes ra) {
         userService.toggleUserSuspension(id);
         ra.addFlashAttribute("success", "User profile status updated successfully.");
-        return "redirect:/admin/users";
+        return "redirect:/admin/manage-users";
     }
 
     @PostMapping("/users/{id}/approve-owner")
     public String approveOwner(@PathVariable Long id, RedirectAttributes ra) {
         userService.approveUser(id);
         ra.addFlashAttribute("success", "Shop owner approved successfully!");
-        return "redirect:/admin/users";
+        return "redirect:/admin/manage-users";
     }
 
     // DYNAMIC EQUIPMENT MODERATION DESK
-    @GetMapping("/tools-moderation")
-    public String showToolsModeration() {
+    @GetMapping({"/tools", "/tools-moderation", "/manage-tools"})
+    public String showToolsModeration(Model model) {
+        model.addAttribute("tools", toolService.getAllTools());
         return "admin/tools-moderation";
     }
 
     @GetMapping("/tools/pending")
     public String pendingToolsRedirect() {
-        return "redirect:/admin/tools-moderation";
+        return "redirect:/admin/manage-tools";
+    }
+
+    // 🎯 NEW: PROCESS TOOL MODERATION APPROVAL / REJECTION ACTIONS
+    // Handles form submissions from templates/admin/tools-moderation.html cleanly
+    @PostMapping("/tools/{id}/status")
+    public String updateToolStatus(
+            @PathVariable Long id,
+            @RequestParam("status") String statusStr,
+            RedirectAttributes ra) {
+        try {
+            Toolstatus targetStatus = Toolstatus.valueOf(statusStr.toUpperCase());
+            toolService.updateToolStatus(id, targetStatus);
+            ra.addFlashAttribute("success", "Tool listing has been successfully updated to " + targetStatus + "!");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Failed to update tool listing status.");
+        }
+        return "redirect:/admin/manage-tools";
     }
 
     // FULL PLATFORM RENTAL HISTORY
@@ -119,12 +137,8 @@ public class AdminController {
         return "admin/shops-list";
     }
 
-    // 🎯 NEW: SERVE THE SHOP DETAILS MANAGEMENT PROFILE
-    // This perfectly hooks up to templates/admin/shop-detail.html
     @GetMapping("/shop-detail")
     public String showShopDetail(@RequestParam(required = false) Long id, Model model) {
-        // We pass the parameter ID straight down to the view so the internal
-        // JavaScript engine can extract the correct query context from the URL!
         model.addAttribute("ownerId", id);
         return "admin/shop-detail";
     }

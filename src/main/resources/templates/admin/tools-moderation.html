@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,122 +21,56 @@
         </a>
     </header>
 
-    <div id="alertBox" class="hidden mb-6 p-4 rounded-lg text-sm font-semibold transition-all"></div>
-
-    <div id="loadingState" class="text-center py-12 text-slate-400 font-medium text-lg">
-        🔄 Scanning database for pending items...
+    <div th:if="${success}" class="mb-6 p-4 rounded-lg text-sm font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+        ✨ <span th:text="${success}">Action completed successfully.</span>
     </div>
 
-    <div id="noItemsNotice" class="hidden bg-slate-800 text-center p-12 rounded-xl border border-dashed border-slate-700 text-slate-400">
+    <div th:if="${tools == null || tools.empty}" class="bg-slate-800 text-center p-12 rounded-xl border border-dashed border-slate-700 text-slate-400">
         🎉 All catchments clear! No custom listings are currently waiting for admin validation.
     </div>
 
-    <div id="toolsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-</div>
+    <div th:unless="${tools == null || tools.empty}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-<script>
-    // Fetch and render pending tools when the page loads
-    document.addEventListener("DOMContentLoaded", loadPendingTools);
+        <th:block th:each="tool : ${tools}">
+            <div th:if="${#strings.toString(tool.status) == 'PENDING'}"
+                 class="bg-slate-800 rounded-xl border border-slate-700 shadow-md overflow-hidden flex flex-col justify-between transition-all hover:border-slate-600">
 
-    async function loadPendingTools() {
-        const grid = document.getElementById("toolsGrid");
-        const loading = document.getElementById("loadingState");
-        const emptyNotice = document.getElementById("noItemsNotice");
+                <div>
+                    <img th:src="${tool.imageUrl != null && !tool.imageUrl.empty} ? ${tool.imageUrl} : '/uploads/default-placeholder.png'"
+                         class="w-full h-48 object-cover bg-slate-900 border-b border-slate-700"
+                         alt="Hardware preview"
+                         onerror="this.src='/uploads/default-placeholder.png'">
 
-        try {
-            // Fetching all records (Using a larger page size to scan for moderation items)
-            const response = await fetch('/api/tools?size=50&sortBy=id&direction=desc');
-            if (!response.ok) throw new Error("Failed to load catalog inventory.");
-
-            const data = await response.json();
-
-            // Filter specifically for PENDING tools
-            const pendingTools = data.content.filter(tool => tool.status === "PENDING");
-
-            loading.classList.add("hidden");
-            grid.innerHTML = "";
-
-            if (pendingTools.length === 0) {
-                emptyNotice.classList.remove("hidden");
-                return;
-            }
-
-            emptyNotice.classList.add("hidden");
-
-            pendingTools.forEach(tool => {
-                const card = document.createElement("div");
-                card.className = "bg-slate-800 rounded-xl border border-slate-700 shadow-md overflow-hidden flex flex-col justify-between transition-all hover:border-slate-600";
-                card.id = `tool-card-${tool.id}`;
-
-                card.innerHTML = `
-                    <div>
-                        <img src="${tool.imageUrl || '/uploads/default-placeholder.png'}"
-                             class="w-full h-48 object-cover bg-slate-900 border-b border-slate-700"
-                             alt="Hardware preview"
-                             onerror="this.src='/uploads/default-placeholder.png'">
-                        <div class="p-5">
-                            <span class="px-2.5 py-0.5 text-xs font-bold bg-sky-500/10 text-sky-400 rounded-full border border-sky-500/20">
-                                ${tool.category}
-                            </span>
-                            <h3 class="text-lg font-bold text-white mt-2">${tool.name}</h3>
-                            <p class="text-sm text-slate-400 mt-1 line-clamp-3">${tool.description}</p>
-                            <p class="text-emerald-400 font-extrabold mt-3 text-lg">Rs. ${tool.dailyRate.toFixed(2)} / day</p>
-                        </div>
+                    <div class="p-5">
+                        <span class="px-2.5 py-0.5 text-xs font-bold bg-sky-500/10 text-sky-400 rounded-full border border-sky-500/20"
+                              th:text="${tool.category}">
+                            Category
+                        </span>
+                        <h3 class="text-lg font-bold text-white mt-2" th:text="${tool.name}">Tool Title</h3>
+                        <p class="text-sm text-slate-400 mt-1 line-clamp-3" th:text="${tool.description}">Description context</p>
+                        <p class="text-emerald-400 font-extrabold mt-3 text-lg" th:text="'Rs. ' + ${tool.dailyRate} + ' / day'">Rs. 0.00 / day</p>
                     </div>
-                    <div class="p-5 bg-slate-800/50 border-t border-slate-700 grid grid-cols-2 gap-3">
-                        <button onclick="updateStatus(${tool.id}, 'APPROVED')" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-sm transition-all cursor-pointer">
+                </div>
+
+                <div class="p-5 bg-slate-800/50 border-t border-slate-700 grid grid-cols-2 gap-3">
+                    <form th:action="@{/admin/tools/{id}/status(id=${tool.id})}" method="post">
+                        <input type="hidden" name="status" value="APPROVED"/>
+                        <button type="submit" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-sm transition-all cursor-pointer">
                             Approve
                         </button>
-                        <button onclick="updateStatus(${tool.id}, 'REJECTED')" class="w-full py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg text-sm transition-all cursor-pointer">
+                    </form>
+
+                    <form th:action="@{/admin/tools/{id}/status(id=${tool.id})}" method="post">
+                        <input type="hidden" name="status" value="REJECTED"/>
+                        <button type="submit" class="w-full py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg text-sm transition-all cursor-pointer">
                             Reject
                         </button>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
+                    </form>
+                </div>
+            </div>
+        </th:block>
+    </div>
+</div>
 
-        } catch (err) {
-            loading.innerText = "❌ Error establishing connection to management server: " + err.message;
-        }
-    }
-
-    async function updateStatus(toolId, newStatus) {
-        try {
-            // Sends patch parameters straight to your @PutMapping("/{id}/status") backend mapping
-            const response = await fetch(`/api/tools/${toolId}/status?status=${newStatus}`, {
-                method: 'PUT'
-            });
-
-            if (!response.ok) throw new Error("Could not execute structural operation.");
-
-            showAlert(`Successfully marker tool as ${newStatus}!`, newStatus === 'APPROVED' ? 'emerald' : 'rose');
-
-            // Animate and remove item container card from dashboard
-            const card = document.getElementById(`tool-card-${toolId}`);
-            if (card) {
-                card.style.opacity = '0';
-                card.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    card.remove();
-                    // If no more cards remain, display the empty state notice
-                    if (document.getElementById("toolsGrid").children.length === 0) {
-                        document.getElementById("noItemsNotice").classList.remove("hidden");
-                    }
-                }, 300);
-            }
-
-        } catch (err) {
-            showAlert("Action update failure: " + err.message, "rose");
-        }
-    }
-
-    function showAlert(msg, color) {
-        const alertBox = document.getElementById("alertBox");
-        alertBox.innerText = msg;
-        alertBox.className = `mb-6 p-4 rounded-lg text-sm font-semibold transition-all bg-${color}-500/10 text-${color}-400 border border-${color}-500/20`;
-        alertBox.classList.remove("hidden");
-        setTimeout(() => alertBox.classList.add("hidden"), 4000);
-    }
-</script>
 </body>
 </html>

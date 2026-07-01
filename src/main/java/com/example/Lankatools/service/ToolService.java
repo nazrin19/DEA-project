@@ -82,15 +82,41 @@ public class ToolService {
         return toolRepository.count();
     }
 
-
     public Page<Tool> getToolsByCategoryPaginated(String category, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
         return toolRepository.findByCategoryContainingIgnoreCase(category, pageable);
     }
 
-
     public Page<Tool> searchToolsByNamePaginated(String name, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
         return toolRepository.findByNameContainingIgnoreCase(name, pageable);
+    }
+
+    // ==========================================
+    // 🎯 NEW STATUS-FILTERED METRIC & PAGINATION METHODS FOR HOMEPAGE
+    // ==========================================
+
+    public Page<Tool> getToolsByStatusWithPagination(String statusStr, int page, int size, String sortBy, String direction) {
+        Toolstatus status = Toolstatus.valueOf(statusStr.toUpperCase());
+        Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return toolRepository.findByStatus(status, pageable);
+    }
+
+    public Page<Tool> searchToolsByNameAndStatusPaginated(String name, String statusStr, int page, int size) {
+        Toolstatus status = Toolstatus.valueOf(statusStr.toUpperCase());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        return toolRepository.findByNameContainingIgnoreCaseAndStatus(name, status, pageable);
+    }
+
+    public Page<Tool> getToolsByCategoryAndStatusPaginated(String category, String statusStr, int page, int size) {
+        Toolstatus status = Toolstatus.valueOf(statusStr.toUpperCase());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        return toolRepository.findByCategoryContainingIgnoreCaseAndStatus(category, status, pageable);
+    }
+
+    public long countToolsByStatus(String statusStr) {
+        Toolstatus status = Toolstatus.valueOf(statusStr.toUpperCase());
+        return toolRepository.countByStatus(status);
     }
 }

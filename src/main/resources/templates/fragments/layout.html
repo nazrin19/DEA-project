@@ -39,10 +39,7 @@
                 </li>
 
                 <li class="nav-item" sec:authorize="hasRole('SHOP_OWNER')">
-                    <a class="nav-link text-warning fw-medium" href="/owner/dashboard">Shop Dashboard</a>
-                </li>
-                <li class="nav-item" sec:authorize="hasRole('CUSTOMER')">
-                    <a class="nav-link text-info fw-medium" href="/customer/dashboard">Customer Dashboard</a>
+                    <a class="nav-link text-warning fw-medium" href="/shop/dashboard">Shop Dashboard</a>
                 </li>
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link text-danger fw-medium" href="/admin/dashboard">Admin Dashboard</a>
@@ -57,7 +54,7 @@
 
                 <div sec:authorize="isAuthenticated()" class="d-flex align-items-center gap-3">
                     <span class="text-white-50 small">
-                        Welcome, <span class="text-white fw-medium" th:text="${#strings.contains(#authentication.name, '@') ? #strings.arraySplit(#authentication.name, '@')[0] : #strings.arraySplit(#authentication.name, ' ')[0]}">User</span>
+                        Welcome, <span class="text-white fw-medium" sec:authentication="name">User</span>
                         <span class="badge bg-secondary text-white ms-1 font-monospace small"
                               sec:authorize="hasRole('ADMIN')">Admin</span>
                         <span class="badge bg-warning text-dark ms-1 font-monospace small"
