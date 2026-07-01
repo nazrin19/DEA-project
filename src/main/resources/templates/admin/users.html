@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lanka Tools - User Management</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light-subtle min-vh-100 py-5" style="color: #333333;">
+
+<div class="container my-4" style="max-width: 1140px;">
+
+  <header class="row mb-5 g-3 p-4 rounded-4 text-white shadow-sm align-items-center" style="background-color: #0c3966;">
+    <div class="col-sm-8">
+      <h1 class="h3 fw-bold tracking-tight mb-1 text-white d-flex align-items-center gap-2">
+        👥 User Management Hub
+      </h1>
+      <p class="opacity-75 mb-0 small">Control access authorization, handle suspensions, and view shop profiles</p>
+    </div>
+    <div class="col-sm-4 text-sm-end">
+      <a href="/admin/dashboard" class="btn btn-outline-light px-4 py-2 fw-semibold rounded-3 text-uppercase small tracking-wide">
+        Back to Dashboard
+      </a>
+    </div>
+  </header>
+
+  <div th:if="${success}" class="alert alert-success mb-4 rounded-4 fw-semibold shadow-sm" role="alert">
+    ✨ <span th:text="${success}">Action completed successfully.</span>
+  </div>
+
+  <div class="mb-4 p-3 bg-white rounded-4 border border-light shadow-sm d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div class="d-flex align-items-center gap-2">
+      <span class="small fw-semibold text-muted">Filter System Group:</span>
+      <div class="btn-group shadow-sm" role="group">
+        <a href="/admin/manage-users"
+           th:classappend="${selectedRole == null || selectedRole == ''} ? 'btn btn-primary fw-bold px-3 py-1.5' : 'btn btn-light border text-secondary px-3 py-1.5'"
+           style="font-size: 0.75rem;" class="text-uppercase">
+          All Profiles
+        </a>
+        <a href="/admin/manage-users?role=CUSTOMER"
+           th:classappend="${selectedRole == 'CUSTOMER'} ? 'btn btn-primary fw-bold px-3 py-1.5' : 'btn btn-light border text-secondary px-3 py-1.5'"
+           style="font-size: 0.75rem;" class="text-uppercase">
+          Customers
+        </a>
+        <a href="/admin/manage-users?role=OWNER"
+           th:classappend="${selectedRole == 'OWNER'} ? 'btn btn-primary fw-bold px-3 py-1.5' : 'btn btn-light border text-secondary px-3 py-1.5'"
+           style="font-size: 0.75rem;" class="text-uppercase">
+          Shop Owners
+        </a>
+      </div>
+    </div>
+    <div class="small fw-semibold text-muted">
+      Found <span th:text="${users.size()}" class="fw-bold text-dark fs-6 font-monospace">0</span> system profiles match
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+        <tr class="bg-light text-uppercase font-monospace small" style="font-size: 0.75rem; --bs-table-bg: #f8fafc;">
+          <th class="p-4 text-secondary border-0">Account Holder Details</th>
+          <th class="p-4 text-secondary border-0">Assigned Role</th>
+          <th class="p-4 text-secondary border-0">Business Footprint</th>
+          <th class="p-4 text-secondary border-0 text-center">Status Filters</th>
+          <th class="p-4 text-secondary border-0 text-end">Management Actions</th>
+        </tr>
+        </thead>
+        <tbody class="border-top-0">
+        <tr th:if="${users.empty}">
+          <td colspan="5" class="p-5 text-center text-muted fst-italic">
+            No system profile records matched the designated filtering scope criteria.
+          </td>
+        </tr>
+
+        <tr th:each="user : ${users}">
+          <td class="p-4">
+            <div class="fw-bold fs-6 mb-0" style="color: #0c3966;" th:text="${user.name}">Nimal Fernando</div>
+            <div class="text-muted small" style="font-size: 0.75rem;" th:text="${user.email}">nimal@gmail.com</div>
+            <div class="text-secondary font-monospace small" style="font-size: 0.7rem;" th:text="${user.phone}">0771234567</div>
+          </td>
+
+          <td class="p-4">
+                        <span class="badge border font-monospace text-uppercase px-2.5 py-1.5" style="font-size: 0.7rem; font-weight: 700;"
+                              th:classappend="${#strings.toString(user.role) == 'ADMIN'} ? 'bg-purple-subtle text-purple border-purple-subtle' : (${#strings.toString(user.role) == 'OWNER'} ? 'bg-info-subtle text-info-emphasis border-info-subtle' : 'bg-success-subtle text-success border-success-subtle')"
+                              th:text="${user.role}">
+                            CUSTOMER
+                        </span>
+          </td>
+
+          <td class="p-4">
+            <div th:if="${#strings.toString(user.role) == 'OWNER'}">
+              <span class="fw-bold text-dark d-block mb-0" th:text="${user.shopName}">Lanka Hardware</span>
+              <span class="text-muted small d-block text-truncate" style="max-width: 200px;" th:text="${user.shopAddress}">Colombo, LK</span>
+            </div>
+            <div th:unless="${#strings.toString(user.role) == 'OWNER'}" class="text-muted fst-italic small" style="font-size: 0.75rem;">
+              No commercial profile
+            </div>
+          </td>
+
+          <td class="p-4 text-center">
+            <div class="d-flex flex-column gap-1 align-items-center">
+                            <span class="badge font-monospace text-uppercase px-2 py-1" style="font-size: 0.65rem;"
+                                  th:classappend="${user.active} ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'"
+                                  th:text="${user.active} ? '🟢 Account Active' : '🔴 Suspended'">
+                            </span>
+              <span th:if="${#strings.toString(user.role) == 'OWNER'}"
+                    class="badge font-monospace text-uppercase px-2 py-1" style="font-size: 0.65rem;"
+                    th:classappend="${user.approved} ? 'bg-info-subtle text-dark' : 'bg-warning-subtle text-warning-emphasis'"
+                    th:text="${user.approved} ? '🛡️ Approved Shop' : '⚠️ Pending Verification'">
+                            </span>
+            </div>
+          </td>
+
+          <td class="p-4 text-end">
+            <div class="d-inline-flex gap-2 justify-content-end align-items-center">
+              <a th:if="${#strings.toString(user.role) == 'OWNER'}"
+                 th:href="@{/admin/shop-detail(id=${user.id})}"
+                 class="btn btn-sm btn-light border fw-semibold text-uppercase px-2.5 py-1.5" style="font-size: 0.7rem; letter-spacing: 0.3px;">
+                View Shop Inventory
+              </a>
+
+              <form th:if="${#strings.toString(user.role) == 'OWNER' && !user.approved}"
+                    th:action="@{/admin/users/{id}/approve-owner(id=${user.id})}" method="post" class="m-0 p-0">
+                <button type="submit" class="btn btn-sm btn-success fw-bold text-uppercase px-2.5 py-1.5" style="font-size: 0.7rem; letter-spacing: 0.3px;">
+                  Verify Shop
+                </button>
+              </form>
+
+              <form th:action="@{/admin/users/{id}/suspend(id=${user.id})}" method="post" class="m-0 p-0">
+                <button type="submit"
+                        th:classappend="${user.active} ? 'btn-outline-danger' : 'btn-success'"
+                        class="btn btn-sm fw-bold text-uppercase px-2.5 py-1.5" style="font-size: 0.7rem; letter-spacing: 0.3px;"
+                        th:text="${user.active} ? 'Suspend Account' : 'Lift Suspension'">
+                  Toggle Active Status
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

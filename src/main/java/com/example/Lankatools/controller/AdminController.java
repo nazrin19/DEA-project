@@ -10,6 +10,7 @@ import com.example.Lankatools.repository.ToolRepository;
 import com.example.Lankatools.repository.UserRepository;
 import com.example.Lankatools.repository.BookingRepository;
 import com.example.Lankatools.service.UserService;
+import com.example.Lankatools.service.ToolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,6 +35,8 @@ public class AdminController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ToolService toolService;
 
     // UNIFIED DASHBOARD METRICS
     @GetMapping("/dashboard")
@@ -55,7 +58,7 @@ public class AdminController {
     }
 
     // USERS MANAGEMENT
-    @GetMapping("/users")
+    @GetMapping({"/users", "/manage-users"})
     public String allUsers(
             @RequestParam(required = false) String role,
             Model model) {
@@ -71,7 +74,7 @@ public class AdminController {
             users = userRepository.findAll();
         }
         model.addAttribute("users", users);
-        model.addAttribute("selectedRole", role);
+        model.addAttribute("selectedRole", role != null ? role : "");
         return "admin/users";
     }
 
@@ -79,48 +82,43 @@ public class AdminController {
     public String suspendUser(@PathVariable Long id, RedirectAttributes ra) {
         userService.toggleUserSuspension(id);
         ra.addFlashAttribute("success", "User profile status updated successfully.");
-        return "redirect:/admin/users";
+        return "redirect:/admin/manage-users";
     }
 
     @PostMapping("/users/{id}/approve-owner")
     public String approveOwner(@PathVariable Long id, RedirectAttributes ra) {
         userService.approveUser(id);
         ra.addFlashAttribute("success", "Shop owner approved successfully!");
-        return "redirect:/admin/users";
+        return "redirect:/admin/manage-users";
     }
 
     // DYNAMIC EQUIPMENT MODERATION DESK
-    @GetMapping("/tools-moderation")
+    @GetMapping({"/tools", "/tools-moderation", "/manage-tools"})
     public String showToolsModeration(Model model) {
-        List<Tool> tools = toolRepository.findAll();
-        List<Tool> pendingTools = toolRepository.findByStatus(Toolstatus.PENDING);
-        model.addAttribute("tools", tools);
-        model.addAttribute("pendingTools", pendingTools);
-        model.addAttribute("approvedCount", toolRepository.findByStatus(Toolstatus.APPROVED).size());
-        model.addAttribute("pendingCount", pendingTools.size());
-        model.addAttribute("rejectedCount", toolRepository.findByStatus(Toolstatus.REJECTED).size());
+        model.addAttribute("tools", toolService.getAllTools());
         return "admin/tools-moderation";
-    }
-
-    @PostMapping("/tools/{id}/approve")
-    public String approveTool(@PathVariable Long id, RedirectAttributes ra) {
-        Tool tool = toolRepository.findById(id).orElse(null);
-        if (tool != null) { tool.setStatus(Toolstatus.APPROVED); toolRepository.save(tool); }
-        ra.addFlashAttribute("success", "Tool approved!");
-        return "redirect:/admin/tools-moderation";
-    }
-
-    @PostMapping("/tools/{id}/reject")
-    public String rejectTool(@PathVariable Long id, RedirectAttributes ra) {
-        Tool tool = toolRepository.findById(id).orElse(null);
-        if (tool != null) { tool.setStatus(Toolstatus.REJECTED); toolRepository.save(tool); }
-        ra.addFlashAttribute("success", "Tool rejected.");
-        return "redirect:/admin/tools-moderation";
     }
 
     @GetMapping("/tools/pending")
     public String pendingToolsRedirect() {
-        return "redirect:/admin/tools-moderation";
+        return "redirect:/admin/manage-tools";
+    }
+
+    // 🎯 NEW: PROCESS TOOL MODERATION APPROVAL / REJECTION ACTIONS
+    // Handles form submissions from templates/admin/tools-moderation.html cleanly
+    @PostMapping("/tools/{id}/status")
+    public String updateToolStatus(
+            @PathVariable Long id,
+            @RequestParam("status") String statusStr,
+            RedirectAttributes ra) {
+        try {
+            Toolstatus targetStatus = Toolstatus.valueOf(statusStr.toUpperCase());
+            toolService.updateToolStatus(id, targetStatus);
+            ra.addFlashAttribute("success", "Tool listing has been successfully updated to " + targetStatus + "!");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Failed to update tool listing status.");
+        }
+        return "redirect:/admin/manage-tools";
     }
 
     // FULL PLATFORM RENTAL HISTORY
@@ -135,35 +133,12 @@ public class AdminController {
     }
 
     @GetMapping("/shops-list")
-    public String showRegisteredShops(Model model) {
-        List<User> shopOwners = userRepository.findByRole(Role.SHOP_OWNER);
-        model.addAttribute("shopOwners", shopOwners);
-        long approved = shopOwners.stream().filter(u -> Boolean.TRUE.equals(u.getApproved())).count();
-        model.addAttribute("approvedShopCount", approved);
-        model.addAttribute("pendingShopCount", shopOwners.size() - approved);
+    public String showRegisteredShops() {
         return "admin/shops-list";
     }
 
-    @PostMapping("/shops/{id}/approve")
-    public String approveShop(@PathVariable Long id, RedirectAttributes ra) {
-        userService.approveUser(id);
-        ra.addFlashAttribute("success", "Shop approved!");
-        return "redirect:/admin/shops-list";
-    }
-
-    @PostMapping("/shops/{id}/suspend")
-    public String suspendShop(@PathVariable Long id, RedirectAttributes ra) {
-        userService.toggleUserSuspension(id);
-        ra.addFlashAttribute("success", "Shop status updated.");
-        return "redirect:/admin/shops-list";
-    }
-
-    // 🎯 NEW: SERVE THE SHOP DETAILS MANAGEMENT PROFILE
-    // This perfectly hooks up to templates/admin/shop-detail.html
     @GetMapping("/shop-detail")
     public String showShopDetail(@RequestParam(required = false) Long id, Model model) {
-        // We pass the parameter ID straight down to the view so the internal
-        // JavaScript engine can extract the correct query context from the URL!
         model.addAttribute("ownerId", id);
         return "admin/shop-detail";
     }
