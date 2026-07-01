@@ -26,17 +26,21 @@ public class HomeController {
         int pageSize = 6;
         Page<Tool> toolPage;
 
+        // 🎯 CRITICAL FIX: Only display tools that have been explicitly APPROVED by an administrator
+        String activeStatus = "APPROVED";
+
         if (query != null && !query.trim().isEmpty()) {
-            toolPage = toolService.searchToolsByNamePaginated(query.trim(), page, pageSize);
+            toolPage = toolService.searchToolsByNameAndStatusPaginated(query.trim(), activeStatus, page, pageSize);
             model.addAttribute("searchQuery", query);
         } else if (category != null && !category.trim().isEmpty()) {
-            toolPage = toolService.getToolsByCategoryPaginated(category.trim(), page, pageSize);
+            toolPage = toolService.getToolsByCategoryAndStatusPaginated(category.trim(), activeStatus, page, pageSize);
             model.addAttribute("selectedCategory", category);
         } else {
-            toolPage = toolService.getToolsWithPagination(page, pageSize, "id", "asc");
+            toolPage = toolService.getToolsByStatusWithPagination(activeStatus, page, pageSize, "id", "asc");
         }
 
-        long totalAvailableTools = toolService.countAvailableTools();
+        // Count only the approved/available tools for the UI metrics
+        long totalAvailableTools = toolService.countToolsByStatus(activeStatus);
 
         model.addAttribute("tools", toolPage.getContent());
         model.addAttribute("totalTools", totalAvailableTools);

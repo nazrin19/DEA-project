@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Tools Catalog - LankaTools</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-50 font-sans text-slate-800">
+
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <header class="flex justify-between items-center mb-8">
+        <div>
+            <a href="/owner/dashboard" class="text-sm font-semibold text-blue-600 hover:underline flex items-center gap-1 mb-2">
+                <i class="fa-solid fa-arrow-left text-xs"></i> Back to Dashboard
+            </a>
+            <h1 class="text-2xl font-black text-slate-900">Your Managed Inventory</h1>
+        </div>
+        <a href="/owner/upload-tool" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all">
+            Add Another Item
+        </a>
+    </header>
+
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                <tr class="bg-slate-100 text-slate-600 text-xs uppercase font-bold tracking-wider border-b border-slate-200">
+                    <th class="p-4">Equipment Info</th>
+                    <th class="p-4">Category</th>
+                    <th class="p-4">Daily Rate</th>
+                    <th class="p-4">Moderation Status</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 text-sm">
+                <tr th:if="${tools == null || tools.empty}">
+                    <td colspan="4" class="p-8 text-center text-slate-400 italic">
+                        No equipment catalog records found. Click "Add Another Item" to start.
+                    </td>
+                </tr>
+                <tr th:each="tool : ${tools}" class="hover:bg-slate-50/80 transition-colors">
+                    <td class="p-4 flex items-center gap-3">
+                        <img th:src="${tool.imageUrl != null && !tool.imageUrl.empty} ? ${tool.imageUrl} : '/uploads/default-placeholder.png'"
+                             class="w-12 h-12 object-cover rounded-lg bg-slate-100 border border-slate-200"
+                             onerror="this.src='/uploads/default-placeholder.png'">
+                        <div>
+                            <span class="font-bold text-slate-900 block" th:text="${tool.name}">Heavy Duty Jackhammer</span>
+                            <span class="text-xs text-slate-400 line-clamp-1 max-w-sm" th:text="${tool.description}">Description</span>
+                        </div>
+                    </td>
+                    <td class="p-4 text-slate-600" th:text="${tool.category}">Power Tools</td>
+                    <td class="p-4 font-bold text-slate-900">Rs. <span th:text="${tool.dailyRate}">0.00</span></td>
+                    <td class="p-4">
+                        <span class="px-2.5 py-1 text-xs font-bold rounded-full"
+                              th:classappend="${#strings.toString(tool.status) == 'APPROVED'} ? 'bg-emerald-100 text-emerald-800' : (${#strings.toString(tool.status) == 'PENDING'} ? 'bg-amber-100 text-amber-800' : 'bg-rose-100 text-rose-800')"
+                              th:text="${tool.status}">
+                            PENDING
+                        </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

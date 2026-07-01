@@ -28,6 +28,7 @@
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
                 <li class="nav-item">
@@ -42,9 +43,20 @@
                 <li class="nav-item" sec:authorize="hasRole('SHOP_OWNER')">
                     <a class="nav-link text-warning fw-medium" th:href="@{/bookings/incoming}">Incoming Bookings</a>
                 </li>
+<<<<<<< HEAD
                 <li class="nav-item" sec:authorize="hasRole('SHOP_OWNER')">
                     <a class="nav-link text-warning fw-medium" href="/shop/dashboard">Shop Dashboard</a>
+=======
+
+                <li class="nav-item" sec:authorize="hasRole('OWNER')">
+                    <a class="nav-link text-warning fw-medium" href="/owner/dashboard">Shop Dashboard</a>
+>>>>>>> 9d50a90a1a4b085d2e11fc5fc128caa86e7e9c89
                 </li>
+
+                <li class="nav-item" sec:authorize="hasRole('CUSTOMER')">
+                    <a class="nav-link text-info fw-medium" href="/customer/dashboard">Customer Dashboard</a>
+                </li>
+
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link text-danger fw-medium" href="/admin/dashboard">Admin Dashboard</a>
                 </li>
@@ -59,10 +71,9 @@
                 <div sec:authorize="isAuthenticated()" class="d-flex align-items-center gap-3">
                     <span class="text-white-50 small">
                         Welcome, <span class="text-white fw-medium" sec:authentication="name">User</span>
-                        <span class="badge bg-secondary text-white ms-1 font-monospace small"
-                              sec:authorize="hasRole('ADMIN')">Admin</span>
-                        <span class="badge bg-warning text-dark ms-1 font-monospace small"
-                              sec:authorize="hasRole('SHOP_OWNER')">Shop</span>
+                        <span class="badge bg-secondary text-white ms-1 font-monospace small" sec:authorize="hasRole('ADMIN')">Admin</span>
+                        <span class="badge bg-warning text-dark ms-1 font-monospace small" sec:authorize="hasRole('OWNER')">Shop</span>
+                        <span class="badge bg-info text-dark ms-1 font-monospace small" sec:authorize="hasRole('CUSTOMER')">Customer</span>
                     </span>
                     <form th:action="@{/logout}" method="post" class="m-0">
                         <button type="submit" class="btn btn-sm btn-outline-secondary px-3 text-white-50">Sign Out</button>

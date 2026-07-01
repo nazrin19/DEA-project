@@ -2,9 +2,196 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lanka Tools - Shop Profile Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
 
+<div class="max-w-6xl mx-auto p-6">
+    <header class="mb-8 flex justify-between items-center bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
+        <div>
+            <h1 class="text-2xl font-black tracking-tight text-white flex items-center gap-2">
+                🏪 Shop Profile Hub
+            </h1>
+            <p class="text-slate-400 text-sm mt-0.5">Review vendor business details and inventory records</p>
+        </div>
+        <a href="/admin/users?role=OWNER" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm font-semibold text-slate-200 transition-all">
+            Back to Shop Owners
+        </a>
+    </header>
+
+    <div id="alertBox" class="hidden mb-6 p-4 rounded-lg text-sm font-semibold transition-all"></div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="space-y-6">
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-md">
+                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4 border-b border-slate-700 pb-2">
+                    Business Credentials
+                </h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-xs text-slate-500 font-medium block">Shop Name</label>
+                        <span id="shopName" class="text-lg font-bold text-sky-400">Loading...</span>
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-500 font-medium block">Owner Operator</label>
+                        <span id="ownerName" class="text-white font-semibold">Loading...</span>
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-500 font-medium block">Email Address</label>
+                        <span id="ownerEmail" class="text-slate-300 text-sm break-all">Loading...</span>
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-500 font-medium block">Contact Number</label>
+                        <span id="ownerPhone" class="text-slate-300 text-sm">Loading...</span>
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-500 font-medium block">Operational Base Address</label>
+                        <span id="shopAddress" class="text-slate-300 text-sm block mt-0.5 leading-relaxed">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2">
+            <div class="bg-slate-800 rounded-xl border border-slate-700 shadow-md overflow-hidden">
+                <div class="p-6 border-b border-slate-700 bg-slate-800/50 flex justify-between items-center">
+                    <h2 class="text-lg font-bold text-white">Registered Inventory Catalog</h2>
+                    <span id="inventoryCount" class="px-2.5 py-0.5 text-xs font-bold bg-slate-700 text-slate-300 rounded-full">0 Tools</span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                        <tr class="bg-slate-900/50 text-slate-400 text-xs uppercase font-bold tracking-wider border-b border-slate-700">
+                            <th class="p-4">Equipment Info</th>
+                            <th class="p-4">Category</th>
+                            <th class="p-4">Daily Rental</th>
+                            <th class="p-4">Verification Status</th>
+                        </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody" class="divide-y divide-slate-700 text-sm">
+                        <tr>
+                            <td colspan="4" class="p-8 text-center text-slate-400 font-medium">
+                                🔄 Gathering inventory data files...
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Extract the user/owner ID from the URL path parameter (e.g., /admin/shops-list?id=5)
+    const urlParams = new URLSearchParams(window.location.search);
+    const ownerId = urlParams.get('id');
+
+    document.addEventListener("DOMContentLoaded", () => {
+        if (!ownerId) {
+            showNotification("No valid profile context target ID specified.", "rose");
+            return;
+        }
+        fetchShopDetails();
+    });
+
+    async function fetchShopDetails() {
+        try {
+            // Fetching the user details profile directly
+            const userResponse = await fetch(`/api/tools`); // Uses paginated data fetch setup to match tools
+            if (!userResponse.ok) throw new Error("Could not download administrative data logs.");
+
+            const toolsData = await userResponse.json();
+
+            // Filter items belonging to this target owner ID
+            const shopInventory = toolsData.content.filter(tool => tool.owner && tool.owner.id == ownerId);
+
+            if (shopInventory.length > 0 || toolsData.content.length > 0) {
+                // Pull vendor metadata details straight from the nested first-match object configuration
+                // Alternatively, fallback if shop doesn't have tools listed yet
+                let targetUser = shopInventory[0]?.owner;
+
+                if (!targetUser) {
+                    // Fallback attempt: scan the data matrix manually
+                    for(let t of toolsData.content) {
+                        if(t.owner && t.owner.id == ownerId) {
+                            targetUser = t.owner;
+                            break;
+                        }
+                    }
+                }
+
+                if (targetUser) {
+                    document.getElementById("shopName").innerText = targetUser.shopName || "N/A";
+                    document.getElementById("ownerName").innerText = targetUser.name || "N/A";
+                    document.getElementById("ownerEmail").innerText = targetUser.email || "N/A";
+                    document.getElementById("ownerPhone").innerText = targetUser.phone || "N/A";
+                    document.getElementById("shopAddress").innerText = targetUser.shopAddress || "No address on file.";
+                }
+            }
+
+            renderInventoryTable(shopInventory);
+
+        } catch (err) {
+            showNotification("Data mapping extraction fault: " + err.message, "rose");
+        }
+    }
+
+    function renderInventoryTable(tools) {
+        const tbody = document.getElementById("inventoryTableBody");
+        const counter = document.getElementById("inventoryCount");
+
+        tbody.innerHTML = "";
+        counter.innerText = `${tools.length} ${tools.length === 1 ? 'Tool' : 'Tools'}`;
+
+        if (tools.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="p-8 text-center text-slate-500 italic">
+                        No hardware tools listings have been uploaded by this shop yet.
+                    </td>
+                </tr>`;
+            return;
+        }
+
+        tools.forEach(tool => {
+            let statusBadgeColor = "bg-amber-500/10 text-amber-400 border-amber-500/20";
+            if (tool.status === "APPROVED") statusBadgeColor = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+            if (tool.status === "REJECTED") statusBadgeColor = "bg-rose-500/10 text-rose-400 border-rose-500/20";
+
+            const row = document.createElement("tr");
+            row.className = "hover:bg-slate-800/40 transition-colors";
+            row.innerHTML = `
+                <td class="p-4 flex items-center gap-3">
+                    <img src="${tool.imageUrl || '/uploads/default-placeholder.png'}"
+                         class="w-10 h-10 object-cover rounded-lg bg-slate-900 border border-slate-700"
+                         onerror="this.src='/uploads/default-placeholder.png'">
+                    <div>
+                        <span class="font-bold text-white block">${tool.name}</span>
+                        <span class="text-xs text-slate-400 line-clamp-1">${tool.description || 'No description provided.'}</span>
+                    </div>
+                </td>
+                <td class="p-4 text-slate-300">${tool.category}</td>
+                <td class="p-4 font-semibold text-emerald-400">Rs. ${tool.dailyRate.toFixed(2)}</td>
+                <td class="p-4">
+                    <span class="px-2.5 py-0.5 text-xs font-bold rounded-full border ${statusBadgeColor}">
+                        ${tool.status}
+                    </span>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function showNotification(msg, color) {
+        const alertBox = document.getElementById("alertBox");
+        alertBox.innerText = msg;
+        alertBox.className = `mb-6 p-4 rounded-lg text-sm font-semibold transition-all bg-${color}-500/10 text-${color}-400 border border-${color}-500/20`;
+        alertBox.classList.remove("hidden");
+    }
+</script>
 </body>
 </html>
