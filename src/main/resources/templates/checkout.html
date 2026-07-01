@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Booking - LankaTools</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen font-sans">
+
+<header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <a href="/" class="text-2xl font-extrabold text-blue-600 tracking-tight">
+            Lanka<span class="text-slate-900">Tools</span>
+        </a>
+    </div>
+</header>
+
+<main class="max-w-3xl mx-auto px-4 py-12">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden p-8">
+
+        <h1 class="text-2xl font-black text-slate-900 tracking-tight mb-6">Confirm Rental Details</h1>
+
+        <div class="flex items-center space-x-4 p-4 bg-slate-50 border border-slate-200 rounded-xl mb-8">
+            <img th:src="@{${tool.imageUrl}}" onerror="this.onerror=null; this.src='/images/default-tool.png';" class="w-16 h-16 object-contain bg-white rounded-lg p-1 border">
+            <div>
+                <h3 class="font-bold text-slate-900 text-lg" th:text="${tool.name}">Equipment Name</h3>
+                <p class="text-sm text-slate-500" th:text="${tool.category}">Category</p>
+            </div>
+        </div>
+
+        <form th:action="@{/bookings}" method="post" class="space-y-6">
+            <input type="hidden" name="toolId" th:value="${tool.id}" />
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Pick-up Date</label>
+                    <input type="date" id="startDate" name="startDate" required
+                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Return Date</label>
+                    <input type="date" id="endDate" name="endDate" required
+                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
+                </div>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-100 rounded-xl p-5 space-y-3">
+                <div class="flex justify-between text-sm text-blue-800">
+                    <span>Daily Rate:</span>
+                    <span class="font-bold">Rs. <span id="dailyRate" th:text="${tool.dailyRate}">0.00</span></span>
+                </div>
+                <div class="flex justify-between text-sm text-blue-800">
+                    <span>Total Duration:</span>
+                    <span class="font-bold"><span id="daysCount">0</span> Days</span>
+                </div>
+                <div class="border-t border-blue-200 pt-3 flex justify-between text-base font-black text-blue-900">
+                    <span>Estimated Cost:</span>
+                    <span>Rs. <span id="totalCost">0.00</span></span>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg shadow-blue-100 transition">
+                Finalize & Place Booking Order
+            </button>
+        </form>
+    </div>
+</main>
+
+<script>
+    const startInput = document.getElementById('startDate');
+    const endInput = document.getElementById('endDate');
+    const daysDisplay = document.getElementById('daysCount');
+    const costDisplay = document.getElementById('totalCost');
+    const dailyRate = parseFloat(document.getElementById('dailyRate').innerText);
+
+    function calculateCost() {
+        if (startInput.value && endInput.value) {
+            const start = new Date(startInput.value);
+            const end = new Date(endInput.value);
+
+            // Calculate differences in days
+            const diffTime = end - start;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // including start day
+
+            if (diffDays > 0) {
+                daysDisplay.innerText = diffDays;
+                costDisplay.innerText = (diffDays * dailyRate).toFixed(2);
+            } else {
+                daysDisplay.innerText = "0";
+                costDisplay.innerText = "0.00";
+            }
+        }
+    }
+
+    startInput.addEventListener('change', calculateCost);
+    endInput.addEventListener('change', calculateCost);
+</script>
+</body>
+</html>

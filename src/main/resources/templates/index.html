@@ -87,17 +87,28 @@
             <div class="row g-4 mb-5" th:unless="${#lists.isEmpty(tools)}">
                 <div class="col-lg-4 col-md-6" th:each="tool : ${tools}">
                     <div class="card h-100 border border-light border-opacity-50 shadow-sm rounded-4 overflow-hidden bg-white tool-card transition-all">
-                        <div class="position-relative bg-light bg-opacity-70 text-center py-5 border-bottom border-light" style="min-height: 220px;">
-                            <div class="position-absolute top-3 start-3">
+
+                        <div class="position-relative bg-light bg-opacity-70 text-center d-flex align-items-center justify-content-center border-bottom border-light" style="height: 220px; overflow: hidden;">
+                            <div class="position-absolute top-3 start-3" style="z-10: 5;">
                                 <span class="badge bg-dark text-white px-2.5 py-1.5 rounded-3 font-monospace small tracking-wide fw-semibold text-uppercase" th:text="${tool.status.name()}">PENDING</span>
                             </div>
-                            <div class="position-absolute top-3 end-3">
+                            <div class="position-absolute top-3 end-3" style="z-10: 5;">
                                 <span class="badge bg-white text-dark border border-secondary border-opacity-25 px-2.5 py-1.5 rounded-3 fw-bold font-monospace" th:text="'Rs.' + ${tool.dailyRate} + '/Day'">Rs.0/Day</span>
                             </div>
-                            <div class="d-flex justify-content-center align-items-center h-100 mt-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="text-secondary opacity-25" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm1.175-.146a.175.175 0 0 0-.175.175v13.708c0 .097.078.175.175.175h13.65a.175.175 0 0 0 .175-.175V1.175a.175.175 0 0 0-.175-.175H1.175z"/></svg>
+
+                            <img th:if="${tool.imageUrl != null}"
+                                 th:src="@{${tool.imageUrl}}"
+                                 onerror="this.onerror=null; this.src='/images/default-tool.png';"
+                                 class="img-fluid p-3"
+                                 style="max-height: 100%; object-fit: contain;"
+                                 alt="Tool Image">
+
+                            <div th:unless="${tool.imageUrl != null}" class="text-center text-muted py-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="opacity-25 mb-1" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm1.175-.146a.175.175 0 0 0-.175.175v13.708c0 .097.078.175.175.175h13.65a.175.175 0 0 0 .175-.175V1.175a.175.175 0 0 0-.175-.175H1.175z"/></svg>
+                                <div class="small text-secondary font-monospace" style="font-size: 0.75rem;">No Image Added</div>
                             </div>
                         </div>
+
                         <div class="card-body p-4 d-flex flex-column justify-content-between">
                             <div>
                                 <div class="mb-2">

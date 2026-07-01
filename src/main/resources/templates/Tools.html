@@ -1,23 +1,68 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::#tools-content})}">
 <head>
-  <title>LankaTools - Equipment Catalog</title>
-  <div th:replace="~{fragments/layout :: header-css}"></div>
+    <title>LankaTools - Equipment Catalog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="bg-gray-50 font-sans flex flex-col min-screen-dynamic minimum-h-screen">
+<body>
 
-<nav th:replace="~{fragments/layout :: header-nav}"></nav>
+<div id="tools-content" class="w-100">
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
 
-<main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-8 border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between">
+            <div class="space-y-1">
+                <h1 class="text-3xl font-extrabold tracking-tight text-gray-900">Available Equipment Catalog</h1>
+                <p class="text-sm text-gray-500">Premium industrial and local tools available for dynamic immediate booking slots.</p>
+            </div>
+            <div class="mt-4 sm:mt-0">
+                <a th:href="@{/tools/add}" class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 transition duration-150">
+                    <i class="fa-solid fa-plus-circle text-xs"></i> Register New Equipment
+                </a>
+            </div>
+        </div>
 
-  <div class="mb-8 border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between">
-    <div class="space-y-1">
-      <h1 class="text-3xl font-extrabold tracking-tight text-gray-900">Available Equipment Catalog</h1>
-      <p class="text-sm text-gray-500">Premium industrial and local tools available for dynamic immediate booking slots.</p>
-    </div>
-    <div class="mt-4 sm:mt-0">
-      <a th:href="@{/tools/add}" class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 transition duration-150">
-        <i class="fa-solid fa-plus-circle text-xs"></i> Register New Equipment
-      </a>
-    </div>
-  </div>
+        <div class="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
+            <div th:each="tool : ${tools}" class="group relative bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden flex flex-col justify-between p-4">
+
+                <div class="w-full aspect-square bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center relative overflow-hidden h-48">
+
+                    <img th:if="${tool.imageUrl != null}"
+                         th:src="@{${tool.imageUrl}}"
+                         onerror="this.onerror=null; this.src='/images/default-tool.png';"
+                         class="object-contain w-full h-full p-4"
+                         alt="Tool Image">
+
+                    <div th:unless="${tool.imageUrl != null}" class="text-center p-4">
+                        <i class="fa-solid fa-screwdriver-wrench text-2xl text-slate-300 mb-1 block"></i>
+                        <span class="text-xs text-slate-400 font-medium">No Image Found</span>
+                    </div>
+
+                </div>
+
+                <div class="pt-4 flex flex-col justify-between flex-grow">
+                    <div>
+                        <span class="text-xs font-semibold uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-1 rounded" th:text="${tool.category}">Category</span>
+                        <h3 class="text-lg font-bold text-gray-900 mt-2" th:text="${tool.name}">Tool Name</h3>
+                        <p class="text-sm text-gray-500 line-clamp-2 mt-1" th:text="${tool.description}">Description text...</p>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-gray-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-sm font-medium text-gray-900" th:text="'Rs.' + ${tool.dailyRate} + '/Day'">Rs.0.00/Day</span>
+                        </div>
+                        <a th:href="@{/tools/detail/{id}(id=${tool.id})}" class="block w-full text-center border border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white transition duration-150 font-semibold py-2 rounded-xl text-sm uppercase tracking-wider">
+                            View Asset Spec
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+</div>
+
+</body>
+</html>

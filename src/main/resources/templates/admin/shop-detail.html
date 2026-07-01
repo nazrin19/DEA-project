@@ -4,81 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lanka Tools - Shop Profile Management</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-light-subtle min-vh-100 py-5" style="color: #333333;">
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
 
-<div class="container my-4" style="max-width: 1140px;">
-
-    <header class="row mb-5 g-3 p-4 rounded-4 text-white shadow-sm align-items-center" style="background-color: #0c3966;">
-        <div class="col-sm-8">
-            <h1 class="h3 fw-bold tracking-tight mb-1 text-white d-flex align-items-center gap-2">
+<div class="max-w-6xl mx-auto p-6">
+    <header class="mb-8 flex justify-between items-center bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
+        <div>
+            <h1 class="text-2xl font-black tracking-tight text-white flex items-center gap-2">
                 🏪 Shop Profile Hub
             </h1>
-            <p class="opacity-75 mb-0 small">Review vendor business details and inventory records</p>
+            <p class="text-slate-400 text-sm mt-0.5">Review vendor business details and inventory records</p>
         </div>
-        <div class="col-sm-4 text-sm-end">
-            <a href="/admin/users?role=OWNER" class="btn btn-outline-light px-4 py-2 fw-semibold rounded-3 text-uppercase small tracking-wide">
-                Back to Shop Owners
-            </a>
-        </div>
+        <a href="/admin/users?role=OWNER" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm font-semibold text-slate-200 transition-all">
+            Back to Shop Owners
+        </a>
     </header>
 
-    <div id="alertBox" class="d-none alert mb-4 rounded-4 fw-semibold shadow-sm" role="alert"></div>
+    <div id="alertBox" class="hidden mb-6 p-4 rounded-lg text-sm font-semibold transition-all"></div>
 
-    <div class="row g-4">
-        <div class="col-12 col-lg-4">
-            <div class="card h-100 border-0 shadow-sm p-3 bg-white rounded-4">
-                <div class="card-body">
-                    <h6 class="text-uppercase text-secondary fw-bold font-monospace small mb-4 border-b pb-2" style="color: #6c757d !important; letter-spacing: 0.5px;">
-                        Business Credentials
-                    </h6>
-                    <div class="d-flex flex-column gap-3">
-                        <div>
-                            <label class="form-label text-uppercase text-muted fw-bold font-monospace mb-1" style="font-size: 0.7rem;">Shop Name</label>
-                            <span id="shopName" class="d-block h5 fw-bold" style="color: #0c3966;">Loading...</span>
-                        </div>
-                        <div>
-                            <label class="form-label text-uppercase text-muted fw-bold font-monospace mb-1" style="font-size: 0.7rem;">Owner Operator</label>
-                            <span id="ownerName" class="d-block fw-semibold text-dark">Loading...</span>
-                        </div>
-                        <div>
-                            <label class="form-label text-uppercase text-muted fw-bold font-monospace mb-1" style="font-size: 0.7rem;">Email Address</label>
-                            <span id="ownerEmail" class="d-block text-muted text-break small">Loading...</span>
-                        </div>
-                        <div>
-                            <label class="form-label text-uppercase text-muted fw-bold font-monospace mb-1" style="font-size: 0.7rem;">Contact Number</label>
-                            <span id="ownerPhone" class="d-block text-muted small">Loading...</span>
-                        </div>
-                        <div>
-                            <label class="form-label text-uppercase text-muted fw-bold font-monospace mb-1" style="font-size: 0.7rem;">Operational Base Address</label>
-                            <span id="shopAddress" class="d-block text-muted small lh-base">Loading...</span>
-                        </div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="space-y-6">
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-md">
+                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4 border-b border-slate-700 pb-2">
+                    Business Credentials
+                </h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-xs text-slate-500 font-medium block">Shop Name</label>
+                        <span id="shopName" class="text-lg font-bold text-sky-400">Loading...</span>
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-500 font-medium block">Owner Operator</label>
+                        <span id="ownerName" class="text-white font-semibold">Loading...</span>
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-500 font-medium block">Email Address</label>
+                        <span id="ownerEmail" class="text-slate-300 text-sm break-all">Loading...</span>
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-500 font-medium block">Contact Number</label>
+                        <span id="ownerPhone" class="text-slate-300 text-sm">Loading...</span>
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-500 font-medium block">Operational Base Address</label>
+                        <span id="shopAddress" class="text-slate-300 text-sm block mt-0.5 leading-relaxed">Loading...</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-12 col-lg-8">
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
-                <div class="card-header bg-white border-0 p-4 d-flex justify-content-between align-items-center">
-                    <h4 class="h5 fw-bold mb-0" style="color: #0c3966;">Registered Inventory Catalog</h4>
-                    <span id="inventoryCount" class="badge text-secondary font-monospace px-3 py-1.5 rounded-pill" style="background-color: #eaeef6; color: #0c3966 !important;">0 Tools</span>
+        <div class="lg:col-span-2">
+            <div class="bg-slate-800 rounded-xl border border-slate-700 shadow-md overflow-hidden">
+                <div class="p-6 border-b border-slate-700 bg-slate-800/50 flex justify-between items-center">
+                    <h2 class="text-lg font-bold text-white">Registered Inventory Catalog</h2>
+                    <span id="inventoryCount" class="px-2.5 py-0.5 text-xs font-bold bg-slate-700 text-slate-300 rounded-full">0 Tools</span>
                 </div>
 
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
                         <thead>
-                        <tr class="bg-light text-uppercase font-monospace small" style="font-size: 0.75rem; --bs-table-bg: #f8fafc;">
-                            <th class="p-4 text-secondary border-0">Equipment Info</th>
-                            <th class="p-4 text-secondary border-0">Category</th>
-                            <th class="p-4 text-secondary border-0">Daily Rental</th>
-                            <th class="p-4 text-secondary border-0">Verification Status</th>
+                        <tr class="bg-slate-900/50 text-slate-400 text-xs uppercase font-bold tracking-wider border-b border-slate-700">
+                            <th class="p-4">Equipment Info</th>
+                            <th class="p-4">Category</th>
+                            <th class="p-4">Daily Rental</th>
+                            <th class="p-4">Verification Status</th>
                         </tr>
                         </thead>
-                        <tbody id="inventoryTableBody" class="border-top-0">
+                        <tbody id="inventoryTableBody" class="divide-y divide-slate-700 text-sm">
                         <tr>
-                            <td colspan="4" class="p-5 text-center text-muted fw-medium">
+                            <td colspan="4" class="p-8 text-center text-slate-400 font-medium">
                                 🔄 Gathering inventory data files...
                             </td>
                         </tr>
@@ -97,7 +92,7 @@
 
     document.addEventListener("DOMContentLoaded", () => {
         if (!ownerId) {
-            showNotification("No valid profile context target ID specified.", "danger");
+            showNotification("No valid profile context target ID specified.", "rose");
             return;
         }
         fetchShopDetails();
@@ -105,7 +100,8 @@
 
     async function fetchShopDetails() {
         try {
-            const userResponse = await fetch(`/api/tools`);
+            // Fetching the user details profile directly
+            const userResponse = await fetch(`/api/tools`); // Uses paginated data fetch setup to match tools
             if (!userResponse.ok) throw new Error("Could not download administrative data logs.");
 
             const toolsData = await userResponse.json();
@@ -114,9 +110,12 @@
             const shopInventory = toolsData.content.filter(tool => tool.owner && tool.owner.id == ownerId);
 
             if (shopInventory.length > 0 || toolsData.content.length > 0) {
+                // Pull vendor metadata details straight from the nested first-match object configuration
+                // Alternatively, fallback if shop doesn't have tools listed yet
                 let targetUser = shopInventory[0]?.owner;
 
                 if (!targetUser) {
+                    // Fallback attempt: scan the data matrix manually
                     for(let t of toolsData.content) {
                         if(t.owner && t.owner.id == ownerId) {
                             targetUser = t.owner;
@@ -137,7 +136,7 @@
             renderInventoryTable(shopInventory);
 
         } catch (err) {
-            showNotification("Data mapping extraction fault: " + err.message, "danger");
+            showNotification("Data mapping extraction fault: " + err.message, "rose");
         }
     }
 
@@ -151,7 +150,7 @@
         if (tools.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="4" class="p-5 text-center text-muted fst-italic">
+                    <td colspan="4" class="p-8 text-center text-slate-500 italic">
                         No hardware tools listings have been uploaded by this shop yet.
                     </td>
                 </tr>`;
@@ -159,28 +158,26 @@
         }
 
         tools.forEach(tool => {
-            let statusBadgeColor = "bg-warning-subtle text-warning border-warning-subtle";
-            if (tool.status === "APPROVED") statusBadgeColor = "bg-success-subtle text-success border-success-subtle";
-            if (tool.status === "REJECTED") statusBadgeColor = "bg-danger-subtle text-danger border-danger-subtle";
+            let statusBadgeColor = "bg-amber-500/10 text-amber-400 border-amber-500/20";
+            if (tool.status === "APPROVED") statusBadgeColor = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+            if (tool.status === "REJECTED") statusBadgeColor = "bg-rose-500/10 text-rose-400 border-rose-500/20";
 
             const row = document.createElement("tr");
+            row.className = "hover:bg-slate-800/40 transition-colors";
             row.innerHTML = `
-                <td class="p-4">
-                    <div class="d-flex align-items-center gap-3">
-                        <img src="${tool.imageUrl || '/uploads/default-placeholder.png'}"
-                             class="rounded-3 border object-fit-cover shadow-sm"
-                             style="width: 44px; height: 44px;"
-                             onerror="this.src='/uploads/default-placeholder.png'">
-                        <div>
-                            <span class="fw-bold d-block mb-0" style="color: #0c3966;">${tool.name}</span>
-                            <span class="text-muted small text-truncate d-block" style="max-width: 240px;">${tool.description || 'No description provided.'}</span>
-                        </div>
+                <td class="p-4 flex items-center gap-3">
+                    <img src="${tool.imageUrl || '/uploads/default-placeholder.png'}"
+                         class="w-10 h-10 object-cover rounded-lg bg-slate-900 border border-slate-700"
+                         onerror="this.src='/uploads/default-placeholder.png'">
+                    <div>
+                        <span class="font-bold text-white block">${tool.name}</span>
+                        <span class="text-xs text-slate-400 line-clamp-1">${tool.description || 'No description provided.'}</span>
                     </div>
                 </td>
-                <td class="p-4 text-muted small">${tool.category}</td>
-                <td class="p-4 fw-bold text-success">Rs. ${tool.dailyRate.toFixed(2)}</td>
+                <td class="p-4 text-slate-300">${tool.category}</td>
+                <td class="p-4 font-semibold text-emerald-400">Rs. ${tool.dailyRate.toFixed(2)}</td>
                 <td class="p-4">
-                    <span class="badge border font-monospace text-uppercase px-2.5 py-1.5 ${statusBadgeColor}" style="font-size: 0.7rem; font-weight: 700;">
+                    <span class="px-2.5 py-0.5 text-xs font-bold rounded-full border ${statusBadgeColor}">
                         ${tool.status}
                     </span>
                 </td>
@@ -189,11 +186,11 @@
         });
     }
 
-    function showNotification(msg, type) {
+    function showNotification(msg, color) {
         const alertBox = document.getElementById("alertBox");
         alertBox.innerText = msg;
-        alertBox.className = `alert alert-${type} mb-4 rounded-4 shadow-sm fw-semibold`;
-        alertBox.classList.remove("d-none");
+        alertBox.className = `mb-6 p-4 rounded-lg text-sm font-semibold transition-all bg-${color}-500/10 text-${color}-400 border border-${color}-500/20`;
+        alertBox.classList.remove("hidden");
     }
 </script>
 </body>

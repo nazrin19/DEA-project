@@ -23,6 +23,8 @@ public class Tool {
     @Positive(message = "Daily rate must be greater than zero")
     private double dailyRate;
 
+    // FIXED: Added explicit mapping to match the database snake_case column
+    @Column(name = "image_url")
     private String imageUrl;
 
     @Enumerated(EnumType.STRING)
