@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Account | Lankatools</title>
-    <!-- Tailwind CSS with custom theme config -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -24,7 +23,6 @@
             }
         }
     </script>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -39,7 +37,7 @@
             const shopFields = document.getElementById('shop-fields');
             const shopNameInput = document.getElementById('shopName');
             const shopAddressInput = document.getElementById('shopAddress');
-            
+
             if (roleSelect.value === 'SHOP_OWNER') {
                 shopFields.classList.remove('hidden');
                 shopNameInput.required = true;
@@ -48,135 +46,309 @@
                 shopFields.classList.add('hidden');
                 shopNameInput.required = false;
                 shopAddressInput.required = false;
+                // Clear validation errors and values if user switches back to Customer
+                clearError('shopName');
+                clearError('shopAddress');
             }
         }
+
+        // --- Client-Side Validation Logic ---
+
+        function showError(inputId, message) {
+            const inputField = document.getElementById(inputId);
+            let errorSpan = document.getElementById(inputId + '-error');
+
+            // Highlight input border
+            inputField.classList.remove('border-slate-200');
+            inputField.classList.add('border-rose-500', 'focus:ring-rose-500', 'focus:border-rose-500');
+
+            if (!errorSpan) {
+                errorSpan = document.createElement('span');
+                errorSpan.id = inputId + '-error';
+                errorSpan.className = 'text-rose-500 text-xs mt-1 block font-medium animate-fadeIn';
+                inputField.closest('div').appendChild(errorSpan);
+            }
+            errorSpan.textContent = message;
+        }
+
+        function clearError(inputId) {
+            const inputField = document.getElementById(inputId);
+            const errorSpan = document.getElementById(inputId + '-error');
+
+            // Restore original input styling
+            inputField.classList.remove('border-rose-500', 'focus:ring-rose-500', 'focus:border-rose-500');
+            inputField.classList.add('border-slate-200');
+
+            if (errorSpan) {
+                errorSpan.remove();
+            }
+        }
+
+        function validateName() {
+            const nameInput = document.getElementById('name');
+            const val = nameInput.value.trim();
+            if (val === "") {
+                showError('name', 'Full Name is required.');
+                return false;
+            }
+            if (val.length < 3) {
+                showError('name', 'Full Name must be at least 3 characters.');
+                return false;
+            }
+            if (!/^[a-zA-Z\s]+$/.test(val)) {
+                showError('name', 'Full Name can only contain letters and spaces.');
+                return false;
+            }
+            clearError('name');
+            return true;
+        }
+
+        function validateEmail() {
+            const emailInput = document.getElementById('email');
+            const val = emailInput.value.trim();
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (val === "") {
+                showError('email', 'Email Address is required.');
+                return false;
+            }
+            if (!emailPattern.test(val)) {
+                showError('email', 'Please enter a valid email address.');
+                return false;
+            }
+            clearError('email');
+            return true;
+        }
+
+        function validatePhone() {
+            const phoneInput = document.getElementById('phone');
+            const val = phoneInput.value.trim();
+            const phonePattern = /^07[0-9]{8}$/;
+
+            if (val === "") {
+                showError('phone', 'Phone Number is required.');
+                return false;
+            }
+            if (!phonePattern.test(val)) {
+                showError('phone', 'Must be a 10-digit Sri Lankan mobile number starting with 07.');
+                return false;
+            }
+            clearError('phone');
+            return true;
+        }
+
+        function validatePassword() {
+            const passwordInput = document.getElementById('password');
+            const val = passwordInput.value;
+
+            if (val.length < 8) {
+                showError('password', 'Password must be at least 8 characters long.');
+                return false;
+            }
+            if (!/[A-Z]/.test(val)) {
+                showError('password', 'Password must contain at least one uppercase letter.');
+                return false;
+            }
+            if (!/[a-z]/.test(val)) {
+                showError('password', 'Password must contain at least one lowercase letter.');
+                return false;
+            }
+            if (!/[0-9]/.test(val)) {
+                showError('password', 'Password must contain at least one digit.');
+                return false;
+            }
+            if (!/[@$!%*?&]/.test(val)) {
+                showError('password', 'Password must contain at least one special character (@, $, !, %, *, ?, &).');
+                return false;
+            }
+            clearError('password');
+            return true;
+        }
+
+        function validateShopName() {
+            const roleSelect = document.getElementById('role');
+            if (roleSelect.value !== 'SHOP_OWNER') return true;
+
+            const shopNameInput = document.getElementById('shopName');
+            const val = shopNameInput.value.trim();
+
+            if (val === "") {
+                showError('shopName', 'Shop Name is required.');
+                return false;
+            }
+            if (val.length < 3) {
+                showError('shopName', 'Shop Name must be at least 3 characters.');
+                return false;
+            }
+            clearError('shopName');
+            return true;
+        }
+
+        function validateShopAddress() {
+            const roleSelect = document.getElementById('role');
+            if (roleSelect.value !== 'SHOP_OWNER') return true;
+
+            const shopAddressInput = document.getElementById('shopAddress');
+            const val = shopAddressInput.value.trim();
+
+            if (val === "") {
+                showError('shopAddress', 'Shop Address is required.');
+                return false;
+            }
+            if (val.length < 5) {
+                showError('shopAddress', 'Shop Address must be at least 5 characters.');
+                return false;
+            }
+            clearError('shopAddress');
+            return true;
+        }
+
+        // Attach event listeners after DOM loading
+        document.addEventListener('DOMContentLoaded', () => {
+            const fields = [
+                { id: 'name', validator: validateName },
+                { id: 'email', validator: validateEmail },
+                { id: 'phone', validator: validatePhone },
+                { id: 'password', validator: validatePassword },
+                { id: 'shopName', validator: validateShopName },
+                { id: 'shopAddress', validator: validateShopAddress }
+            ];
+
+            fields.forEach(field => {
+                const element = document.getElementById(field.id);
+                element.addEventListener('keyup', field.validator);
+                element.addEventListener('blur', field.validator);
+            });
+
+            // Prevent submission if form remains invalid
+            const form = document.getElementById('registrationForm');
+            form.addEventListener('submit', (e) => {
+                const isNameValid = validateName();
+                const isEmailValid = validateEmail();
+                const isPhoneValid = validatePhone();
+                const isPasswordValid = validatePassword();
+                const isShopNameValid = validateShopName();
+                const isShopAddressValid = validateShopAddress();
+
+                if (!isNameValid || !isEmailValid || !isPhoneValid || !isPasswordValid || !isShopNameValid || !isShopAddressValid) {
+                    e.preventDefault();
+                }
+            });
+        });
     </script>
 </head>
 <body class="min-h-screen flex flex-col justify-center items-center p-4 sm:p-6 md:p-8 antialiased">
 
-    <!-- Register Card Container -->
-    <div class="w-full max-w-[540px] bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100 p-8 sm:p-10 transition-all duration-300 my-8">
-        
-        <!-- Header -->
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Create Account</h1>
-            <p class="text-slate-500 text-sm font-medium">Join the Lanka Tools sharing platform</p>
-            <div class="h-[1px] w-full bg-slate-100 mt-6"></div>
-        </div>
+<div class="w-full max-w-[540px] bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100 p-8 sm:p-10 transition-all duration-300 my-8">
 
-        <!-- Error Alert -->
-        <div th:if="${param.error}" class="mb-6 p-4 bg-rose-50 border-l-4 border-rose-500 rounded-r-lg text-rose-800 text-sm flex items-start gap-3">
-            <i class="fa-solid fa-triangle-exclamation mt-0.5 text-rose-600"></i>
-            <div>
-                <span class="font-bold">Registration Failed:</span> Email may already be in use or inputs are invalid. Please check and try again.
-            </div>
-        </div>
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Create Account</h1>
+        <p class="text-slate-500 text-sm font-medium">Join the Lanka Tools sharing platform</p>
+        <div class="h-[1px] w-full bg-slate-100 mt-6"></div>
+    </div>
 
-        <!-- Registration Form -->
-        <form th:action="@{/register}" method="POST" class="space-y-5">
-            
-            <!-- Full Name -->
-            <div>
-                <label for="name" class="block text-sm font-semibold text-slate-700 mb-2">Full Name</label>
-                <div class="relative">
+    <div th:if="${param.error}" class="mb-6 p-4 bg-rose-50 border-l-4 border-rose-500 rounded-r-lg text-rose-800 text-sm flex items-start gap-3">
+        <i class="fa-solid fa-triangle-exclamation mt-0.5 text-rose-600"></i>
+        <div>
+            <span class="font-bold">Registration Failed:</span> Email may already be in use or inputs are invalid. Please check and try again.
+        </div>
+    </div>
+
+    <form id="registrationForm" th:action="@{/register}" method="POST" class="space-y-5">
+
+        <div>
+            <label for="name" class="block text-sm font-semibold text-slate-700 mb-2">Full Name</label>
+            <div class="relative">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
                         <i class="fa-regular fa-user text-base"></i>
                     </span>
-                    <input type="text" id="name" name="name" required placeholder="John Doe"
-                           class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-sm font-medium">
-                </div>
+                <input type="text" id="name" name="name" required placeholder="John Doe"
+                       class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-sm font-medium">
             </div>
+        </div>
 
-            <!-- Email Address -->
-            <div>
-                <label for="email" class="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
-                <div class="relative">
+        <div>
+            <label for="email" class="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
+            <div class="relative">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
                         <i class="fa-regular fa-envelope text-base"></i>
                     </span>
-                    <input type="email" id="email" name="email" required placeholder="name@example.com"
-                           class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-sm font-medium">
-                </div>
+                <input type="email" id="email" name="email" required placeholder="name@example.com"
+                       class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-sm font-medium">
             </div>
+        </div>
 
-            <!-- Phone and Password Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <!-- Phone -->
-                <div>
-                    <label for="phone" class="block text-sm font-semibold text-slate-700 mb-2">Phone Number</label>
-                    <div class="relative">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label for="phone" class="block text-sm font-semibold text-slate-700 mb-2">Phone Number</label>
+                <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
                             <i class="fa-solid fa-phone text-sm"></i>
                         </span>
-                        <input type="tel" id="phone" name="phone" required placeholder="07XXXXXXXX"
-                               class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-sm font-medium">
-                    </div>
+                    <input type="tel" id="phone" name="phone" required placeholder="07XXXXXXXX"
+                           class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-sm font-medium">
                 </div>
-                <!-- Password -->
-                <div>
-                    <label for="password" class="block text-sm font-semibold text-slate-700 mb-2">Password</label>
-                    <div class="relative">
+            </div>
+            <div>
+                <label for="password" class="block text-sm font-semibold text-slate-700 mb-2">Password</label>
+                <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
                             <i class="fa-solid fa-lock text-sm"></i>
                         </span>
-                        <input type="password" id="password" name="password" required placeholder="••••••••"
-                               class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-sm font-medium">
-                    </div>
+                    <input type="password" id="password" name="password" required placeholder="••••••••"
+                           class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-sm font-medium">
                 </div>
             </div>
+        </div>
 
-            <!-- Role Selector -->
-            <div>
-                <label for="role" class="block text-sm font-semibold text-slate-700 mb-2">Select Role</label>
-                <div class="relative">
+        <div>
+            <label for="role" class="block text-sm font-semibold text-slate-700 mb-2">Select Role</label>
+            <div class="relative">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
                         <i class="fa-solid fa-user-gear text-base"></i>
                     </span>
-                    <select id="role" name="role" required onchange="handleRoleChange()"
-                            class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-sm font-medium appearance-none">
-                        <option value="CUSTOMER">Customer (Hire tools from others)</option>
-                        <option value="SHOP_OWNER">Shop Owner (List tools for hire)</option>
-                    </select>
-                    <span class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">
+                <select id="role" name="role" required onchange="handleRoleChange()"
+                        class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-sm font-medium appearance-none">
+                    <option value="CUSTOMER">Customer (Hire tools from others)</option>
+                    <option value="SHOP_OWNER">Shop Owner (List tools for hire)</option>
+                </select>
+                <span class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">
                         <i class="fa-solid fa-chevron-down text-xs"></i>
                     </span>
+            </div>
+        </div>
+
+        <div id="shop-fields" class="hidden p-5 bg-blue-50/50 border border-blue-100 rounded-2xl space-y-4 transition-all duration-300">
+            <div class="flex items-center gap-2 mb-1">
+                <i class="fa-solid fa-store text-brand-600"></i>
+                <h3 class="text-sm font-bold text-slate-900">Shop Registration Details</h3>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="shopName" class="block text-xs font-semibold text-slate-600 mb-2">Shop Name</label>
+                    <input type="text" id="shopName" name="shopName" placeholder="Lanka Hardware"
+                           class="w-full px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 text-xs font-medium">
+                </div>
+                <div>
+                    <label for="shopAddress" class="block text-xs font-semibold text-slate-600 mb-2">Shop Address</label>
+                    <input type="text" id="shopAddress" name="shopAddress" placeholder="Colombo, Sri Lanka"
+                           class="w-full px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 text-xs font-medium">
                 </div>
             </div>
+        </div>
 
-            <!-- Conditional Shop Info Block -->
-            <div id="shop-fields" class="hidden p-5 bg-blue-50/50 border border-blue-100 rounded-2xl space-y-4 transition-all duration-300">
-                <div class="flex items-center gap-2 mb-1">
-                    <i class="fa-solid fa-store text-brand-600"></i>
-                    <h3 class="text-sm font-bold text-slate-900">Shop Registration Details</h3>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label for="shopName" class="block text-xs font-semibold text-slate-600 mb-2">Shop Name</label>
-                        <input type="text" id="shopName" name="shopName" placeholder="Lanka Hardware"
-                               class="w-full px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 text-xs font-medium">
-                    </div>
-                    <div>
-                        <label for="shopAddress" class="block text-xs font-semibold text-slate-600 mb-2">Shop Address</label>
-                        <input type="text" id="shopAddress" name="shopAddress" placeholder="Colombo, Sri Lanka"
-                               class="w-full px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 text-xs font-medium">
-                    </div>
-                </div>
-            </div>
+        <button type="submit"
+                class="w-full py-3.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 transition-all cursor-pointer text-sm">
+            Create Free Account
+        </button>
 
-            <!-- Submit Button -->
-            <button type="submit"
-                    class="w-full py-3.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 transition-all cursor-pointer text-sm">
-                Create Free Account
-            </button>
+        <div class="text-center text-sm text-slate-500 pt-2">
+            Already have an account?
+            <a th:href="@{/login}" class="text-brand-500 font-bold hover:text-brand-700 hover:underline transition-all">Sign In here</a>
+        </div>
 
-            <!-- Sign In Link -->
-            <div class="text-center text-sm text-slate-500 pt-2">
-                Already have an account? 
-                <a th:href="@{/login}" class="text-brand-500 font-bold hover:text-brand-700 hover:underline transition-all">Sign In here</a>
-            </div>
-
-        </form>
-    </div>
+    </form>
+</div>
 
 </body>
 </html>

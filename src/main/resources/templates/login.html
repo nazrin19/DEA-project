@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In | Lankatools</title>
-    <!-- Tailwind CSS with custom theme config -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -24,7 +23,6 @@
             }
         }
     </script>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -33,84 +31,160 @@
             background: linear-gradient(180deg, #022050 0%, #001230 40%, #ffffff 75%);
         }
     </style>
+    <script>
+        // --- Client-Side Validation Logic ---
+
+        function showError(inputId, message) {
+            const inputField = document.getElementById(inputId);
+            let errorSpan = document.getElementById(inputId + '-error');
+
+            // Highlight input border
+            inputField.classList.remove('border-slate-200');
+            inputField.classList.add('border-rose-500', 'focus:ring-rose-500', 'focus:border-rose-500');
+
+            if (!errorSpan) {
+                errorSpan = document.createElement('span');
+                errorSpan.id = inputId + '-error';
+                errorSpan.className = 'text-rose-500 text-xs mt-1 block font-medium';
+                inputField.closest('div').appendChild(errorSpan);
+            }
+            errorSpan.textContent = message;
+        }
+
+        function clearError(inputId) {
+            const inputField = document.getElementById(inputId);
+            const errorSpan = document.getElementById(inputId + '-error');
+
+            // Restore original input styling
+            inputField.classList.remove('border-rose-500', 'focus:ring-rose-500', 'focus:border-rose-500');
+            inputField.classList.add('border-slate-200');
+
+            if (errorSpan) {
+                errorSpan.remove();
+            }
+        }
+
+        function validateEmail() {
+            const emailInput = document.getElementById('email');
+            const val = emailInput.value.trim();
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (val === "") {
+                showError('email', 'Email Address is required.');
+                return false;
+            }
+            if (!emailPattern.test(val)) {
+                showError('email', 'Please enter a valid email address.');
+                return false;
+            }
+            clearError('email');
+            return true;
+        }
+
+        function validatePassword() {
+            const passwordInput = document.getElementById('password');
+            const val = passwordInput.value;
+
+            if (val === "") {
+                showError('password', 'Password is required.');
+                return false;
+            }
+            clearError('password');
+            return true;
+        }
+
+        // Attach event listeners after DOM loading
+        document.addEventListener('DOMContentLoaded', () => {
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+
+            // Interactive feedback on keyup and blur
+            emailInput.addEventListener('keyup', validateEmail);
+            emailInput.addEventListener('blur', validateEmail);
+
+            passwordInput.addEventListener('keyup', validatePassword);
+            passwordInput.addEventListener('blur', validatePassword);
+
+            // Prevent form submission if fields fail validation
+            const form = document.getElementById('loginForm');
+            form.addEventListener('submit', (e) => {
+                const isEmailValid = validateEmail();
+                const isPasswordValid = validatePassword();
+
+                if (!isEmailValid || !isPasswordValid) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
 </head>
 <body class="min-h-screen flex flex-col justify-center items-center p-4 sm:p-6 md:p-8 antialiased">
 
-    <!-- Login Card Container -->
-    <div class="w-full max-w-[480px] bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100 p-8 sm:p-10 transition-all duration-300">
-        
-        <!-- Header -->
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Welcome Back</h1>
-            <p class="text-slate-500 text-sm font-medium">Sign in to your Lankatools account</p>
-            <div class="h-[1px] w-full bg-slate-100 mt-6"></div>
-        </div>
+<div class="w-full max-w-[480px] bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100 p-8 sm:p-10 transition-all duration-300">
 
-        <!-- Success Alert (from Flash Attributes) -->
-        <div th:if="${success}" class="mb-6 p-4 bg-emerald-50 border-l-4 border-emerald-500 rounded-r-lg text-emerald-800 text-sm flex items-start gap-3">
-            <i class="fa-solid fa-circle-check mt-0.5 text-emerald-600"></i>
-            <div>
-                <span class="font-bold">Success!</span> <span th:text="${success}">Account created!</span>
-            </div>
-        </div>
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Welcome Back</h1>
+        <p class="text-slate-500 text-sm font-medium">Sign in to your Lankatools account</p>
+        <div class="h-[1px] w-full bg-slate-100 mt-6"></div>
+    </div>
 
-        <!-- Logout Success Alert -->
-        <div th:if="${param.logout}" class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg text-blue-800 text-sm flex items-start gap-3">
-            <i class="fa-solid fa-circle-info mt-0.5 text-blue-600"></i>
-            <div>
-                <span class="font-bold">Signed Out:</span> You have successfully logged out of the session.
-            </div>
+    <div th:if="${success}" class="mb-6 p-4 bg-emerald-50 border-l-4 border-emerald-500 rounded-r-lg text-emerald-800 text-sm flex items-start gap-3">
+        <i class="fa-solid fa-circle-check mt-0.5 text-emerald-600"></i>
+        <div>
+            <span class="font-bold">Success!</span> <span th:text="${success}">Account created!</span>
         </div>
+    </div>
 
-        <!-- Error Alert -->
-        <div th:if="${param.error}" class="mb-6 p-4 bg-rose-50 border-l-4 border-rose-500 rounded-r-lg text-rose-800 text-sm flex items-start gap-3">
-            <i class="fa-solid fa-triangle-exclamation mt-0.5 text-rose-600"></i>
-            <div>
-                <span class="font-bold">Authentication Failed:</span> Invalid email address or password. Please try again.
-            </div>
+    <div th:if="${param.logout}" class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg text-blue-800 text-sm flex items-start gap-3">
+        <i class="fa-solid fa-circle-info mt-0.5 text-blue-600"></i>
+        <div>
+            <span class="font-bold">Signed Out:</span> You have successfully logged out of the session.
         </div>
+    </div>
 
-        <!-- Login Form -->
-        <form th:action="@{/login}" method="POST" class="space-y-6">
-            
-            <!-- Email Input -->
-            <div>
-                <label for="email" class="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
-                <div class="relative">
+    <div th:if="${param.error}" class="mb-6 p-4 bg-rose-50 border-l-4 border-rose-500 rounded-r-lg text-rose-800 text-sm flex items-start gap-3">
+        <i class="fa-solid fa-triangle-exclamation mt-0.5 text-rose-600"></i>
+        <div>
+            <span class="font-bold">Authentication Failed:</span> Invalid email address or password. Please try again.
+        </div>
+    </div>
+
+    <form id="loginForm" th:action="@{/login}" method="POST" class="space-y-6">
+
+        <div>
+            <label for="email" class="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
+            <div class="relative">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
                         <i class="fa-regular fa-envelope text-base"></i>
                     </span>
-                    <input type="email" id="email" name="email" required placeholder="name@example.com"
-                           class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-sm font-medium">
-                </div>
+                <input type="email" id="email" name="email" required placeholder="name@example.com"
+                       class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-sm font-medium">
             </div>
+        </div>
 
-            <!-- Password Input -->
-            <div>
-                <label for="password" class="block text-sm font-semibold text-slate-700 mb-2">Password</label>
-                <div class="relative">
+        <div>
+            <label for="password" class="block text-sm font-semibold text-slate-700 mb-2">Password</label>
+            <div class="relative">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
                         <i class="fa-solid fa-lock text-base"></i>
                     </span>
-                    <input type="password" id="password" name="password" required placeholder="••••••••"
-                           class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-sm font-medium">
-                </div>
+                <input type="password" id="password" name="password" required placeholder="••••••••"
+                       class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-sm font-medium">
             </div>
+        </div>
 
-            <!-- Sign In Button -->
-            <button type="submit"
-                    class="w-full py-3.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 transition-all cursor-pointer text-sm">
-                Sign In
-            </button>
+        <button type="submit"
+                class="w-full py-3.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 transition-all cursor-pointer text-sm">
+            Sign In
+        </button>
 
-            <!-- Sign Up Link -->
-            <div class="text-center text-sm text-slate-500 pt-4">
-                Don't have an account? 
-                <a th:href="@{/register}" class="text-brand-500 font-bold hover:text-brand-700 hover:underline transition-all">Create Account</a>
-            </div>
+        <div class="text-center text-sm text-slate-500 pt-4">
+            Don't have an account?
+            <a th:href="@{/register}" class="text-brand-500 font-bold hover:text-brand-700 hover:underline transition-all">Create Account</a>
+        </div>
 
-        </form>
-    </div>
+    </form>
+</div>
 
 </body>
 </html>
