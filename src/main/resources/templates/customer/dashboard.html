@@ -26,7 +26,9 @@
             </div>
             <div class="flex items-center gap-4">
                 <a th:href="@{/}" class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">Marketplace</a>
-                <a th:href="@{/logout}" class="text-sm font-semibold text-rose-600 hover:text-rose-700 transition-colors">Logout</a>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button type="submit" class="text-sm font-semibold text-rose-600 hover:text-rose-700 transition-colors cursor-pointer bg-transparent border-0 p-0">Logout</button>
+                </form>
             </div>
         </div>
     </div>

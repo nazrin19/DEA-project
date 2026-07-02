@@ -22,7 +22,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 shadow-sm border-bottom border-secondary border-opacity-25">
     <div class="container">
-        <a class="navbar-brand fw-bold text-white tracking-tight" th:href="@{/}">
+        <a class="navbar-brand fw-bold text-white tracking-tight" href="/">
             LANKA<span class="text-secondary fw-light">TOOLS</span>
         </a>
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,25 +32,14 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
                 <li class="nav-item">
-                    <a class="nav-link active fw-medium" th:href="@{/}">Home</a>
+                    <a class="nav-link active fw-medium" href="/">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white-50" th:href="@{/tools}">Browse Tools</a>
+                    <a class="nav-link text-white-50" href="/tools">Browse Tools</a>
                 </li>
-                <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <a class="nav-link text-white-50" th:href="@{/bookings/my}">My Bookings</a>
-                </li>
-                <li class="nav-item" sec:authorize="hasRole('SHOP_OWNER')">
-                    <a class="nav-link text-warning fw-medium" th:href="@{/bookings/incoming}">Incoming Bookings</a>
-                </li>
-<<<<<<< HEAD
-                <li class="nav-item" sec:authorize="hasRole('SHOP_OWNER')">
-                    <a class="nav-link text-warning fw-medium" href="/shop/dashboard">Shop Dashboard</a>
-=======
 
                 <li class="nav-item" sec:authorize="hasRole('OWNER')">
                     <a class="nav-link text-warning fw-medium" href="/owner/dashboard">Shop Dashboard</a>
->>>>>>> 9d50a90a1a4b085d2e11fc5fc128caa86e7e9c89
                 </li>
 
                 <li class="nav-item" sec:authorize="hasRole('CUSTOMER')">
@@ -64,8 +53,8 @@
 
             <div class="d-flex align-items-center gap-2">
                 <div sec:authorize="isAnonymous()" class="d-flex gap-2">
-                    <a th:href="@{/login}" class="btn btn-link text-white-50 text-decoration-none fw-medium px-3">Sign In</a>
-                    <a th:href="@{/register}" class="btn btn-outline-light px-3 rounded-3 fw-medium transition-all">Register Account</a>
+                    <a href="/login" class="btn btn-link text-white-50 text-decoration-none fw-medium px-3">Sign In</a>
+                    <a href="/register" class="btn btn-outline-light px-3 rounded-3 fw-medium transition-all">Register Account</a>
                 </div>
 
                 <div sec:authorize="isAuthenticated()" class="d-flex align-items-center gap-3">
