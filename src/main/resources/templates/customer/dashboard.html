@@ -8,95 +8,61 @@
 </head>
 <body>
 
-<!-- This container replaces the layout body placeholder directly without breaking standard grids[cite: 3] -->
-<div id="customer-dashboard" class="container py-5">
 
-    <!-- Custom isolated styles to bypass Tailwind/Bootstrap framework conflicts -->
-    <style>
-        .custom-dashboard-card {
-            background-color: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            padding: 1.5rem;
-            transition: all 0.25s ease-in-out;
-        }
-        .custom-dashboard-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        .icon-circle {
-            width: 3.5rem;
-            height: 3.5rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            color: #ffffff;
-            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
-        }
-        .icon-square {
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.125rem;
-            margin-bottom: 1rem;
-        }
-    </style>
+<div id="customer-dashboard" class="container py-5" style="max-width: 900px;">
 
-    <!-- Inject FontAwesome stylesheet safely within the view content framework block -->
+   
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
-    <!-- User Profile Header Row -->
-    <div class="custom-dashboard-card mb-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
-        <div class="d-flex align-items-center gap-3">
-            <div class="icon-circle" style="background: linear-gradient(to top right, #0c3966, #4a90d9);">
-                <i class="fa-regular fa-user"></i>
+    <!-- User Profile Header Section Card -->
+    <div class="card border border-light-subtle p-4 rounded-4 bg-white shadow-sm mb-4">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center text-white font-bold text-xl shadow-sm"
+                     style="width: 3.5rem; height: 3.5rem; background: linear-gradient(to top right, #0c3966, #4a90d9);">
+                    <i class="fa-regular fa-user"></i>
+                </div>
+                <div>
+                    <h1 class="h5 fw-bold text-dark mb-1" th:text="${user != null ? user.name : 'Valued Customer'}">User Name</h1>
+                    <p class="text-muted small mb-0" th:text="${user != null ? user.email : 'customer@example.com'}">customer@example.com</p>
+                </div>
             </div>
-            <div>
-                <h1 class="h5 fw-bold mb-1 text-dark" th:text="${user != null ? user.name : 'Valued Customer'}">User Name</h1>
-                <p class="text-muted small mb-0" th:text="${user != null ? user.email : 'customer@example.com'}">customer@example.com</p>
-            </div>
+            <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill text-uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.5px;">
+                Active Client Status
+            </span>
         </div>
-        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill text-uppercase fw-bold" style="font-size: 0.7rem; letter-spacing: 0.5px;">
-            Active Client Status
-        </span>
     </div>
 
-    <!-- Dashboard Quick Links Selection Menu Grid Block -->
+    <!-- Grid Menu Options Links Layout -->
     <div class="row g-4">
 
-        <!-- Feature Block: Rental Receipts Management Module -->
+        <!-- Feature Block: Track Rentals Module -->
         <div class="col-12 col-md-6">
-            <div class="custom-dashboard-card h-100 d-flex flex-column justify-content-between">
+            <div class="card border border-light-subtle p-4 rounded-4 bg-white shadow-sm h-100 d-flex flex-column justify-content-between transition-all tool-card">
                 <div>
-                    <div class="icon-square" style="background-color: #e8eef5; color: #0c3966;">
-                        <i class="fa-solid fa-receipt"></i>
+                    <div class="rounded-3 d-flex align-items-center justify-content-center mb-3" style="width: 2.5rem; height: 2.5rem; background-color: #e8eef5; color: #0c3966;">
+                        <i class="fa-solid fa-receipt fs-5"></i>
                     </div>
                     <h3 class="h6 fw-bold text-dark mb-2">Track Rentals & History</h3>
                     <p class="text-muted small mb-4" style="line-height: 1.6;">Review your past transactions, look up delivery details, and inspect dates on active gear hires.</p>
                 </div>
-                <a th:href="@{/customer/bookings}" class="fw-bold small text-decoration-none d-inline-flex align-items-center gap-1" style="color: #0c3966;">
+                <a th:href="@{/customer/bookings}" class="fw-bold small text-decoration-none d-inline-flex align-items-center gap-1 mt-auto" style="color: #0c3966;">
                     View rental receipts <i class="fa-solid fa-arrow-right" style="font-size: 0.7rem;"></i>
                 </a>
             </div>
         </div>
 
-        <!-- Feature Block: Store Marketplace Navigational Entry point -->
+        <!-- Feature Block: Tool Marketplace Navigation Module -->
         <div class="col-12 col-md-6">
-            <div class="custom-dashboard-card h-100 d-flex flex-column justify-content-between">
+            <div class="card border border-light-subtle p-4 rounded-4 bg-white shadow-sm h-100 d-flex flex-column justify-content-between transition-all tool-card">
                 <div>
-                    <div class="icon-square" style="background-color: #fffbeb; color: #d97706;">
-                        <i class="fa-solid fa-store"></i>
+                    <div class="rounded-3 d-flex align-items-center justify-content-center mb-3" style="width: 2.5rem; height: 2.5rem; background-color: #fffbeb; color: #d97706;">
+                        <i class="fa-solid fa-store fs-5"></i>
                     </div>
                     <h3 class="h6 fw-bold text-dark mb-2">Explore Tool Marketplace</h3>
                     <p class="text-muted small mb-4" style="line-height: 1.6;">Find heavy-duty concrete machinery, scaffolding, drills, and professional power tools near you.</p>
                 </div>
-                <a th:href="@{/}" class="fw-bold small text-decoration-none d-inline-flex align-items-center gap-1" style="color: #d97706;">
+                <a th:href="@{/}" class="fw-bold small text-decoration-none d-inline-flex align-items-center gap-1 mt-auto" style="color: #d97706;">
                     Browse hardware tools <i class="fa-solid fa-arrow-right" style="font-size: 0.7rem;"></i>
                 </a>
             </div>
