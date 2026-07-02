@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.Lankatools.entity.Booking;
 import com.example.Lankatools.entity.Tool;
@@ -35,80 +34,6 @@ public class BookingController {
      * Processes requests directly from your booking-form.html template submission.
      */
     @PostMapping("/bookings")
-<<<<<<< HEAD
-    public String handleNewBooking(@RequestParam Long toolId,
-                                   @RequestParam String startDate,
-                                   @RequestParam String endDate,
-                                   Principal principal,
-                                   RedirectAttributes redirectAttributes) {
-        try {
-            LocalDate parsedStart = LocalDate.parse(startDate);
-            LocalDate parsedEnd = LocalDate.parse(endDate);
-            bookingService.createBooking(principal.getName(), toolId, parsedStart, parsedEnd);
-            redirectAttributes.addFlashAttribute("successMessage", "Booking request submitted successfully.");
-        } catch (Exception ex) {
-            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
-        }
-        return "redirect:/tools/" + toolId;
-    }
-
-    @GetMapping("/bookings/my")
-    public String myBookings(Model model, Principal principal) {
-        List<Booking> bookings = bookingService.getBookingsForCustomer(principal.getName());
-        model.addAttribute("bookings", bookings);
-        return "my-bookings";
-    }
-
-    @GetMapping("/bookings/incoming")
-    public String incomingBookings(Model model, Principal principal) {
-        List<Booking> bookings = bookingService.getBookingsForToolOwner(principal.getName());
-        model.addAttribute("bookings", bookings);
-        return "owner-bookings";
-    }
-
-    @PostMapping("/bookings/{id}/confirm")
-    public String confirmBooking(@PathVariable Long id, Principal principal, RedirectAttributes redirectAttributes) {
-        try {
-            bookingService.confirmBooking(id, principal.getName());
-            redirectAttributes.addFlashAttribute("successMessage", "Booking confirmed.");
-        } catch (Exception ex) {
-            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
-        }
-        return "redirect:/bookings/incoming";
-    }
-
-    @PostMapping("/bookings/{id}/reject")
-    public String rejectBooking(@PathVariable Long id, Principal principal, RedirectAttributes redirectAttributes) {
-        try {
-            bookingService.rejectBooking(id, principal.getName());
-            redirectAttributes.addFlashAttribute("successMessage", "Booking rejected.");
-        } catch (Exception ex) {
-            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
-        }
-        return "redirect:/bookings/incoming";
-    }
-
-    @PostMapping("/bookings/{id}/cancel")
-    public String cancelBooking(@PathVariable Long id, Principal principal, RedirectAttributes redirectAttributes) {
-        try {
-            bookingService.cancelBooking(id, principal.getName());
-            redirectAttributes.addFlashAttribute("successMessage", "Booking cancelled.");
-        } catch (Exception ex) {
-            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
-        }
-        return "redirect:/bookings/my";
-    }
-
-    @PostMapping("/bookings/{id}/return")
-    public String markReturned(@PathVariable Long id, Principal principal, RedirectAttributes redirectAttributes) {
-        try {
-            bookingService.markReturned(id, principal.getName());
-            redirectAttributes.addFlashAttribute("successMessage", "Booking marked as returned.");
-        } catch (Exception ex) {
-            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
-        }
-        return "redirect:/bookings/my";
-=======
     public String handleNewBooking(@RequestParam("toolId") Long toolId,
                                    @RequestParam("startDate") String startDate,
                                    @RequestParam("endDate") String endDate,
@@ -136,10 +61,8 @@ public class BookingController {
             return "redirect:/?error=booking_failed";
         }
 
-        return "redirect:/customer/bookings"; // Redirects customer straight to their history after booking!
->>>>>>> 9d50a90a1a4b085d2e11fc5fc128caa86e7e9c89
+        return "redirect:/customer/bookings?success=booked"; // Redirects customer straight to their history after booking!
     }
-
 
 
     /**
@@ -159,6 +82,41 @@ public class BookingController {
         model.addAttribute("bookings", customerBookings);
 
         return "customer/bookings"; // Resolves to src/main/resources/templates/customer/bookings.html
+    }
+
+    @PostMapping("/bookings/{id}/cancel")
+    public String cancelBookingFromPage(@PathVariable Long id, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            bookingService.cancelBooking(id, principal.getName());
+        } catch (IllegalArgumentException e) {
+            return "redirect:/customer/bookings?error=cancel_expired";
+        }
+
+        return "redirect:/customer/bookings";
+    }
+
+    @PostMapping("/owner/bookings/{id}/confirm")
+    public String confirmBookingFromPage(@PathVariable Long id, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        bookingService.confirmBooking(id, principal.getName());
+        return "redirect:/owner/rental-requests";
+    }
+
+    @PostMapping("/owner/bookings/{id}/reject")
+    public String rejectBookingFromPage(@PathVariable Long id, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        bookingService.rejectBooking(id, principal.getName());
+        return "redirect:/owner/rental-requests";
     }
 
     // DEDICATED CALCULATOR CHECKOUT GATEWAY VIEW ROUTE
@@ -190,6 +148,12 @@ public class BookingController {
     @ResponseBody
     public List<Booking> getBookingsForToolOwner(Principal principal) {
         return bookingService.getBookingsForToolOwner(principal.getName());
+    }
+
+    @GetMapping("/api/bookings/tool/{toolId}")
+    @ResponseBody
+    public List<Booking> getBookingsForTool(@PathVariable Long toolId) {
+        return bookingService.getBookingsForTool(toolId);
     }
 
     @PutMapping("/api/bookings/{id}/confirm")

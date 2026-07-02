@@ -33,11 +33,12 @@
                     <th class="p-4">Client Contact</th>
                     <th class="p-4">Rental Duration</th>
                     <th class="p-4">Financial Total</th>
+                    <th class="p-4">Status / Actions</th>
                 </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-200 text-sm">
                 <tr th:if="${bookings == null || bookings.empty}">
-                    <td colspan="4" class="p-8 text-center text-slate-400 italic">
+                    <td colspan="5" class="p-8 text-center text-slate-400 italic">
                         No active booking context profiles registered for your tools yet.
                     </td>
                 </tr>
@@ -71,6 +72,27 @@
 =======
                         Rs. <span th:text="${booking.totalCost}">0.00</span>
 >>>>>>> 9d50a90a1a4b085d2e11fc5fc128caa86e7e9c89
+                    </td>
+                    <td class="p-4">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border"
+                                  th:classappend="${booking.status != null && booking.status.name == 'CONFIRMED' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                                   booking.status != null && booking.status.name == 'PENDING' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                                                   'bg-slate-100 text-slate-600 border-slate-200'}"
+                                  th:text="${booking.status != null ? booking.status.name : 'PENDING'}">
+                                PENDING
+                            </span>
+                            <form th:if="${booking.status != null && booking.status.name == 'PENDING'}" th:action="@{/owner/bookings/{id}/confirm(id=${booking.id})}" method="post" class="inline">
+                                <button type="submit" class="px-3 py-1.5 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wider hover:bg-emerald-100 transition-colors">
+                                    Confirm
+                                </button>
+                            </form>
+                            <form th:if="${booking.status != null && booking.status.name == 'PENDING'}" th:action="@{/owner/bookings/{id}/reject(id=${booking.id})}" method="post" class="inline">
+                                <button type="submit" class="px-3 py-1.5 rounded-lg border border-rose-200 bg-rose-50 text-rose-700 text-[10px] font-bold uppercase tracking-wider hover:bg-rose-100 transition-colors">
+                                    Reject
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 </tbody>

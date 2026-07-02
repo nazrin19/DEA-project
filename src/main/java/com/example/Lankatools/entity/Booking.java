@@ -1,8 +1,19 @@
 package com.example.Lankatools.entity;
 
-import com.example.Lankatools.enums.BookingStatus;
-import jakarta.persistence.*;
 import java.time.LocalDate;
+
+import com.example.Lankatools.enums.BookingStatus;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "bookings")
@@ -17,6 +28,9 @@ public class Booking {
 
     @Column(name = "end_date")
     private LocalDate endDate;
+
+    @Column(name = "booked_at")
+    private java.time.LocalDateTime bookedAt;
 
     @Column(name = "total_cost")
     private double totalCost;
@@ -56,6 +70,14 @@ public class Booking {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    public java.time.LocalDateTime getBookedAt() {
+        return bookedAt;
+    }
+
+    public void setBookedAt(java.time.LocalDateTime bookedAt) {
+        this.bookedAt = bookedAt;
     }
 
     public double getTotalCost() {

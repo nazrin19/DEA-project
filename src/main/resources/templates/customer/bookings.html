@@ -89,6 +89,10 @@
 <div class="max-w-4xl mx-auto px-4 py-10">
     <h1 class="text-2xl font-black text-slate-900 mb-6">Your Rental Receipts & History</h1>
 
+    <div th:if="${param.success} == 'booked'" class="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-800 text-sm font-semibold">
+        Your booking is confirmed! You may cancel within two hours if needed.
+    </div>
+
     <div th:if="${#lists.isEmpty(bookings)}" class="bg-white p-8 rounded-xl border border-slate-200 shadow-sm text-center">
         <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-3">
             <i class="fa-solid fa-receipt text-lg"></i>
@@ -100,6 +104,9 @@
         </a>
     </div>
 
+    <div th:if="${param.success} == 'booked'" class="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-800 text-sm font-semibold">
+        Your booking is confirmed! You may cancel within two hours if needed.
+    </div>
     <div th:if="${not #lists.isEmpty(bookings)}" class="space-y-4">
         <div th:each="booking : ${bookings}" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
             <div class="flex items-center gap-4">
@@ -116,18 +123,32 @@
 
             <div class="text-right">
                 <span class="text-sm font-black text-slate-900 block" th:text="'LKR ' + ${booking.totalCost}">LKR 0.00</span>
-                <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider mt-1 border"
-                      th:classappend="${booking.status == 'CONFIRMED' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                                       booking.status == 'PENDING' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                                       'bg-slate-100 text-slate-600 border-slate-200'}"
-                      th:text="${booking.status}">
-                    PENDING
-                </span>
+                <div class="mt-2 flex items-center justify-end gap-2 flex-wrap">
+                    <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border"
+                          th:classappend="${booking.status != null && booking.status.name == 'CONFIRMED' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                           booking.status != null && booking.status.name == 'PENDING' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                                           'bg-slate-100 text-slate-600 border-slate-200'}"
+                          th:text="${booking.status != null ? booking.status.name : 'PENDING'}">
+                        PENDING
+                    </span>
+                    <form th:if="${booking.status != null && booking.status.name != 'CANCELLED' && booking.status.name != 'REJECTED'}"
+                          th:action="@{/bookings/{id}/cancel(id=${booking.id})}" method="post" class="inline">
+                        <button type="submit" class="px-3 py-1.5 rounded-lg border border-rose-200 bg-rose-50 text-rose-700 text-[10px] font-bold uppercase tracking-wider hover:bg-rose-100 transition-colors">
+                            Cancel
+                        </button>
+                    </form>
+                </div>
             </div>
 >>>>>>> 9d50a90a1a4b085d2e11fc5fc128caa86e7e9c89
         </div>
     </div>
 </div>
+
+<script>
+    if (window.location.search.includes('success=booked')) {
+        alert('Booking confirmed! You may cancel within two hours.');
+    }
+</script>
 
 </body>
 </html>

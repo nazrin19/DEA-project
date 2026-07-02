@@ -39,14 +39,14 @@
     </div>
 
     <!-- The Booking Submission Form -->
-    <form th:action="@{/customer/bookings/create}" method="POST" class="bg-white p-6 rounded-xl border border-slate-200 shadow-md space-y-5">
+    <form id="bookingForm" th:action="@{/bookings}" method="POST" class="bg-white p-6 rounded-xl border border-slate-200 shadow-md space-y-5">
         <!-- Hidden context reference mapping parameter -->
         <input type="hidden" name="toolId" th:value="${tool.id}"/>
 
         <div>
             <label class="block text-xs uppercase font-bold tracking-wider text-slate-500 mb-2">Start Date</label>
             <div class="relative">
-                <input type="date" name="startDate" required
+                <input type="date" id="startDate" name="startDate" required
                        class="w-full border border-slate-200 rounded-lg p-2.5 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/50">
                 <i class="fa-regular fa-calendar-plus absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
             </div>
@@ -55,7 +55,7 @@
         <div>
             <label class="block text-xs uppercase font-bold tracking-wider text-slate-500 mb-2">End Date</label>
             <div class="relative">
-                <input type="date" name="endDate" required
+                <input type="date" id="endDate" name="endDate" required
                        class="w-full border border-slate-200 rounded-lg p-2.5 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/50">
                 <i class="fa-regular fa-calendar-minus absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
             </div>
@@ -73,5 +73,73 @@
     </form>
 </div>
 
+<script>
+    const toolId = document.querySelector('input[name="toolId"]').value;
+    const bookingForm = document.getElementById('bookingForm');
+    const startInput = document.getElementById('startDate');
+    const endInput = document.getElementById('endDate');
+    const blockedRanges = [];
+
+    function parseDate(value) {
+        if (!value) return null;
+        const parts = value.split('-');
+        return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    }
+
+    function isDateBlocked(dateValue) {
+        if (!dateValue) return false;
+        const selected = parseDate(dateValue);
+        return blockedRanges.some(range => selected >= range.start && selected <= range.end);
+    }
+
+    function showBlockedMessage() {
+        alert('This date is already booked. Please choose another date.');
+    }
+
+    function validateDateInput(input) {
+        if (input.value && isDateBlocked(input.value)) {
+            showBlockedMessage();
+            input.value = '';
+            return false;
+        }
+        return true;
+    }
+
+    function markBlockedDates() {
+        if (!toolId) return;
+        fetch('/api/bookings/tool/' + toolId)
+            .then(response => response.json())
+            .then(data => {
+                blockedRanges.length = 0;
+                data.forEach(booking => {
+                    if (!booking.startDate || !booking.endDate) return;
+                    blockedRanges.push({
+                        start: parseDate(booking.startDate),
+                        end: parseDate(booking.endDate)
+                    });
+                });
+            })
+            .catch(() => {
+                blockedRanges.length = 0;
+            });
+    }
+
+    ['input', 'change'].forEach(eventName => {
+        startInput.addEventListener(eventName, function () {
+            validateDateInput(this);
+        });
+        endInput.addEventListener(eventName, function () {
+            validateDateInput(this);
+        });
+    });
+
+    bookingForm.addEventListener('submit', function (event) {
+        if (!validateDateInput(startInput) || !validateDateInput(endInput)) {
+            event.preventDefault();
+        }
+    });
+
+    markBlockedDates();
+</script>
 </body>
 </html>

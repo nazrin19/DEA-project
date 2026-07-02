@@ -1,5 +1,15 @@
 package com.example.Lankatools.service;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.example.Lankatools.entity.Booking;
 import com.example.Lankatools.entity.Tool;
 import com.example.Lankatools.entity.User;
@@ -7,13 +17,6 @@ import com.example.Lankatools.enums.BookingStatus;
 import com.example.Lankatools.enums.Toolstatus;
 import com.example.Lankatools.repository.BookingRepository;
 import com.example.Lankatools.repository.ToolRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.List;
 
 @Service
 public class BookingService {
@@ -74,6 +77,7 @@ public class BookingService {
         booking.setCustomer(customer);
         booking.setStartDate(startDate);
         booking.setEndDate(endDate);
+        booking.setBookedAt(LocalDateTime.now());
         booking.setStatus(BookingStatus.PENDING);
         booking.setTotalCost(totalCost);
 
@@ -105,6 +109,15 @@ public class BookingService {
         return bookingRepository.findByTool_Owner(owner);
     }
 
+    public List<Booking> getBookingsForTool(Long toolId) {
+        Tool tool = toolRepository.findById(toolId).orElse(null);
+        if (tool == null) {
+            return List.of();
+        }
+        List<BookingStatus> excludedStatuses = Arrays.asList(BookingStatus.REJECTED, BookingStatus.CANCELLED);
+        return bookingRepository.findByToolAndStatusNotIn(tool, excludedStatuses);
+    }
+
     public List<Tool> getApprovedTools() {
         return toolRepository.findByStatus(Toolstatus.APPROVED);
     }
@@ -128,6 +141,14 @@ public class BookingService {
     public Booking cancelBooking(Long id, String username) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Booking reference not found."));
+
+        if (booking.getBookedAt() != null) {
+            Duration sinceBooking = Duration.between(booking.getBookedAt(), LocalDateTime.now());
+            if (sinceBooking.toHours() >= 2) {
+                throw new IllegalArgumentException("Cancellation period has expired. You can only cancel within two hours of booking.");
+            }
+        }
+
         booking.setStatus(BookingStatus.CANCELLED);
         return bookingRepository.save(booking);
     }
@@ -154,7 +175,7 @@ public class BookingService {
                 "📋 RENTAL DETAILS:\n" +
                 "• Booking Reference ID: #" + booking.getId() + "\n" +
                 "• Rental Window: " + booking.getStartDate() + " to " + booking.getEndDate() + "\n" +
-                "• Estimated Total Cost: Rs. " + String.format("%.2Fi", booking.getTotalCost()) + "\n\n" +
+                "• Estimated Total Cost: Rs. " + String.format("%.2f", booking.getTotalCost()) + "\n\n" +
                 "The tool owner will evaluate your rental status request shortly. Thank you for using LankaTools!";
 
         try {
