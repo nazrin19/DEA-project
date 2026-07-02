@@ -3,6 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
+    <title>My Rental Orders - LankaTools</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/frontend-theme.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="frontend-theme bg-slate-50 text-slate-800 min-h-screen font-sans">
+
+<div class="max-w-6xl mx-auto px-4 py-10">
+    <header class="flex justify-between items-center mb-8">
+        <div>
+            <a href="/customer/dashboard" class="text-sm font-semibold text-blue-600 hover:underline flex items-center gap-1 mb-2">
+                <i class="fa-solid fa-arrow-left text-xs"></i> Back to Dashboard
+            </a>
+            <h1 class="text-2xl font-black text-slate-900 tracking-tight">Your Rental History</h1>
+        </div>
+        <a href="/index" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm">
+            Browse More Gear
+        </a>
+    </header>
+
+    <!-- Orders Log Container -->
+    <div class="bg-white rounded-xl border border-slate-200 shadow-md overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                <tr class="bg-slate-100 text-slate-600 text-xs uppercase font-bold tracking-wider border-b border-slate-200">
+                    <th class="p-4">Rented Gear Details</th>
+                    <th class="p-4">Provider Shop</th>
+                    <th class="p-4">Rental Window Period</th>
+                    <th class="p-4">Total Amount Paid</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 text-sm">
+                <!-- Empty Fallback -->
+                <tr th:if="${bookings == null || bookings.empty}">
+                    <td colspan="4" class="p-8 text-center text-slate-400 italic">
+                        You haven't placed any tool rental orders yet!
+                    </td>
+                </tr>
+                <!-- Bookings Loop -->
+                <tr th:each="booking : ${bookings}" class="hover:bg-slate-50/50 transition-colors">
+                    <td class="p-4">
+                        <span class="font-bold text-slate-900 block" th:text="${booking.tool.name}">Industrial Grade Drill</span>
+                        <span class="text-xs text-slate-400" th:text="${booking.tool.category}">Category</span>
+                    </td>
+                    <td class="p-4">
+                        <span class="text-slate-700 font-semibold block" th:text="${booking.tool.owner.shopName}">Vendor Store</span>
+                        <span class="text-xs text-slate-400" th:text="${booking.tool.owner.phone}">Contact</span>
+                    </td>
+                    <td class="p-4">
+                        <div class="text-slate-700 font-medium">
+                            <i class="fa-regular fa-calendar-days text-slate-400 mr-1 text-xs"></i>
+                            <span th:text="${booking.startDate}">2026-06-28</span> to <span th:text="${booking.endDate}">2026-06-30</span>
+                        </div>
+                    </td>
+                    <td class="p-4 font-bold text-emerald-600">
+                        Rs. <span th:text="${booking.totalPrice}">0.00</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+=======
     <title>My Rental Bookings - LankaTools</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -61,6 +124,7 @@
                     PENDING
                 </span>
             </div>
+>>>>>>> 9d50a90a1a4b085d2e11fc5fc128caa86e7e9c89
         </div>
     </div>
 </div>

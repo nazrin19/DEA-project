@@ -102,7 +102,7 @@ public class BookingService {
 
     public List<Booking> getBookingsForToolOwner(String email) {
         User owner = userService.getUserByEmail(email);
-        return bookingRepository.findByToolOwner(owner);
+        return bookingRepository.findByTool_Owner(owner);
     }
 
     public List<Tool> getApprovedTools() {
@@ -135,7 +135,11 @@ public class BookingService {
     public Booking markReturned(Long id, String username) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Booking reference not found."));
+<<<<<<< HEAD
+        booking.setStatus(BookingStatus.RETURNED);
+=======
         booking.setStatus(BookingStatus.CONFIRMED);
+>>>>>>> 9d50a90a1a4b085d2e11fc5fc128caa86e7e9c89
         return bookingRepository.save(booking);
     }
 

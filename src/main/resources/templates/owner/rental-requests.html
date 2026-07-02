@@ -5,9 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rental Requests - LankaTools</title>
     <script src="https://cdn.tailwindcss.com"></script>
+<<<<<<< HEAD
+    <link rel="stylesheet" href="/css/frontend-theme.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="frontend-theme bg-slate-50 font-sans text-slate-800">
+=======
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-slate-50 font-sans text-slate-800">
+>>>>>>> 9d50a90a1a4b085d2e11fc5fc128caa86e7e9c89
 
 <div class="max-w-6xl mx-auto px-4 py-8">
     <div class="mb-8">
@@ -36,12 +43,21 @@
                 </tr>
                 <tr th:each="booking : ${bookings}" class="hover:bg-slate-50/80 transition-colors">
                     <td class="p-4">
+<<<<<<< HEAD
+                        <span class="font-bold text-slate-900 block" th:text="${booking.tool.name}">Demolition Jackhammer</span>
+                        <span class="text-xs text-slate-400" th:text="${booking.tool.category}">Power Tools</span>
+                    </td>
+                    <td class="p-4">
+                        <span class="font-semibold text-slate-800 block" th:text="${booking.user.name}">Customer Name</span>
+                        <span class="text-xs text-slate-400" th:text="${booking.user.email}">email@example.com</span>
+=======
                         <span class="font-bold text-slate-900 block" th:text="${booking.tool != null ? booking.tool.name : 'Unknown Equipment'}">Demolition Jackhammer</span>
                         <span class="text-xs text-slate-400" th:text="${booking.tool != null ? booking.tool.category : 'General'}">Power Tools</span>
                     </td>
                     <td class="p-4">
                         <span class="font-semibold text-slate-800 block" th:text="${booking.customer != null ? booking.customer.name : 'Guest User'}">Customer Name</span>
                         <span class="text-xs text-slate-400" th:text="${booking.customer != null ? booking.customer.email : 'N/A'}">email@example.com</span>
+>>>>>>> 9d50a90a1a4b085d2e11fc5fc128caa86e7e9c89
                     </td>
                     <td class="p-4">
                         <div class="text-slate-700 font-medium">
@@ -50,7 +66,11 @@
                         </div>
                     </td>
                     <td class="p-4 font-bold text-emerald-600">
+<<<<<<< HEAD
+                        Rs. <span th:text="${booking.totalPrice != null ? booking.totalPrice : '0.00'}">0.00</span>
+=======
                         Rs. <span th:text="${booking.totalCost}">0.00</span>
+>>>>>>> 9d50a90a1a4b085d2e11fc5fc128caa86e7e9c89
                     </td>
                 </tr>
                 </tbody>
