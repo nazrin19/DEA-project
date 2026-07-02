@@ -9,7 +9,6 @@
     <title th:replace="${title}">Lankatools</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Modern interaction transitions */
         .transition-all {
             transition: all 0.25s ease-in-out;
         }
@@ -29,6 +28,7 @@
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
                 <li class="nav-item">
@@ -38,9 +38,14 @@
                     <a class="nav-link text-white opacity-75" href="/tools">Browse Tools</a>
                 </li>
 
-                <li class="nav-item" sec:authorize="hasRole('SHOP_OWNER')">
-                    <a class="nav-link text-warning fw-semibold" href="/shop/dashboard">Shop Dashboard</a>
+                <li class="nav-item" sec:authorize="hasRole('OWNER')">
+                    <a class="nav-link text-warning fw-semibold" href="/owner/dashboard">Shop Dashboard</a>
                 </li>
+
+                <li class="nav-item" sec:authorize="hasRole('CUSTOMER')">
+                    <a class="nav-link text-info fw-semibold" href="/customer/dashboard">Customer Dashboard</a>
+                </li>
+
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link text-danger fw-semibold" href="/admin/dashboard">Admin Dashboard</a>
                 </li>
@@ -60,7 +65,10 @@
                               sec:authorize="hasRole('ADMIN')">ADMIN</span>
                         <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle ms-1 font-monospace small"
                               style="font-size: 0.65rem; font-weight: 700;"
-                              sec:authorize="hasRole('SHOP_OWNER')">SHOP OWNER</span>
+                              sec:authorize="hasRole('OWNER')">SHOP</span>
+                        <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle ms-1 font-monospace small"
+                              style="font-size: 0.65rem; font-weight: 700;"
+                              sec:authorize="hasRole('CUSTOMER')">CUSTOMER</span>
                     </span>
                     <form th:action="@{/logout}" method="post" class="m-0">
                         <button type="submit" class="btn btn-sm btn-outline-light opacity-75 px-3">Sign Out</button>
