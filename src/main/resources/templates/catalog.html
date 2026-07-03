@@ -1,215 +1,194 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tool Catalog</title>
-
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>LankaTools - Heavy Hardware Marketplace</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        .bg-gradient-hero {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a4ebd 100%);
+        }
+        .text-primary-theme {
+            color: #0d6efd !important;
+        }
+        .card-tool {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: none;
+            border-radius: 12px;
+        }
+        .card-tool:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
+        }
+        .tool-img-container {
+            height: 200px;
+            background-color: #f1f3f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+        .tool-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .badge-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .badge-approved {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+    </style>
 </head>
+<body>
 
-<body class="bg-gray-50 font-sans">
-
-<nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 flex justify-between items-center h-16">
-
-            <span class="text-xl font-bold text-blue-600">
-                Tool Share
-            </span>
-
-        <div class="space-x-4">
-            <a href="#" class="text-gray-600 hover:text-blue-600 font-medium">
-                Catalog
-            </a>
-
-            <a href="add-tool.html"
-               class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                Add Tool
+<!-- Simple Navigation Navbar Header -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top shadow-sm">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/tools">
+            <span class="fw-bold fs-4 text-dark">Lanka<span class="text-primary-theme">Tools</span></span>
+            <span class="badge bg-secondary ms-2 small" style="font-size: 0.65rem;">B2B Marketplace</span>
+        </a>
+        <div class="ms-auto">
+            <a href="/owner/tools/add" class="btn btn-primary bg-gradient-hero border-0 rounded-3 px-3 fw-semibold">
+                <i class="bi bi-plus-circle me-1"></i> Add New Tool
             </a>
         </div>
-
     </div>
 </nav>
 
+<!-- Clean Blue Gradient Hero Banner Section -->
+<div class="bg-gradient-hero text-white py-5 mb-4 shadow-sm">
+    <div class="container py-3">
+        <span class="text-uppercase tracking-wider small opacity-75 fw-bold">B2B Heavy Hardware Marketplace</span>
+        <h1 class="display-5 fw-bold mt-1">Deploy Certified Equipment On Demand</h1>
+        <p class="lead opacity-90 max-w-xl">Verify local availability of high-precision heavy industrial mechanics, specialized construction gear, and standard contracting field equipment across Sri Lanka.</p>
 
-<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-    <h1 class="text-3xl font-bold text-gray-800 mb-6">
-        Tool Catalog
-    </h1>
-
-    <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
-
-        <form id="filterForm" class="grid grid-cols-1 md:grid-cols-5 gap-4">
-
-            <div class="md:col-span-2">
-                <label for="search" class="block text-sm font-medium text-gray-700 mb-1">
-                    Search Tools
-                </label>
-
-                <input
-                        type="text"
-                        id="search"
-                        name="search"
-                        placeholder="e.g. Cordless Drill, Ladder..."
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        <!-- Filters & Search Form Control Bar -->
+        <form method="GET" action="/tools" class="row g-2 mt-4 bg-white p-3 rounded-4 shadow-sm text-dark mx-1">
+            <div class="col-md-7">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" class="form-control border-start-0 py-2 fs-6" placeholder="Search inventory entries...">
+                </div>
             </div>
-
-            <div>
-                <label for="category" class="block text-sm font-medium text-gray-700 mb-1">
-                    Category
-                </label>
-
-                <select id="category"
-                        name="category"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-
+            <div class="col-md-3">
+                <select name="category" class="form-select py-2 fs-6">
                     <option value="">All Categories</option>
-                    <option value="power-tools">Power Tools</option>
-                    <option value="hand-tools">Hand Tools</option>
-                    <option value="gardening">Gardening</option>
-                    <option value="plumbing">Plumbing</option>
-
+                    <option value="CUTTING">Cutting</option>
+                    <option value="DRILLING">Drilling</option>
+                    <option value="GARDENING">Gardening</option>
+                    <option value="HAND_TOOLS">Hand Tools</option>
+                    <option value="MEASURING">Measuring</option>
                 </select>
             </div>
-
-            <div>
-                <label for="sortBy" class="block text-sm font-medium text-gray-700 mb-1">
-                    Sort By Price
-                </label>
-
-                <select id="sortBy"
-                        name="sortBy"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-
-                    <option value="dailyRate,asc">Price: Low to High</option>
-                    <option value="dailyRate,desc">Price: High to Low</option>
-
-                </select>
-            </div>
-
-            <div class="flex items-end">
-                <button
-                        type="submit"
-                        class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
-                    Search
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold bg-gradient-hero border-0">
+                    <i class="bi bi-funnel me-1"></i> Filter
                 </button>
             </div>
-
         </form>
+    </div>
+</div>
 
-    </section>
+<div class="container mb-5">
 
-    <section>
-
-        <div id="toolGrid"
-             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition">
-
-                <div class="relative h-48">
-                    <img
-                            src="https://images.unsplash.com/photo-1504148455328-c376907d081c?w=500"
-                            alt="Power Drill"
-                            class="w-full h-full object-cover">
-
-                    <span class="absolute top-3 right-3 bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">
-                            APPROVED
-                        </span>
-                </div>
-
-                <div class="p-5">
-
-                        <span class="text-xs uppercase text-gray-400 font-semibold">
-                            Power Tools
-                        </span>
-
-                    <h3 class="text-lg font-bold text-gray-900 mt-1">
-                        DeWalt Cordless Drill
-                    </h3>
-
-                    <p class="text-sm text-gray-500 mt-2">
-                        High performance 20V Max drill with brushless motor.
-                    </p>
-
-                    <div class="mt-4 flex justify-between items-center">
-
-                        <div>
-                                <span class="text-xl font-bold text-blue-600">
-                                    $25
-                                </span>
-                            <span class="text-gray-500 text-sm">
-                                    / day
-                                </span>
-                        </div>
-
-                        <button
-                                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                            View Details
-                        </button>
-
-                    </div>
-
-                </div>
-
+    <!-- System Audit Summary Row Metrics -->
+    <div class="row g-3 mb-5">
+        <div class="col-6 col-md-3">
+            <div class="bg-white p-3 rounded-3 border shadow-sm">
+                <small class="text-uppercase text-muted fw-bold d-block mb-1" style="font-size: 0.75rem;">Total System Pool</small>
+                <span class="h4 fw-bold text-dark" th:text="${toolsPage != null ? toolsPage.totalElements + ' Units' : '0 Units'}">0 Units</span>
             </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="bg-white p-3 rounded-3 border shadow-sm">
+                <small class="text-uppercase text-muted fw-bold d-block mb-1" style="font-size: 0.75rem;">Active Yield</small>
+                <span class="h4 fw-bold text-primary-theme" th:text="${toolsPage != null ? toolsPage.numberOfElements + ' Shown' : '0 Shown'}">0 Shown</span>
+            </div>
+        </div>
+    </div>
 
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden opacity-80">
+    <!-- Section Title Headers -->
+    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-2">
+        <div>
+            <h3 class="fw-bold text-dark mb-0">Hardware Index Listings</h3>
+            <small class="text-muted">Browse active and pending machinery assets context grid matrix.</small>
+        </div>
+        <div th:if="${param.search != null || param.category != null}">
+            <a href="/tools" class="btn btn-sm btn-outline-secondary rounded-3">
+                <i class="bi bi-x-circle me-1"></i> Clear Filters
+            </a>
+        </div>
+    </div>
 
-                <div class="relative h-48">
-                    <img
-                            src="https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=500"
-                            alt="Lawn Mower"
-                            class="w-full h-full object-cover">
+    <!-- EMPTY STATE: Displays dynamically if collection is completely null or empty -->
+    <div th:if="${toolsPage == null || toolsPage.empty}" class="text-center bg-white py-5 px-4 rounded-4 shadow-sm border">
+        <i class="bi bi-exclamation-circle text-muted display-4 mb-3 d-block"></i>
+        <h5 class="fw-bold text-dark">No operational results match lookup specs</h5>
+        <p class="text-muted">Clear context query parameters or switch default class scopes above.</p>
+        <a href="/tools" class="btn btn-sm btn-primary bg-gradient-hero border-0 px-3 mt-2">Clear Query Filter</a>
+    </div>
 
-                    <span class="absolute top-3 right-3 bg-yellow-100 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full">
+    <!-- ACTIVE HARDWARE MATRIX GRID -->
+    <div th:unless="${toolsPage == null || toolsPage.empty}" class="row g-4">
+
+        <!-- Loop through paginated list elements context using Thymeleaf th:each -->
+        <div class="col-sm-6 col-md-4 col-lg-3" th:each="tool : ${toolsPage.content}">
+            <div class="card card-tool h-100 shadow-sm bg-white">
+
+                <!-- Tool Asset Image Frame Box Layout Container -->
+                <div class="tool-img-container position-relative">
+                    <!-- Dynamic Status Badge Corner Overlays -->
+                    <span class="position-absolute top-0 end-0 m-2 badge px-2 py-1 fs-7 rounded-2 fw-semibold shadow-sm"
+                          th:classappend="${tool.status.name() == 'PENDING' ? 'badge-pending' : 'badge-approved'}"
+                          th:text="${tool.status}">
                             PENDING
                         </span>
+
+                    <!-- Tool Fallback Render Loop Context Container -->
+                    <img th:src="${tool.imageUrl != null ? tool.imageUrl : '/uploads/default-placeholder.png'}"
+                         class="tool-img"
+                         alt="Equipment Asset Frame Component">
                 </div>
 
-                <div class="p-5">
-
-                        <span class="text-xs uppercase text-gray-400 font-semibold">
-                            Gardening
-                        </span>
-
-                    <h3 class="text-lg font-bold text-gray-900 mt-1">
-                        Electric Lawn Mower
-                    </h3>
-
-                    <p class="text-sm text-gray-500 mt-2">
-                        Quiet, efficient electric mower ideal for medium lawns.
+                <!-- Card Contents -->
+                <div class="card-body d-flex flex-column p-3">
+                    <span class="text-uppercase text-muted fw-bold mb-1" style="font-size: 0.7rem;" th:text="${tool.category}">Category</span>
+                    <h5 class="card-title fw-bold text-dark mb-2 text-truncate" th:text="${tool.name}">Industrial Jackhammer</h5>
+                    <p class="card-text text-muted small flex-grow-1 text-truncate-2" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" th:text="${tool.description}">
+                        No product specification notes or descriptions attached context for this asset profile block.
                     </p>
 
-                    <div class="mt-4 flex justify-between items-center">
-
+                    <div class="border-top pt-3 mt-2 d-flex align-items-center justify-content-between">
                         <div>
-                                <span class="text-xl font-bold text-gray-700">
-                                    $45
-                                </span>
-                            <span class="text-gray-500 text-sm">
-                                    / day
-                                </span>
+                            <small class="text-muted d-block" style="font-size: 0.75rem;">Daily Rate</small>
+                            <span class="fw-bold text-primary-theme fs-5" th:text="'Rs. ' + ${#numbers.formatDecimal(tool.dailyRate, 1, 'COMMA', 2, 'POINT')}">Rs. 0.00</span><small class="text-muted">/Day</small>
                         </div>
-
-                        <button
-                                disabled
-                                class="bg-gray-100 text-gray-400 px-4 py-2 rounded-lg cursor-not-allowed">
-                            Pending Approval
-                        </button>
-
+                        <a th:href="@{/tools/detail/{id}(id=${tool.id})}" class="btn btn-sm btn-outline-primary px-3 rounded-2 fw-semibold">
+                            View Info
+                        </a>
                     </div>
-
                 </div>
-
             </div>
-
         </div>
 
-    </section>
+    </div>
 
-</main>
+</div>
 
 </body>
 </html>
-
