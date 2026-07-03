@@ -4,59 +4,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Rental Bookings - LankaTools</title>
-</head>
-<body>
-
-
-<div id="bookings-container" class="container py-5" style="max-width: 750px;">
-
-
+    <title>My Rental Orders - LankaTools</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/frontend-theme.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="frontend-theme bg-slate-50 text-slate-800 min-h-screen font-sans">
 
-    <h1 class="h4 fw-bold text-center text-dark mb-4" style="font-weight: 800;">Your Rental Receipts & History</h1>
-
-    <!-- Empty State -->
-    <div th:if="${#lists.isEmpty(bookings)}" class="card border border-light-subtle p-5 rounded-4 text-center bg-white shadow-sm">
-        <div class="rounded-circle d-flex align-items-center justify-content-center text-secondary bg-light mx-auto mb-3" style="width: 3rem; height: 3rem;">
-            <i class="fa-solid fa-receipt fs-5"></i>
+<div class="max-w-6xl mx-auto px-4 py-10">
+    <header class="flex justify-between items-center mb-8">
+        <div>
+            <a href="/customer/dashboard" class="text-sm font-semibold text-blue-600 hover:underline flex items-center gap-1 mb-2">
+                <i class="fa-solid fa-arrow-left text-xs"></i> Back to Dashboard
+            </a>
+            <h1 class="text-2xl font-black text-slate-900 tracking-tight">Your Rental History</h1>
         </div>
-        <h3 class="h6 fw-bold text-dark mb-1">No transactions found</h3>
-        <p class="text-muted small mb-3">You haven't ordered or reserved any hardware gear tools yet.</p>
-        <a th:href="@{/}" class="btn text-white fw-bold btn-sm rounded-3 px-4 py-2 border-0" style="background-color: #0c3966; font-size: 0.75rem;">
-            Explore Marketplace
+        <a href="/index" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm">
+            Browse More Gear
         </a>
-    </div>
+    </header>
 
-    <!-- Booking List Grid -->
-    <div th:if="${not #lists.isEmpty(bookings)}" class="d-flex flex-column gap-3">
-        <div th:each="booking : ${bookings}" class="card border border-light-subtle p-3 rounded-4 bg-white shadow-sm d-flex flex-row align-items-center justify-content-between">
-
-            <!-- Left Block: Icon & Detail Descriptions -->
-            <div class="d-flex align-items-center gap-3">
-                <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 3rem; height: 3rem; background-color: #e6f0fa; border: 1px solid #cbdcf2; min-width: 3rem;">
-                    <i class="fa-solid fa-screwdriver-wrench fs-5" style="color: #0c3966;"></i>
-                </div>
-                <div>
-                    <h3 class="h6 fw-bold text-dark mb-1" th:text="${booking.tool != null ? booking.tool.name : 'Unknown Tool'}">Tool Name</h3>
-                    <p class="text-muted font-monospace small mb-0" style="font-size: 0.75rem;">
-                        <span th:text="${booking.startDate}">2026-06-29</span> to <span th:text="${booking.endDate}">2026-07-05</span>
-                    </p>
-                </div>
-            </div>
-
-            <!-- Right Block: Price Tracking & Status Badging elements -->
-            <div class="text-end">
-                <span class="fs-6 fw-bold text-dark d-block mb-1" th:text="'LKR ' + ${booking.totalCost}">LKR 0.00</span>
-                <span class="badge border font-monospace text-uppercase px-2.5 py-1.5" style="font-size: 0.65rem; font-weight: 700;"
-                      th:classappend="${#strings.toString(booking.status) == 'CONFIRMED' || #strings.toString(booking.status) == 'RETURNED' ? 'bg-success-subtle text-success border-success-subtle' :
-                                       #strings.toString(booking.status) == 'PENDING' ? 'bg-warning-subtle text-warning-emphasis border-warning-subtle' :
-                                       'bg-light text-secondary border-light-subtle'}"
-                      th:text="${booking.status}">
-                    PENDING
-                </span>
-            </div>
-
+    <!-- Orders Log Container -->
+    <div class="bg-white rounded-xl border border-slate-200 shadow-md overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                <tr class="bg-slate-100 text-slate-600 text-xs uppercase font-bold tracking-wider border-b border-slate-200">
+                    <th class="p-4">Rented Gear Details</th>
+                    <th class="p-4">Provider Shop</th>
+                    <th class="p-4">Rental Window Period</th>
+                    <th class="p-4">Total Amount Paid</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 text-sm">
+                <!-- Empty Fallback -->
+                <tr th:if="${bookings == null || bookings.empty}">
+                    <td colspan="4" class="p-8 text-center text-slate-400 italic">
+                        You haven't placed any tool rental orders yet!
+                    </td>
+                </tr>
+                <!-- Bookings Loop -->
+                <tr th:each="booking : ${bookings}" class="hover:bg-slate-50/50 transition-colors">
+                    <td class="p-4">
+                        <span class="font-bold text-slate-900 block" th:text="${booking.tool.name}">Industrial Grade Drill</span>
+                        <span class="text-xs text-slate-400" th:text="${booking.tool.category}">Category</span>
+                    </td>
+                    <td class="p-4">
+                        <span class="text-slate-700 font-semibold block" th:text="${booking.tool.owner.shopName}">Vendor Store</span>
+                        <span class="text-xs text-slate-400" th:text="${booking.tool.owner.phone}">Contact</span>
+                    </td>
+                    <td class="p-4">
+                        <div class="text-slate-700 font-medium">
+                            <i class="fa-regular fa-calendar-days text-slate-400 mr-1 text-xs"></i>
+                            <span th:text="${booking.startDate}">2026-06-28</span> to <span th:text="${booking.endDate}">2026-06-30</span>
+                        </div>
+                    </td>
+                    <td class="p-4 font-bold text-emerald-600">
+                        Rs. <span th:text="${booking.totalPrice}">0.00</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

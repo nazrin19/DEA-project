@@ -1,0 +1,50 @@
+/* Scoped frontend theme for selected user pages */
+.frontend-theme{
+  --primary: #14315A;
+  --secondary: #21487E;
+  --accent-blue: #295EA9;
+  --background: #FBFCFD;
+  --surface: #FFFFFF;
+  --border: #D3D8D6;
+  --text-primary: #14315A;
+  --text-secondary: #798A9E;
+  --warning: #FACC15;
+  --danger: #EF4444;
+  --success: #22C55E;
+  --highlight: #F59E0B;
+
+  /* light variants used for subtle backgrounds */
+  --primary-50: rgba(20,49,90,0.06);
+  --primary-100: rgba(20,49,90,0.12);
+  --accent-blue-50: rgba(41,94,169,0.06);
+}
+
+/* Map commonly used Tailwind utility classes (scoped) to theme variables. */
+.frontend-theme .text-blue-600{ color: var(--primary) !important; }
+.frontend-theme .text-blue-700{ color: var(--secondary) !important; }
+.frontend-theme .text-blue-800{ color: var(--accent-blue) !important; }
+
+.frontend-theme .bg-blue-50{ background-color: var(--primary-50) !important; }
+.frontend-theme .bg-blue-100{ background-color: var(--accent-blue-50) !important; }
+.frontend-theme .border-blue-100{ border-color: var(--primary-100) !important; }
+.frontend-theme .bg-blue-600{ background-color: var(--primary) !important; }
+.frontend-theme .hover\:bg-blue-700:hover{ background-color: var(--secondary) !important; }
+
+.frontend-theme .text-slate-900{ color: var(--text-primary) !important; }
+.frontend-theme .text-slate-800{ color: var(--text-primary) !important; }
+.frontend-theme .text-slate-600{ color: var(--text-secondary) !important; }
+.frontend-theme .text-slate-500{ color: var(--text-secondary) !important; }
+.frontend-theme .text-slate-400{ color: var(--text-secondary) !important; }
+
+.frontend-theme .bg-slate-50{ background-color: var(--background) !important; }
+.frontend-theme .bg-white{ background-color: var(--surface) !important; }
+.frontend-theme .border-slate-200{ border-color: var(--border) !important; }
+.frontend-theme .border-slate-100{ border-color: var(--border) !important; }
+
+.frontend-theme .focus\:ring-blue-500:focus{ box-shadow: 0 0 0 4px rgba(41,94,169,0.12) !important; border-color: var(--accent-blue) !important; outline: none; }
+
+/* small utility for gradient used on customer avatar card */
+.frontend-theme .bg-gradient-to-tr.from-blue-600.to-sky-400{ background-image: linear-gradient(45deg, var(--primary), rgba(41,94,169,0.45)) !important; }
+
+/* keep success/amber/emerald colors intact for status and financial highlights */
+/* Do not override other color families to avoid changing unrelated areas */

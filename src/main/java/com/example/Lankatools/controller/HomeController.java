@@ -1,6 +1,7 @@
 package com.example.Lankatools.controller;
 
 import com.example.Lankatools.entity.Tool;
+import com.example.Lankatools.enums.Toolstatus;
 import com.example.Lankatools.service.ToolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -46,7 +47,7 @@ public class HomeController {
         model.addAttribute("activeToolsCount", toolPage.getNumberOfElements());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", toolPage.getTotalPages());
-
+        model.addAttribute("approvedTools", toolService.getToolsByStatus(Toolstatus.APPROVED));
         return "index";
     }
 }
