@@ -16,11 +16,24 @@
             transform: translateY(-4px);
             box-shadow: 0 0.75rem 2rem rgba(0,0,0,0.08) !important;
         }
+        .btn-signout {
+            background-color: #0c3966;
+            color: #f8fafc;
+            border: 2px solid #ffffff;
+            font-weight: 600;
+            border-radius: 0.8rem;
+            padding: 0.4rem 1.1rem;
+        }
+        .btn-signout:hover {
+            background-color: #ffffff;
+            color: #6c757d;
+            border-color: #e9ecef;
+        }
     </style>
 </head>
 <body class="d-flex flex-column h-100 bg-light-subtle" style="color: #333333;">
 
-<nav class="navbar navbar-expand-lg navbar-dark py-3 shadow-sm" style="background-color: #0c3966;">
+<nav class="navbar navbar-expand-lg navbar-dark py-3 shadow-sm" style="background-color: rgb(6 16 78 / 0.93);">
     <div class="container">
         <a class="navbar-brand fw-bold text-white tracking-tight" href="/">
             LANKA<span class="opacity-75 fw-light">TOOLS</span>
@@ -38,7 +51,7 @@
                     <a class="nav-link text-white opacity-75" href="/tools">Browse Tools</a>
                 </li>
 
-                <li class="nav-item" sec:authorize="hasRole('OWNER')">
+                <li class="nav-item" sec:authorize="hasRole('SHOP_OWNER')">
                     <a class="nav-link text-warning fw-semibold" href="/owner/dashboard">Shop Dashboard</a>
                 </li>
 
@@ -65,13 +78,13 @@
                               sec:authorize="hasRole('ADMIN')">ADMIN</span>
                         <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle ms-1 font-monospace small"
                               style="font-size: 0.65rem; font-weight: 700;"
-                              sec:authorize="hasRole('OWNER')">SHOP</span>
+                              sec:authorize="hasRole('SHOP_OWNER')">SHOP</span>
                         <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle ms-1 font-monospace small"
                               style="font-size: 0.65rem; font-weight: 700;"
                               sec:authorize="hasRole('CUSTOMER')">CUSTOMER</span>
                     </span>
                     <form th:action="@{/logout}" method="post" class="m-0">
-                        <button type="submit" class="btn btn-sm btn-outline-light opacity-75 px-3">Sign Out</button>
+                        <button type="submit" class="btn btn-signout transition-all">Sign Out</button>
                     </form>
                 </div>
             </div>
