@@ -6,49 +6,51 @@
 </head>
 <body>
 <main class="container py-5">
-    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
-    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <div th:if="${successMessage}" class="alert border-0 rounded-4 shadow-sm" style="background-color:#eef3f8; color:#0c3966;" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger border-0 rounded-4 shadow-sm" th:text="${errorMessage}"></div>
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="mb-1">My bookings</h2>
-            <p class="text-muted mb-0">Track every booking request, status change, and cost update.</p>
+            <h2 class="h3 fw-black text-dark mb-1">My Bookings</h2>
+            <p class="text-muted mb-0 small">Track every booking request, status change, and cost update.</p>
         </div>
     </div>
 
     <div class="row g-4" th:if="${!#lists.isEmpty(bookings)}">
         <div class="col-12" th:each="booking : ${bookings}">
-            <div class="card shadow-sm">
-                <div class="card-body">
+            <div class="card border border-light-subtle rounded-4 shadow-sm">
+                <div class="card-body p-4">
                     <div class="row align-items-center">
                         <div class="col-md-7">
-                            <h5 class="card-title mb-1" th:text="${booking.tool.name}">Tool name</h5>
-                            <p class="text-muted mb-2" th:text="${booking.tool.category}">Category</p>
-                            <p class="mb-2"><strong>Dates:</strong> <span th:text="${booking.startDate} + ' to ' + ${booking.endDate}"></span></p>
-                            <p class="mb-2"><strong>Total cost:</strong> Rs. <span th:text="${#numbers.formatDecimal(booking.totalCost, 1, 2)}">0.00</span></p>
+                            <h5 class="fw-bold text-dark mb-1" th:text="${booking.tool.name}">Tool name</h5>
+                            <p class="small fw-bold text-uppercase mb-2" style="color:#0c3966; letter-spacing:0.5px;" th:text="${booking.tool.category}">Category</p>
+                            <p class="small text-muted mb-2"><i class="fa-regular fa-calendar me-1"></i><strong class="text-dark">Dates:</strong> <span th:text="${booking.startDate} + ' to ' + ${booking.endDate}"></span></p>
+                            <p class="small text-muted mb-0"><i class="fa-solid fa-coins me-1"></i><strong class="text-dark">Total cost:</strong> Rs. <span th:text="${#numbers.formatDecimal(booking.totalCost, 1, 2)}">0.00</span></p>
                         </div>
                         <div class="col-md-5 text-md-end">
-                            <span class="badge rounded-pill px-3 py-2 mb-3"
+                            <span class="badge rounded-pill px-3 py-2 mb-3 fw-semibold"
                                   th:classappend="${booking.status.name() == 'PENDING'} ? 'bg-warning text-dark' : (${booking.status.name() == 'RETURNED'} ? 'bg-secondary' : (${booking.status.name() == 'CANCELLED' or booking.status.name() == 'REJECTED'} ? 'bg-danger' : 'bg-success'))"
                                   th:text="${booking.status}">Status</span>
 
                             <div class="d-flex flex-wrap justify-content-md-end gap-2 mt-2">
                                 <form th:if="${booking.status.name() != 'CANCELLED' and booking.status.name() != 'REJECTED' and booking.status.name() != 'RETURNED'}" th:action="@{/bookings/{id}/cancel(id=${booking.id})}" method="post">
-                                    <button class="btn btn-outline-danger btn-sm" type="submit">Cancel</button>
+                                    <button class="btn btn-outline-danger btn-sm rounded-3 fw-semibold" type="submit">Cancel</button>
                                 </form>
                                 <form th:if="${booking.status.name() == 'CONFIRMED' or booking.status.name() == 'ACTIVE'}" th:action="@{/bookings/{id}/return(id=${booking.id})}" method="post">
-                                    <button class="btn btn-outline-success btn-sm" type="submit">Mark returned</button>
+                                    <button class="btn btn-sm rounded-3 fw-semibold text-white" style="background-color:#0c3966;" type="submit">Mark Returned</button>
                                 </form>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-3">
+                    <div class="mt-3 pt-3 border-top">
                         <div class="d-flex flex-wrap gap-2">
-                            <span class="badge rounded-pill px-3 py-2" th:classappend="${booking.status.name() == 'PENDING' or booking.status.name() == 'CONFIRMED' or booking.status.name() == 'ACTIVE' or booking.status.name() == 'RETURNED'} ? 'bg-primary' : 'bg-light text-muted'">Pending</span>
-                            <span class="badge rounded-pill px-3 py-2" th:classappend="${booking.status.name() == 'CONFIRMED' or booking.status.name() == 'ACTIVE' or booking.status.name() == 'RETURNED'} ? 'bg-primary' : 'bg-light text-muted'">Confirmed</span>
-                            <span class="badge rounded-pill px-3 py-2" th:classappend="${booking.status.name() == 'ACTIVE' or booking.status.name() == 'RETURNED'} ? 'bg-primary' : 'bg-light text-muted'">Active</span>
-                            <span class="badge rounded-pill px-3 py-2" th:classappend="${booking.status.name() == 'RETURNED'} ? 'bg-primary' : 'bg-light text-muted'">Returned</span>
+                            <span class="badge rounded-pill px-3 py-2 fw-semibold" th:classappend="${booking.status.name() == 'PENDING' or booking.status.name() == 'CONFIRMED' or booking.status.name() == 'ACTIVE' or booking.status.name() == 'RETURNED'} ? 'step-badge-active' : 'step-badge-inactive'">Pending</span>
+                            <span class="badge rounded-pill px-3 py-2 fw-semibold" th:classappend="${booking.status.name() == 'CONFIRMED' or booking.status.name() == 'ACTIVE' or booking.status.name() == 'RETURNED'} ? 'step-badge-active' : 'step-badge-inactive'">Confirmed</span>
+                            <span class="badge rounded-pill px-3 py-2 fw-semibold" th:classappend="${booking.status.name() == 'ACTIVE' or booking.status.name() == 'RETURNED'} ? 'step-badge-active' : 'step-badge-inactive'">Active</span>
+                            <span class="badge rounded-pill px-3 py-2 fw-semibold" th:classappend="${booking.status.name() == 'RETURNED'} ? 'step-badge-active' : 'step-badge-inactive'">Returned</span>
                         </div>
                     </div>
                 </div>
@@ -56,9 +58,22 @@
         </div>
     </div>
 
-    <div class="alert alert-light border" th:if="${#lists.isEmpty(bookings)}">
+    <div class="card border border-dashed border-light-subtle rounded-4 p-5 text-center text-muted" th:if="${#lists.isEmpty(bookings)}">
+        <i class="fa-regular fa-calendar-xmark fs-3 text-muted mb-2"></i>
         You do not have any bookings yet.
     </div>
 </main>
+
+<style>
+    .step-badge-active {
+        background-color: #0c3966;
+        color: #ffffff;
+    }
+    .step-badge-inactive {
+        background-color: #f1f5f9;
+        color: #94a3b8;
+    }
+</style>
+
 </body>
 </html>
