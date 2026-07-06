@@ -11,20 +11,31 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public void sendSimpleEmail(String toEmail, String subject, String body) {
-        SimpleMailMessage message = new SimpleMailMessage();
+    public void sendBookingConfirmation(String toEmail, String customerName, String toolName, String startDate, String endDate, double totalCost) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom("your-email@gmail.com");
+            message.setTo(toEmail);
+            message.setSubject("Booking Confirmed - LankaTools");
 
-        // This is the sender address
-        message.setFrom("your-system-email@gmail.com");
-        // This is the customer's or user's email address
-        message.setTo(toEmail);
-        // This is the email headline text
-        message.setSubject(subject);
-        // This is the actual main message text
-        message.setText(body);
+            String emailBody = String.format(
+                    "Dear %s,\n\n" +
+                            "Thank you for your order! Your booking request for the '%s' has been successfully placed.\n\n" +
+                            "📋 Rental Details:\n" +
+                            "- Pick-up Date: %s\n" +
+                            "- Return Date: %s\n" +
+                            "- Total Cost: Rs. %.2f\n\n" +
+                            "You will receive an update once the shop owner reviews your rental request.\n\n" +
+                            "Best regards,\n" +
+                            "Team LankaTools",
+                    customerName, toolName, startDate, endDate, totalCost
+            );
 
-        // This line physically pushes the email out to the web
-        mailSender.send(message);
-        System.out.println("Email sent successfully to " + toEmail);
+            message.setText(emailBody);
+            mailSender.send(message);
+            System.out.println("Email sent successfully to " + toEmail);
+        } catch (Exception e) {
+            System.err.println("Failed to send email layout notification: " + e.getMessage());
+        }
     }
 }

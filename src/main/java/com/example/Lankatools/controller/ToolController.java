@@ -86,8 +86,8 @@ public class ToolController {
             }
 
             try {
-                // Determine absolute write target location relative to your execution folder
-                String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/uploads/";
+                // 🔑 FIXED: Target the runtime target folder instead of src/ resources to stop IntelliJ auto-reloading
+                String uploadDir = System.getProperty("user.dir") + "/target/classes/static/uploads/";
                 File dir = new File(uploadDir);
                 if (!dir.exists()) {
                     dir.mkdirs();

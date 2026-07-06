@@ -28,7 +28,14 @@ public class BookingService {
     private UserService userService;
 
     @Autowired
-    private EmailService emailService; // Using your dedicated central email service handler
+    private EmailService emailService;
+
+    /**
+     * Fallback finder method used by Controller endpoints
+     */
+    public Booking findById(Long id) {
+        return bookingRepository.findById(id).orElse(null);
+    }
 
     /**
      * Creates a tool booking after validating overlap checks, updates database, and emails confirmation.
@@ -64,7 +71,7 @@ public class BookingService {
             throw new IllegalArgumentException("Selected dates overlap with an active booking for this tool.");
         }
 
-        // 5. Calculate final rental cost metrics
+        // 5. Calculate final rental cost metrics (Inclusive: +1 day)
         long days = ChronoUnit.DAYS.between(startDate, endDate) + 1;
         double totalCost = days * tool.getDailyRate();
 
@@ -81,7 +88,7 @@ public class BookingService {
         Booking savedBooking = bookingRepository.save(booking);
         System.out.println("🚀 Success: Booking record stored cleanly for " + tool.getName());
 
-        // 8. Centralized call to our notification sender dispatcher
+        // 8. Centralized call to our dynamic notification sender dispatcher
         try {
             sendConfirmationEmail(savedBooking);
         } catch (Exception e) {
@@ -140,22 +147,21 @@ public class BookingService {
     }
 
     /**
-     * Dispatcher helper utilizing your internal EmailService layer
+     * Dispatcher helper utilizing your internal rich EmailService template method
      */
     private void sendConfirmationEmail(Booking booking) {
-        String subject = "🛠️ LankaTools - Booking Request Received!";
-
-        String body = "Dear " + booking.getCustomer().getName() + ",\n\n" +
-                "Your booking request for '" + booking.getTool().getName() + "' has been placed successfully and is currently PENDING review.\n\n" +
-                "📋 RENTAL DETAILS:\n" +
-                "• Booking Reference ID: #" + booking.getId() + "\n" +
-                "• Rental Window: " + booking.getStartDate() + " to " + booking.getEndDate() + "\n" +
-                "• Estimated Total Cost: Rs. " + String.format("%.2Fi", booking.getTotalCost()) + "\n\n" +
-                "The tool owner will evaluate your rental status request shortly. Thank you for using LankaTools!";
-
         try {
-            emailService.sendSimpleEmail(booking.getCustomer().getEmail(), subject, body);
-            System.out.println("📬 Notification dispatched to user checkout mailbox.");
+            if (booking != null && booking.getCustomer() != null && booking.getTool() != null) {
+                emailService.sendBookingConfirmation(
+                        booking.getCustomer().getEmail(),
+                        booking.getCustomer().getName(),
+                        booking.getTool().getName(),
+                        booking.getStartDate().toString(),
+                        booking.getEndDate().toString(),
+                        booking.getTotalCost()
+                );
+                System.out.println("📬 Notification dispatched to user checkout mailbox.");
+            }
         } catch (Exception e) {
             System.err.println("❌ Could not send email via EmailService: " + e.getMessage());
         }

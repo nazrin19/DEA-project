@@ -9,7 +9,6 @@
     <title th:replace="${title}">Lankatools</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Modern interaction transitions */
         .transition-all {
             transition: all 0.25s ease-in-out;
         }
@@ -17,51 +16,75 @@
             transform: translateY(-4px);
             box-shadow: 0 0.75rem 2rem rgba(0,0,0,0.08) !important;
         }
+        .btn-signout {
+            background-color: #0c3966;
+            color: #f8fafc;
+            border: 2px solid #ffffff;
+            font-weight: 600;
+            border-radius: 0.8rem;
+            padding: 0.4rem 1.1rem;
+        }
+        .btn-signout:hover {
+            background-color: #ffffff;
+            color: #6c757d;
+            border-color: #e9ecef;
+        }
     </style>
 </head>
-<body class="d-flex flex-column h-100 bg-light">
+<body class="d-flex flex-column h-100 bg-light-subtle" style="color: #333333;">
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 shadow-sm border-bottom border-secondary border-opacity-25">
+<nav class="navbar navbar-expand-lg navbar-dark py-3 shadow-sm" style="background-color: #0c3966;">
     <div class="container">
         <a class="navbar-brand fw-bold text-white tracking-tight" href="/">
-            LANKA<span class="text-secondary fw-light">TOOLS</span>
+            LANKA<span class="opacity-75 fw-light">TOOLS</span>
         </a>
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
                 <li class="nav-item">
-                    <a class="nav-link active fw-medium" href="/">Home</a>
+                    <a class="nav-link active fw-semibold" href="/">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white-50" href="/tools">Browse Tools</a>
+                    <a class="nav-link text-white opacity-75" href="/tools">Browse Tools</a>
                 </li>
 
                 <li class="nav-item" sec:authorize="hasRole('SHOP_OWNER')">
-                    <a class="nav-link text-warning fw-medium" href="/shop/dashboard">Shop Dashboard</a>
+                    <a class="nav-link text-warning fw-semibold" href="/owner/dashboard">Shop Dashboard</a>
                 </li>
+
+                <li class="nav-item" sec:authorize="hasRole('CUSTOMER')">
+                    <a class="nav-link text-info fw-semibold" href="/customer/dashboard">Customer Dashboard</a>
+                </li>
+
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                    <a class="nav-link text-danger fw-medium" href="/admin/dashboard">Admin Dashboard</a>
+                    <a class="nav-link text-danger fw-semibold" href="/admin/dashboard">Admin Dashboard</a>
                 </li>
             </ul>
 
             <div class="d-flex align-items-center gap-2">
                 <div sec:authorize="isAnonymous()" class="d-flex gap-2">
-                    <a href="/login" class="btn btn-link text-white-50 text-decoration-none fw-medium px-3">Sign In</a>
-                    <a href="/register" class="btn btn-outline-light px-3 rounded-3 fw-medium transition-all">Register Account</a>
+                    <a href="/login" class="btn btn-link text-white opacity-75 text-decoration-none fw-semibold px-3">Sign In</a>
+                    <a href="/register" class="btn btn-outline-light px-3 rounded-3 fw-semibold transition-all">Register Account</a>
                 </div>
 
                 <div sec:authorize="isAuthenticated()" class="d-flex align-items-center gap-3">
-                    <span class="text-white-50 small">
-                        Welcome, <span class="text-white fw-medium" sec:authentication="name">User</span>
-                        <span class="badge bg-secondary text-white ms-1 font-monospace small"
-                              sec:authorize="hasRole('ADMIN')">Admin</span>
-                        <span class="badge bg-warning text-dark ms-1 font-monospace small"
-                              sec:authorize="hasRole('SHOP_OWNER')">Shop</span>
+                    <span class="text-white opacity-75 small">
+                        Welcome, <span class="text-white fw-semibold" sec:authentication="name">User</span>
+                        <span class="badge bg-purple-subtle text-purple border border-purple-subtle ms-1 font-monospace small"
+                              style="font-size: 0.65rem; font-weight: 700;"
+                              sec:authorize="hasRole('ADMIN')">ADMIN</span>
+                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle ms-1 font-monospace small"
+                              style="font-size: 0.65rem; font-weight: 700;"
+                              sec:authorize="hasRole('SHOP_OWNER')">SHOP</span>
+                        <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle ms-1 font-monospace small"
+                              style="font-size: 0.65rem; font-weight: 700;"
+                              sec:authorize="hasRole('CUSTOMER')">CUSTOMER</span>
                     </span>
                     <form th:action="@{/logout}" method="post" class="m-0">
-                        <button type="submit" class="btn btn-sm btn-outline-secondary px-3 text-white-50">Sign Out</button>
+                        <button type="submit" class="btn btn-signout transition-all">Sign Out</button>
                     </form>
                 </div>
             </div>

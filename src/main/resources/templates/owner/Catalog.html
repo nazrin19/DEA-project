@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::#tool-detail})}">
+<head>
+    <title th:text="${tool.name} + ' - LankaTools'">Tool Details - LankaTools</title>
+</head>
+<body>
+
+<div id="tool-detail" class="container py-5">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb small mb-0">
+            <li class="breadcrumb-item"><a href="/" class="text-decoration-none" style="color:#0c3966;">Home</a></li>
+            <li class="breadcrumb-item"><a href="/" class="text-decoration-none" style="color:#0c3966;">Catalog</a></li>
+            <li class="breadcrumb-item active text-muted" aria-current="page" th:text="${tool.name}">Tool</li>
+        </ol>
+    </nav>
+
+    <div class="card border-0 rounded-4 shadow overflow-hidden">
+        <div class="row g-0">
+
+            <!-- Image side -->
+            <div class="col-12 col-lg-6 position-relative d-flex align-items-center justify-content-center p-5"
+                 style="background: linear-gradient(135deg, #0c3966 0%, #133f70 100%);">
+
+                <span class="position-absolute top-0 start-0 m-4 small fw-bold text-uppercase rounded-pill px-3 py-2"
+                      style="background-color:#f0ad0e; color:#1a1a1a; letter-spacing:0.5px; font-size: 0.7rem; z-index: 2;"
+                      th:text="${tool.category}">Category</span>
+
+                <span class="position-absolute top-0 end-0 m-4 small fw-semibold px-3 py-2 rounded-pill"
+                      style="background-color:rgba(255,255,255,0.15); color:#ffffff; z-index: 2; backdrop-filter: blur(4px);"
+                      th:text="${tool.status}">AVAILABLE</span>
+
+                <div class="w-100 bg-white rounded-4 shadow d-flex align-items-center justify-content-center overflow-hidden"
+                     style="max-width: 380px; aspect-ratio: 1 / 1;">
+                    <img th:src="@{${tool.imageUrl}}"
+                         onerror="this.onerror=null; this.src='/images/default-tool.png';"
+                         class="p-4"
+                         style="max-width: 100%; max-height: 100%; object-fit: contain;"
+                         alt="Detailed Tool Image">
+                </div>
+            </div>
+
+            <!-- Details side -->
+            <div class="col-12 col-lg-6 p-4 p-lg-5 d-flex flex-column justify-content-between bg-white">
+
+                <div>
+                    <h1 class="h2 fw-black text-dark mb-3" th:text="${tool.name}">Industrial Jackhammer</h1>
+
+                    <div class="d-flex align-items-baseline gap-2 mb-4">
+                        <span class="fs-2 fw-black" style="color:#0c3966;">
+                            Rs. <span th:text="${tool.dailyRate}">0.00</span>
+                        </span>
+                        <span class="text-muted small">/ per day</span>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-6">
+                            <div class="d-flex align-items-center gap-2 p-3 rounded-4" style="background-color:#f8fafc; border:1px solid #eef1f4;">
+                                <div class="d-flex align-items-center justify-content-center rounded-circle" style="width:2.25rem; height:2.25rem; background-color:#eef3f8;">
+                                    <i class="fa-solid fa-shield-halved" style="color:#0c3966; font-size:0.9rem;"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-0 text-muted" style="font-size:0.65rem; letter-spacing:0.5px;" class="text-uppercase fw-bold">Verified</p>
+                                    <p class="mb-0 small fw-semibold text-dark">Merchant Account</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center gap-2 p-3 rounded-4" style="background-color:#f8fafc; border:1px solid #eef1f4;">
+                                <div class="d-flex align-items-center justify-content-center rounded-circle" style="width:2.25rem; height:2.25rem; background-color:#eef3f8;">
+                                    <i class="fa-solid fa-truck-fast" style="color:#0c3966; font-size:0.9rem;"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-0 text-uppercase text-muted fw-bold" style="font-size:0.65rem; letter-spacing:0.5px;">Booking</p>
+                                    <p class="mb-0 small fw-semibold text-dark">Instant Confirm</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2 class="small fw-bold text-uppercase text-muted mb-2" style="letter-spacing:0.5px;">Product Description</h2>
+                        <p class="text-muted" style="white-space: pre-line; line-height: 1.7;" th:text="${tool.description}">
+                            No description provided for this item.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-4 border-top">
+                    <div class="d-flex align-items-center gap-3 rounded-4 p-3 mb-4" style="background-color:#eef3f8; border:1px solid #dde7f0;">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle text-white fw-bold flex-shrink-0"
+                             style="width:2.75rem; height:2.75rem; background-color:#0c3966; font-size: 0.95rem;"
+                             th:text="${#strings.substring(tool.owner.name, 0, 1)}">S</div>
+                        <div>
+                            <p class="small fw-medium mb-0" style="color:#0c3966;">
+                                Owned by <span class="fw-bold" th:text="${tool.owner.name}">Shop Owner Name</span>
+                            </p>
+                            <p class="mb-0" style="color:#0c3966; font-size: 0.75rem;">
+                                <i class="fa-solid fa-badge-check"></i> Verified Merchant Account
+                            </p>
+                        </div>
+                    </div>
+
+                    <a th:href="@{/bookings/checkout(toolId=${tool.id})}"
+                       class="btn text-white fw-bold rounded-3 py-3 w-100 d-flex align-items-center justify-content-center gap-2 shadow-sm"
+                       style="background-color:#0c3966;">
+                        <i class="fa-solid fa-calendar-check"></i> Book This Equipment
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

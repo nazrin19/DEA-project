@@ -17,6 +17,27 @@
 </header>
 
 <main class="max-w-3xl mx-auto px-4 py-12">
+
+    <div th:if="${param.error != null && param.error[0] == 'dates_overlap'}"
+         class="alert alert-danger d-flex align-items-center mb-4 p-3"
+         style="border-radius: 12px; background-color: #f8d7da; border-color: #f5c6cb; color: #721c24;">
+        <i class="fa-solid fa-circle-exclamation me-3 fs-5" style="color: #dc3545;"></i>
+        <div>
+            <strong class="d-block" style="font-size: 0.9rem;">Dates Already Reserved</strong>
+            <span style="font-size: 0.8rem; opacity: 0.9;">This tool is already booked for the chosen timeframe. Please choose a different date combination.</span>
+        </div>
+    </div>
+
+    <div th:if="${param.error != null && param.error[0] == 'booking_failed'}"
+         class="alert alert-warning d-flex align-items-center mb-4 p-3"
+         style="border-radius: 12px; background-color: #fff3cd; border-color: #ffeeba; color: #856404;">
+        <i class="fa-solid fa-triangle-exclamation me-3 fs-5" style="color: #ffc107;"></i>
+        <div>
+            <strong class="d-block" style="font-size: 0.9rem;">Processing Failure</strong>
+            <span style="font-size: 0.8rem; opacity: 0.9;">An unexpected exception occurred while finalizing your order. Please check your data entry and try again.</span>
+        </div>
+    </div>
+
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden p-8">
 
         <h1 class="text-2xl font-black text-slate-900 tracking-tight mb-6">Confirm Rental Details</h1>
@@ -31,6 +52,9 @@
 
         <form th:action="@{/bookings}" method="post" class="space-y-6">
             <input type="hidden" name="toolId" th:value="${tool.id}" />
+
+            <!-- 🔑 CSRF Security Handshake Token Field Added Here -->
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -68,33 +92,43 @@
 </main>
 
 <script>
-    const startInput = document.getElementById('startDate');
-    const endInput = document.getElementById('endDate');
-    const daysDisplay = document.getElementById('daysCount');
-    const costDisplay = document.getElementById('totalCost');
-    const dailyRate = parseFloat(document.getElementById('dailyRate').innerText);
+    document.addEventListener("DOMContentLoaded", function () {
+        const startInput = document.getElementById('startDate');
+        const endInput = document.getElementById('endDate');
+        const daysDisplay = document.getElementById('daysCount');
+        const costDisplay = document.getElementById('totalCost');
 
-    function calculateCost() {
-        if (startInput.value && endInput.value) {
-            const start = new Date(startInput.value);
-            const end = new Date(endInput.value);
+        const dailyRate = parseFloat("[[${tool.dailyRate}]]") || parseFloat(document.getElementById('dailyRate').innerText) || 0;
 
-            // Calculate differences in days
-            const diffTime = end - start;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // including start day
+        function calculateCost() {
+            if (startInput.value && endInput.value) {
+                endInput.min = startInput.value;
 
-            if (diffDays > 0) {
-                daysDisplay.innerText = diffDays;
-                costDisplay.innerText = (diffDays * dailyRate).toFixed(2);
+                const start = new Date(startInput.value);
+                const end = new Date(endInput.value);
+
+                start.setHours(0, 0, 0, 0);
+                end.setHours(0, 0, 0, 0);
+
+                const diffTime = end.getTime() - start.getTime();
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+                if (diffDays > 0) {
+                    daysDisplay.innerText = diffDays;
+                    costDisplay.innerText = (diffDays * dailyRate).toFixed(2);
+                } else {
+                    daysDisplay.innerText = "0";
+                    costDisplay.innerText = "0.00";
+                }
             } else {
                 daysDisplay.innerText = "0";
                 costDisplay.innerText = "0.00";
             }
         }
-    }
 
-    startInput.addEventListener('change', calculateCost);
-    endInput.addEventListener('change', calculateCost);
+        startInput.addEventListener('change', calculateCost);
+        endInput.addEventListener('change', calculateCost);
+    });
 </script>
 </body>
 </html>

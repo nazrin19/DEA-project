@@ -18,27 +18,23 @@ public class HomeController {
     @GetMapping("/")
     public String index(
             @RequestParam(value = "query", required = false) String query,
-            @RequestParam(value = "category", required = false) String category,
             @RequestParam(value = "page", defaultValue = "0") int page,
             Model model) {
 
         int pageSize = 6;
         Page<Tool> toolPage;
-
-        // 🎯 CRITICAL FIX: Only display tools that have been explicitly APPROVED by an administrator
         String activeStatus = "APPROVED";
 
-        if (query != null && !query.trim().isEmpty()) {
+        boolean hasQuery = query != null && !query.trim().isEmpty();
+
+        // 🎯 Filter exclusively by text query (name lookup)
+        if (hasQuery) {
             toolPage = toolService.searchToolsByNameAndStatusPaginated(query.trim(), activeStatus, page, pageSize);
             model.addAttribute("searchQuery", query);
-        } else if (category != null && !category.trim().isEmpty()) {
-            toolPage = toolService.getToolsByCategoryAndStatusPaginated(category.trim(), activeStatus, page, pageSize);
-            model.addAttribute("selectedCategory", category);
         } else {
             toolPage = toolService.getToolsByStatusWithPagination(activeStatus, page, pageSize, "id", "asc");
         }
 
-        // Count only the approved/available tools for the UI metrics
         long totalAvailableTools = toolService.countToolsByStatus(activeStatus);
 
         model.addAttribute("tools", toolPage.getContent());

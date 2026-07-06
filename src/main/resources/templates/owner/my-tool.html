@@ -1,59 +1,59 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::#my-tools})}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Tools Catalog - LankaTools</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-slate-50 font-sans text-slate-800">
+<body>
 
-<div class="max-w-6xl mx-auto px-4 py-8">
-    <header class="flex justify-between items-center mb-8">
+<div id="my-tools" class="container py-5">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
         <div>
-            <a href="/owner/dashboard" class="text-sm font-semibold text-blue-600 hover:underline flex items-center gap-1 mb-2">
-                <i class="fa-solid fa-arrow-left text-xs"></i> Back to Dashboard
+            <a href="/owner/dashboard" class="small fw-semibold text-decoration-none d-inline-flex align-items-center gap-1 mb-2" style="color:#0c3966;">
+                <i class="fa-solid fa-arrow-left" style="font-size: 0.7rem;"></i> Back to Dashboard
             </a>
-            <h1 class="text-2xl font-black text-slate-900">Your Managed Inventory</h1>
+            <h1 class="h3 fw-black text-dark mb-0">Your Managed Inventory</h1>
         </div>
-        <a href="/owner/upload-tool" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all">
+        <a href="/owner/upload-tool" class="btn text-white fw-semibold rounded-3 px-4 py-2" style="background-color:#0c3966;">
             Add Another Item
         </a>
-    </header>
+    </div>
 
-    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+    <div class="card border border-light-subtle rounded-4 shadow-sm overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
                 <thead>
-                <tr class="bg-slate-100 text-slate-600 text-xs uppercase font-bold tracking-wider border-b border-slate-200">
-                    <th class="p-4">Equipment Info</th>
-                    <th class="p-4">Category</th>
-                    <th class="p-4">Daily Rate</th>
-                    <th class="p-4">Moderation Status</th>
+                <tr class="text-uppercase small fw-bold text-muted" style="background-color:#f1f5f9; letter-spacing:0.5px;">
+                    <th class="p-3">Equipment Info</th>
+                    <th class="p-3">Category</th>
+                    <th class="p-3">Daily Rate</th>
+                    <th class="p-3">Moderation Status</th>
                 </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-200 text-sm">
+                <tbody>
                 <tr th:if="${tools == null || tools.empty}">
-                    <td colspan="4" class="p-8 text-center text-slate-400 italic">
+                    <td colspan="4" class="p-5 text-center text-muted fst-italic">
                         No equipment catalog records found. Click "Add Another Item" to start.
                     </td>
                 </tr>
-                <tr th:each="tool : ${tools}" class="hover:bg-slate-50/80 transition-colors">
-                    <td class="p-4 flex items-center gap-3">
+                <tr th:each="tool : ${tools}">
+                    <td class="p-3 d-flex align-items-center gap-3">
                         <img th:src="${tool.imageUrl != null && !tool.imageUrl.empty} ? ${tool.imageUrl} : '/uploads/default-placeholder.png'"
-                             class="w-12 h-12 object-cover rounded-lg bg-slate-100 border border-slate-200"
+                             class="rounded-3 border border-light-subtle"
+                             style="width: 3rem; height: 3rem; object-fit: cover; background-color: #f1f5f9;"
                              onerror="this.src='/uploads/default-placeholder.png'">
                         <div>
-                            <span class="font-bold text-slate-900 block" th:text="${tool.name}">Heavy Duty Jackhammer</span>
-                            <span class="text-xs text-slate-400 line-clamp-1 max-w-sm" th:text="${tool.description}">Description</span>
+                            <span class="fw-bold text-dark d-block" th:text="${tool.name}">Heavy Duty Jackhammer</span>
+                            <span class="text-muted small text-truncate d-block" style="max-width: 320px;" th:text="${tool.description}">Description</span>
                         </div>
                     </td>
-                    <td class="p-4 text-slate-600" th:text="${tool.category}">Power Tools</td>
-                    <td class="p-4 font-bold text-slate-900">Rs. <span th:text="${tool.dailyRate}">0.00</span></td>
-                    <td class="p-4">
-                        <span class="px-2.5 py-1 text-xs font-bold rounded-full"
-                              th:classappend="${#strings.toString(tool.status) == 'APPROVED'} ? 'bg-emerald-100 text-emerald-800' : (${#strings.toString(tool.status) == 'PENDING'} ? 'bg-amber-100 text-amber-800' : 'bg-rose-100 text-rose-800')"
+                    <td class="p-3 text-muted" th:text="${tool.category}">Power Tools</td>
+                    <td class="p-3 fw-bold text-dark">Rs. <span th:text="${tool.dailyRate}">0.00</span></td>
+                    <td class="p-3">
+                        <span class="px-3 py-1 small fw-bold rounded-pill"
+                              th:classappend="${#strings.toString(tool.status) == 'APPROVED'} ? 'bg-success-subtle text-success-emphasis' : (${#strings.toString(tool.status) == 'PENDING'} ? 'bg-warning-subtle text-warning-emphasis' : 'bg-danger-subtle text-danger-emphasis')"
                               th:text="${tool.status}">
                             PENDING
                         </span>

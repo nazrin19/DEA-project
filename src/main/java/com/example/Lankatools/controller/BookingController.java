@@ -19,6 +19,7 @@ import com.example.Lankatools.entity.Booking;
 import com.example.Lankatools.entity.Tool;
 import com.example.Lankatools.service.BookingService;
 import com.example.Lankatools.service.ToolService;
+import com.example.Lankatools.service.EmailService; // Imported EmailService
 
 @Controller
 public class BookingController {
@@ -29,9 +30,11 @@ public class BookingController {
     @Autowired
     private ToolService toolService;
 
+    @Autowired
+    private EmailService emailService; // Injected EmailService
+
     /**
      * 1. STANDARD FORM SUBMISSION GATEWAY (Thymeleaf UI Form Post Action)
-     * Processes requests directly from your booking-form.html template submission.
      */
     @PostMapping("/bookings")
     public String handleNewBooking(@RequestParam("toolId") Long toolId,
@@ -50,7 +53,6 @@ public class BookingController {
             LocalDate parsedStart = LocalDate.parse(startDate);
             LocalDate parsedEnd = LocalDate.parse(endDate);
 
-            // Save booking instance to database (Email notifications run internally)
             bookingService.createBooking(principal.getName(), toolId, parsedStart, parsedEnd);
 
         } catch (IllegalArgumentException e) {
@@ -61,14 +63,63 @@ public class BookingController {
             return "redirect:/?error=booking_failed";
         }
 
-        return "redirect:/customer/bookings"; // Redirects customer straight to their history after booking!
+        return "redirect:/customer/bookings";
     }
 
+    /**
+     * 👑 OWNER FORM ACTION ENDPOINTS (Thymeleaf Dashboard UI Actions)
+     */
+    @PostMapping("/owner/bookings/{id}/approve")
+    public String approveRentalBooking(@PathVariable("id") Long id, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
 
+        try {
+            // 1. Confirm the booking status to database (sets to CONFIRMED)
+            bookingService.confirmBooking(id, principal.getName());
+            System.out.println("🚀 UI Action: Booking ID " + id + " approved (CONFIRMED) successfully.");
+
+            // 2. Fetch the fully mapped booking object to gather strings safely
+            Booking updatedBooking = bookingService.findById(id);
+            if (updatedBooking != null && updatedBooking.getCustomer() != null && updatedBooking.getTool() != null) {
+
+                // 3. Dispatch the real-time confirmation email over secure SMTP
+                emailService.sendBookingConfirmation(
+                        updatedBooking.getCustomer().getEmail(),
+                        updatedBooking.getCustomer().getName(),
+                        updatedBooking.getTool().getName(),
+                        updatedBooking.getStartDate().toString(),
+                        updatedBooking.getEndDate().toString(),
+                        updatedBooking.getTotalCost()
+                );
+                System.out.println("📬 Success: Approval confirmation email dispatched to " + updatedBooking.getCustomer().getEmail());
+            }
+        } catch (Exception e) {
+            System.err.println("Error processing booking approval/email dispatch via UI: " + e.getMessage());
+        }
+
+        return "redirect:/owner/rental-requests";
+    }
+
+    @PostMapping("/owner/bookings/{id}/reject")
+    public String rejectRentalBooking(@PathVariable("id") Long id, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            bookingService.rejectBooking(id, principal.getName());
+            System.out.println("🛡️ UI Action: Booking ID " + id + " marked REJECTED.");
+        } catch (Exception e) {
+            System.err.println("Error processing booking rejection via UI: " + e.getMessage());
+        }
+
+        return "redirect:/owner/rental-requests";
+    }
 
     /**
      * 🎯 DEDICATED THYMELEAF VIEW ROUTE
-     * Maps the "Track Rentals & History" arrow click from your dashboard to the UI template.
      */
     @GetMapping("/customer/bookings")
     public String showCustomerBookingsPage(Model model, Principal principal) {
@@ -76,13 +127,10 @@ public class BookingController {
             return "redirect:/login";
         }
 
-        // Fetch user bookings list from database service layer
         List<Booking> customerBookings = bookingService.getBookingsForCustomer(principal.getName());
-
-        // Bind data collection down into Thymeleaf layout template contexts
         model.addAttribute("bookings", customerBookings);
 
-        return "customer/bookings"; // Resolves to src/main/resources/templates/customer/bookings.html
+        return "customer/bookings";
     }
 
     // DEDICATED CALCULATOR CHECKOUT GATEWAY VIEW ROUTE
@@ -92,7 +140,7 @@ public class BookingController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid tool Id: " + toolId));
 
         model.addAttribute("tool", tool);
-        return "checkout"; // Opens src/main/resources/templates/checkout.html
+        return "checkout";
     }
 
     // 2. REST API ENDPOINTS SECTION (For AJAX / JavaScript Fetch Interactions)
@@ -140,7 +188,6 @@ public class BookingController {
         return bookingService.markReturned(id, principal.getName());
     }
 
-    // DTO Inner Class Structure payload container mapping properties
     public static class BookingRequest {
         private Long toolId;
         private String startDate;

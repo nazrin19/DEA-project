@@ -1,111 +1,123 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::#upload-tool})}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>List New Equipment - LankaTools</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-slate-50 font-sans text-slate-800 min-h-screen flex flex-col justify-between">
+<body>
 
-<div class="max-w-xl mx-auto w-full px-4 py-10">
-    <div class="mb-6">
-        <a th:href="@{/owner/dashboard}" class="text-sm font-semibold text-blue-600 hover:underline flex items-center gap-1 mb-2">
-            <i class="fa-solid fa-arrow-left text-xs"></i> Back to Dashboard
-        </a>
-        <h1 class="text-2xl font-black text-slate-900 tracking-tight">List New Hardware Gear</h1>
-        <p class="text-slate-500 text-sm mt-0.5">Submitted assets default to pending state verification status.</p>
-    </div>
+<div id="upload-tool" class="container py-5">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
-    <div id="statusAlert" class="hidden p-4 mb-6 text-sm font-semibold rounded-lg transition-all"></div>
-
-    <form id="uploadToolForm" enctype="multipart/form-data" class="bg-white p-6 rounded-xl border border-slate-200 shadow-md space-y-5">
-        <div>
-            <label class="block text-xs uppercase font-bold tracking-wider text-slate-500 mb-2">Equipment Name</label>
-            <input type="text" name="name" required placeholder="e.g., Heavy Duty Demolition Jackhammer"
-                   class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/50">
+    <div class="mx-auto" style="max-width: 576px;">
+        <div class="mb-4">
+            <a th:href="@{/owner/dashboard}" class="small fw-semibold text-decoration-none d-inline-flex align-items-center gap-1 mb-2" style="color:#0c3966;">
+                <i class="fa-solid fa-arrow-left" style="font-size: 0.7rem;"></i> Back to Dashboard
+            </a>
+            <h1 class="h3 fw-black text-dark mb-1">List New Hardware Gear</h1>
+            <p class="text-muted small mb-0">Submitted assets default to pending state verification status.</p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-                <label class="block text-xs uppercase font-bold tracking-wider text-slate-500 mb-2">Equipment Category</label>
-                <select name="category" required
-                        class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/50">
-                    <option value="Power Tools">Power Tools</option>
-                    <option value="Access Equipment">Access Equipment</option>
-                    <option value="Concrete Machinery">Concrete Machinery</option>
-                    <option value="Gardening & Landscaping">Gardening & Landscaping</option>
-                </select>
+        <div id="statusAlert" class="d-none p-3 mb-4 small fw-semibold rounded-3"></div>
+
+        <form id="uploadToolForm" enctype="multipart/form-data" class="card border-0 rounded-4 p-4 p-sm-5" style="box-shadow: 0 0.8rem 2rem rgba(0,0,0,0.06); background-color: #f1f5f9;">
+            <div class="mb-4">
+                <label class="small text-muted mb-1 d-block">Equipment Name</label>
+                <input type="text" name="name" required placeholder="e.g., Heavy Duty Demolition Jackhammer"
+                       class="form-control border-0 border-bottom rounded-0 px-0" style="box-shadow:none;">
             </div>
-            <div>
-                <label class="block text-xs uppercase font-bold tracking-wider text-slate-500 mb-2">Daily Rental Rate (Rs.)</label>
-                <input type="number" step="0.01" name="dailyRate" required placeholder="3500.00"
-                       class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/50">
-            </div>
-        </div>
 
-        <div>
-            <label class="block text-xs uppercase font-bold tracking-wider text-slate-500 mb-2">Detailed Condition/Description</label>
-            <textarea name="description" rows="4" required placeholder="Provide breakdown context info regarding engine power outputs, attachments..."
-                      class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/50"></textarea>
-        </div>
-
-        <div>
-            <label class="block text-xs uppercase font-bold tracking-wider text-slate-500 mb-2">Hardware Presentation Image Attachment</label>
-            <div class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center bg-slate-50/30 hover:bg-slate-50 transition-all relative">
-                <input type="file" name="file" accept="image/png, image/jpeg, image/jpg" class="absolute inset-0 opacity-0 cursor-pointer">
-                <div class="space-y-1">
-                    <i class="fa-solid fa-cloud-arrow-up text-slate-400 text-xl block mb-1"></i>
-                    <span class="text-sm font-semibold text-slate-600 block">Choose file attachment</span>
-                    <span class="text-xs text-slate-400 block">JPEG, JPG, PNG up to 2MB asset capacity limits</span>
+            <div class="row g-4 mb-4">
+                <div class="col-12 col-sm-6">
+                    <label class="small text-muted mb-1 d-block">Equipment Category</label>
+                    <select name="category" required class="form-select border-0 border-bottom rounded-0 px-0" style="box-shadow:none;">
+                        <option value="Power Tools">Power Tools</option>
+                        <option value="Access Equipment">Access Equipment</option>
+                        <option value="Concrete Machinery">Concrete Machinery</option>
+                        <option value="Gardening & Landscaping">Gardening & Landscaping</option>
+                    </select>
+                </div>
+                <div class="col-12 col-sm-6">
+                    <label class="small text-muted mb-1 d-block">Daily Rental Rate (Rs.)</label>
+                    <input type="number" step="0.01" name="dailyRate" required placeholder="3500.00"
+                           class="form-control border-0 border-bottom rounded-0 px-0" style="box-shadow:none;">
                 </div>
             </div>
-        </div>
 
-        <button type="submit" id="submitBtn" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-sm transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer">
-            <span>Deploy Registration Listing</span>
-        </button>
-    </form>
+            <div class="mb-4">
+                <label class="small text-muted mb-1 d-block">Detailed Condition/Description</label>
+                <textarea name="description" rows="3" required placeholder="Provide breakdown context info regarding engine power outputs, attachments..."
+                          class="form-control border-0 border-bottom rounded-0 px-0" style="box-shadow:none;"></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label class="small text-muted mb-2 d-block">Hardware Presentation Image Attachment</label>
+                <div class="border border-2 border-dashed rounded-4 p-4 text-center position-relative" style="background-color:#f8fafc; border-style: dashed !important;">
+                    <input type="file" name="file" accept="image/png, image/jpeg, image/jpg" class="position-absolute top-0 start-0 w-100 h-100 opacity-0" style="cursor:pointer;">
+                    <div>
+                        <i class="fa-solid fa-cloud-arrow-up text-muted fs-4 d-block mb-1"></i>
+                        <span class="small fw-semibold text-dark d-block">Choose file attachment</span>
+                        <span class="text-muted d-block" style="font-size: 0.75rem;">JPEG, JPG, PNG up to 2MB asset capacity limits</span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn text-white fw-semibold rounded-pill py-2 px-4 d-inline-flex align-items-center gap-2" style="background-color:#0c3966; width: fit-content;">
+                <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-white" style="width:1.5rem; height:1.5rem;">
+                    <i class="fa-solid fa-check" style="color:#0c3966; font-size:0.7rem;"></i>
+                </span>
+                <span>Deploy Registration Listing</span>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("uploadToolForm").addEventListener("submit", async (e) => {
+            e.preventDefault(); // Prevents browser form submission reload fallback
+
+            const form = e.target;
+            const formData = new FormData(form);
+            const alertBox = document.getElementById("statusAlert");
+            const submitBtn = document.getElementById("submitBtn");
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Processing submission streams...";
+
+            // 🛡️ Safe & robust clean extraction of the CSRF token from the DOM
+            const tokenInput = form.querySelector("input[name='_csrf']");
+            const token = tokenInput ? tokenInput.value : "";
+            const header = "X-CSRF-TOKEN";
+
+            try {
+                const response = await fetch('/api/tools/save', {
+                    method: 'POST',
+                    headers: {
+                        [header]: token
+                    },
+                    body: formData
+                });
+
+                if (response.status === 201 || response.ok) {
+                    alertBox.className = "p-3 mb-4 small fw-semibold rounded-3 bg-success-subtle text-success-emphasis border border-success-subtle";
+                    alertBox.innerText = "✨ Success! Your tool listing has been uploaded and queued for admin moderation.";
+                    alertBox.classList.remove("d-none");
+                    form.reset();
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(errorText || "An unexpected error occurred.");
+                }
+
+            } catch (err) {
+                alertBox.className = "p-3 mb-4 small fw-semibold rounded-3 bg-danger-subtle text-danger-emphasis border border-danger-subtle";
+                alertBox.innerText = "❌ Upload Failed: " + err.message;
+                alertBox.classList.remove("d-none");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Deploy Registration Listing";
+            }
+        });
+    </script>
 </div>
 
-<script>
-    document.getElementById("uploadToolForm").addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const form = e.target;
-        const formData = new FormData(form);
-        const alertBox = document.getElementById("statusAlert");
-        const submitBtn = document.getElementById("submitBtn");
-
-        submitBtn.disabled = true;
-        submitBtn.innerText = "Processing submission streams...";
-
-        try {
-            const response = await fetch('/api/tools/save', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (response.status === 201 || response.ok) {
-                alertBox.className = "p-4 mb-6 text-sm font-semibold rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-200";
-                alertBox.innerText = "✨ Success! Your tool listing has been uploaded and queued for admin moderation.";
-                alertBox.classList.remove("hidden");
-                form.reset();
-            } else {
-                const errorText = await response.text();
-                throw new Error(errorText || "An unexpected error occurred.");
-            }
-
-        } catch (err) {
-            alertBox.className = "p-4 mb-6 text-sm font-semibold rounded-lg bg-rose-100 text-rose-800 border border-rose-200";
-            alertBox.innerText = "❌ Upload Failed: " + err.message;
-            alertBox.classList.remove("hidden");
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerText = "Deploy Registration Listing";
-        }
-    });
-</script>
 </body>
 </html>

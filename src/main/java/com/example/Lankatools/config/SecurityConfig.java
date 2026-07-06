@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/owner/**").hasRole("SHOP_OWNER") // <-- Updated to /owner/**
                         .requestMatchers("/customer/**").hasRole("CUSTOMER")
 
+
                         .anyRequest().authenticated()
                 )
 

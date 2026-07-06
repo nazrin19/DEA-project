@@ -4,33 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Account | Lankatools</title>
-    <!-- Tailwind CSS with custom theme config -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            500: '#007bff',
-                            600: '#0069d9',
-                            700: '#0056b3',
-                            900: '#0a1d37',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(180deg, #022050 0%, #001230 40%, #ffffff 75%);
+            background-color: #f1f3f5;
+        }
+        .auth-card {
+            border-radius: 0;
+            overflow: hidden;
+            box-shadow: none;
+            min-height: 100vh;
+        }
+        .auth-side {
+            background-color: #0c3966;
+            background-image: linear-gradient(rgba(6,30,58,0.88), rgba(6,30,58,0.92)), url('/images/login-bg tool.jpg');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .form-control-lg-custom {
+            padding: 0.65rem 1rem 0.65rem 2.75rem;
+            border-radius: 0.75rem;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+        .form-control-lg-custom:focus {
+            box-shadow: 0 0 0 0.2rem rgba(12,57,102,0.15);
+            border-color: #0c3966;
+            background-color: #ffffff;
+        }
+        .input-icon {
+            position: absolute;
+            top: 50%;
+            left: 1rem;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            z-index: 5;
+        }
+        @media (min-width: 768px) {
+            .col-left { flex: 0 0 55%; max-width: 55%; }
+            .col-right { flex: 0 0 45%; max-width: 45%; }
         }
     </style>
     <script>
@@ -39,144 +58,145 @@
             const shopFields = document.getElementById('shop-fields');
             const shopNameInput = document.getElementById('shopName');
             const shopAddressInput = document.getElementById('shopAddress');
-            
+
             if (roleSelect.value === 'SHOP_OWNER') {
-                shopFields.classList.remove('hidden');
+                shopFields.classList.remove('d-none');
                 shopNameInput.required = true;
                 shopAddressInput.required = true;
             } else {
-                shopFields.classList.add('hidden');
+                shopFields.classList.add('d-none');
                 shopNameInput.required = false;
                 shopAddressInput.required = false;
             }
         }
     </script>
 </head>
-<body class="min-h-screen flex flex-col justify-center items-center p-4 sm:p-6 md:p-8 antialiased">
+<body class="min-vh-100 d-flex align-items-center justify-content-center p-0">
 
-    <!-- Register Card Container -->
-    <div class="w-full max-w-[540px] bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100 p-8 sm:p-10 transition-all duration-300 my-8">
-        
-        <!-- Header -->
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Create Account</h1>
-            <p class="text-slate-500 text-sm font-medium">Join the Lanka Tools sharing platform</p>
-            <div class="h-[1px] w-full bg-slate-100 mt-6"></div>
+<div class="auth-card bg-white w-100 h-100" style="max-width: 100%;">
+    <div class="row g-0 h-100 min-vh-100">
+
+        <!-- Left brand panel -->
+        <div class="col-12 col-left auth-side text-white p-5 d-flex flex-column justify-content-between">
+            <div>
+                <a href="/" class="text-white text-decoration-none fw-bold fs-5">
+                    LANKA<span class="opacity-75 fw-light">TOOLS</span>
+                </a>
+                <h2 class="fw-bold mt-5 mb-2" style="font-size: 1.75rem;">Join the LankaTools community</h2>
+                <p class="opacity-75 small mb-0">Create an account to hire equipment from trusted shops, or list your own tools for rent across Sri Lanka.</p>
+            </div>
+            <div class="small opacity-50">
+                &copy; 2026 Lankatools Asset Management System
+            </div>
         </div>
 
-        <!-- Error Alert -->
-        <div th:if="${param.error}" class="mb-6 p-4 bg-rose-50 border-l-4 border-rose-500 rounded-r-lg text-rose-800 text-sm flex items-start gap-3">
-            <i class="fa-solid fa-triangle-exclamation mt-0.5 text-rose-600"></i>
-            <div>
-                <span class="font-bold">Registration Failed:</span> Email may already be in use or inputs are invalid. Please check and try again.
+        <!-- Right form panel -->
+        <div class="col-12 col-right p-4 p-sm-5 d-flex flex-column justify-content-center">
+
+            <div class="mb-4">
+                <h1 class="h3 fw-black text-dark mb-1">Create Account</h1>
+                <p class="text-muted small mb-0">Join the Lanka Tools sharing platform</p>
             </div>
+
+            <!-- Error Alert -->
+            <div th:if="${param.error}" class="mb-4 p-3 small rounded-3 d-flex align-items-start gap-2"
+                 style="background-color:#fff1f2; border-left: 4px solid #e11d48; color:#9f1239;">
+                <i class="fa-solid fa-triangle-exclamation mt-1"></i>
+                <div><span class="fw-bold">Registration Failed:</span> Email may already be in use or inputs are invalid. Please check and try again.</div>
+            </div>
+
+            <!-- Registration Form -->
+            <form th:action="@{/register}" method="POST">
+
+                <!-- Full Name -->
+                <div class="mb-3">
+                    <label for="name" class="form-label small fw-semibold text-dark">Full Name</label>
+                    <div class="position-relative">
+                        <i class="fa-regular fa-user input-icon"></i>
+                        <input type="text" id="name" name="name" required placeholder="John Doe"
+                               class="form-control form-control-lg-custom">
+                    </div>
+                </div>
+
+                <!-- Email Address -->
+                <div class="mb-3">
+                    <label for="email" class="form-label small fw-semibold text-dark">Email Address</label>
+                    <div class="position-relative">
+                        <i class="fa-regular fa-envelope input-icon"></i>
+                        <input type="email" id="email" name="email" required placeholder="name@example.com"
+                               class="form-control form-control-lg-custom">
+                    </div>
+                </div>
+
+                <!-- Phone and Password Grid -->
+                <div class="row g-3 mb-3">
+                    <div class="col-12 col-sm-6">
+                        <label for="phone" class="form-label small fw-semibold text-dark">Phone Number</label>
+                        <div class="position-relative">
+                            <i class="fa-solid fa-phone input-icon" style="font-size: 0.85rem;"></i>
+                            <input type="tel" id="phone" name="phone" required placeholder="07XXXXXXXX"
+                                   class="form-control form-control-lg-custom">
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <label for="password" class="form-label small fw-semibold text-dark">Password</label>
+                        <div class="position-relative">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input type="password" id="password" name="password" required placeholder="••••••••"
+                                   class="form-control form-control-lg-custom">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Role Selector -->
+                <div class="mb-3">
+                    <label for="role" class="form-label small fw-semibold text-dark">Select Role</label>
+                    <div class="position-relative">
+                        <i class="fa-solid fa-user-gear input-icon"></i>
+                        <select id="role" name="role" required onchange="handleRoleChange()"
+                                class="form-select form-control-lg-custom">
+                            <option value="CUSTOMER">Customer (Hire tools from others)</option>
+                            <option value="SHOP_OWNER">Shop Owner (List tools for hire)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Conditional Shop Info Block -->
+                <div id="shop-fields" class="d-none p-3 rounded-4 mb-3" style="background-color:#eff6ff; border: 1px solid #dbeafe;">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <i class="fa-solid fa-store" style="color:#0c3966;"></i>
+                        <h3 class="small fw-bold text-dark mb-0">Shop Registration Details</h3>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-12 col-sm-6">
+                            <label for="shopName" class="form-label text-muted mb-1" style="font-size: 0.75rem;">Shop Name</label>
+                            <input type="text" id="shopName" name="shopName" placeholder="Lanka Hardware"
+                                   class="form-control rounded-3" style="font-size: 0.8rem;">
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <label for="shopAddress" class="form-label text-muted mb-1" style="font-size: 0.75rem;">Shop Address</label>
+                            <input type="text" id="shopAddress" name="shopAddress" placeholder="Colombo, Sri Lanka"
+                                   class="form-control rounded-3" style="font-size: 0.8rem;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit"
+                        class="btn text-white fw-bold rounded-3 py-2 w-100 mb-3" style="background-color:#0c3966;">
+                    Create Free Account
+                </button>
+
+                <!-- Sign In Link -->
+                <div class="text-center small text-muted">
+                    Already have an account?
+                    <a th:href="@{/login}" class="fw-bold text-decoration-none" style="color:#0c3966;">Sign In here</a>
+                </div>
+
+            </form>
         </div>
-
-        <!-- Registration Form -->
-        <form th:action="@{/register}" method="POST" class="space-y-5">
-            
-            <!-- Full Name -->
-            <div>
-                <label for="name" class="block text-sm font-semibold text-slate-700 mb-2">Full Name</label>
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
-                        <i class="fa-regular fa-user text-base"></i>
-                    </span>
-                    <input type="text" id="name" name="name" required placeholder="John Doe"
-                           class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-sm font-medium">
-                </div>
-            </div>
-
-            <!-- Email Address -->
-            <div>
-                <label for="email" class="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
-                        <i class="fa-regular fa-envelope text-base"></i>
-                    </span>
-                    <input type="email" id="email" name="email" required placeholder="name@example.com"
-                           class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-sm font-medium">
-                </div>
-            </div>
-
-            <!-- Phone and Password Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <!-- Phone -->
-                <div>
-                    <label for="phone" class="block text-sm font-semibold text-slate-700 mb-2">Phone Number</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
-                            <i class="fa-solid fa-phone text-sm"></i>
-                        </span>
-                        <input type="tel" id="phone" name="phone" required placeholder="07XXXXXXXX"
-                               class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-sm font-medium">
-                    </div>
-                </div>
-                <!-- Password -->
-                <div>
-                    <label for="password" class="block text-sm font-semibold text-slate-700 mb-2">Password</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
-                            <i class="fa-solid fa-lock text-sm"></i>
-                        </span>
-                        <input type="password" id="password" name="password" required placeholder="••••••••"
-                               class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-sm font-medium">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Role Selector -->
-            <div>
-                <label for="role" class="block text-sm font-semibold text-slate-700 mb-2">Select Role</label>
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
-                        <i class="fa-solid fa-user-gear text-base"></i>
-                    </span>
-                    <select id="role" name="role" required onchange="handleRoleChange()"
-                            class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-sm font-medium appearance-none">
-                        <option value="CUSTOMER">Customer (Hire tools from others)</option>
-                        <option value="SHOP_OWNER">Shop Owner (List tools for hire)</option>
-                    </select>
-                    <span class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">
-                        <i class="fa-solid fa-chevron-down text-xs"></i>
-                    </span>
-                </div>
-            </div>
-
-            <!-- Conditional Shop Info Block -->
-            <div id="shop-fields" class="hidden p-5 bg-blue-50/50 border border-blue-100 rounded-2xl space-y-4 transition-all duration-300">
-                <div class="flex items-center gap-2 mb-1">
-                    <i class="fa-solid fa-store text-brand-600"></i>
-                    <h3 class="text-sm font-bold text-slate-900">Shop Registration Details</h3>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label for="shopName" class="block text-xs font-semibold text-slate-600 mb-2">Shop Name</label>
-                        <input type="text" id="shopName" name="shopName" placeholder="Lanka Hardware"
-                               class="w-full px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 text-xs font-medium">
-                    </div>
-                    <div>
-                        <label for="shopAddress" class="block text-xs font-semibold text-slate-600 mb-2">Shop Address</label>
-                        <input type="text" id="shopAddress" name="shopAddress" placeholder="Colombo, Sri Lanka"
-                               class="w-full px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 text-xs font-medium">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Submit Button -->
-            <button type="submit"
-                    class="w-full py-3.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 transition-all cursor-pointer text-sm">
-                Create Free Account
-            </button>
-
-            <!-- Sign In Link -->
-            <div class="text-center text-sm text-slate-500 pt-2">
-                Already have an account? 
-                <a th:href="@{/login}" class="text-brand-500 font-bold hover:text-brand-700 hover:underline transition-all">Sign In here</a>
-            </div>
-
-        </form>
     </div>
+</div>
 
 </body>
 </html>
