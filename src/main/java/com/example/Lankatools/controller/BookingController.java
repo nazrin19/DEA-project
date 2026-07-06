@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,12 +15,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.Lankatools.entity.Booking;
 import com.example.Lankatools.entity.Tool;
 import com.example.Lankatools.service.BookingService;
 import com.example.Lankatools.service.ToolService;
-import com.example.Lankatools.service.EmailService; // Imported EmailService
+import com.example.Lankatools.service.EmailService;
 
 @Controller
 public class BookingController {
@@ -31,7 +34,7 @@ public class BookingController {
     private ToolService toolService;
 
     @Autowired
-    private EmailService emailService; // Injected EmailService
+    private EmailService emailService;
 
     /**
      * 1. STANDARD FORM SUBMISSION GATEWAY (Thymeleaf UI Form Post Action)
@@ -40,7 +43,8 @@ public class BookingController {
     public String handleNewBooking(@RequestParam("toolId") Long toolId,
                                    @RequestParam("startDate") String startDate,
                                    @RequestParam("endDate") String endDate,
-                                   Principal principal) {
+                                   Principal principal,
+                                   RedirectAttributes redirectAttributes) {
 
         if (principal == null) {
             System.err.println("Booking rejection: No authenticated session found.");
@@ -53,14 +57,21 @@ public class BookingController {
             LocalDate parsedStart = LocalDate.parse(startDate);
             LocalDate parsedEnd = LocalDate.parse(endDate);
 
+            // Create the booking entry via core business logic service layer
             bookingService.createBooking(principal.getName(), toolId, parsedStart, parsedEnd);
+
+            // Pass a temporary flash attribute success indicator down to the target customer dashboard view
+            redirectAttributes.addFlashAttribute("success", "Your booking request was submitted successfully! Awaiting owner validation.");
 
         } catch (IllegalArgumentException e) {
             System.err.println("Booking blocked due to business rule validation: " + e.getMessage());
-            return "redirect:/?error=dates_overlap";
+            // Redirect right back to the calculator page instead of home base, injecting the error alert string
+            redirectAttributes.addFlashAttribute("error", "The selected dates overlap with an active booking for this tool.");
+            return "redirect:/bookings/checkout?toolId=" + toolId;
         } catch (Exception e) {
             System.err.println("Core booking application error: " + e.getMessage());
-            return "redirect:/?error=booking_failed";
+            redirectAttributes.addFlashAttribute("error", "Core system error: Unable to process booking.");
+            return "redirect:/bookings/checkout?toolId=" + toolId;
         }
 
         return "redirect:/customer/bookings";
@@ -76,15 +87,15 @@ public class BookingController {
         }
 
         try {
-            // 1. Confirm the booking status to database (sets to CONFIRMED)
+            // 1. Confirm the booking status inside the database (sets to CONFIRMED)
             bookingService.confirmBooking(id, principal.getName());
             System.out.println("🚀 UI Action: Booking ID " + id + " approved (CONFIRMED) successfully.");
 
-            // 2. Fetch the fully mapped booking object to gather strings safely
+            // 2. Fetch the fully mapped booking object to gather profile details securely
             Booking updatedBooking = bookingService.findById(id);
             if (updatedBooking != null && updatedBooking.getCustomer() != null && updatedBooking.getTool() != null) {
 
-                // 3. Dispatch the real-time confirmation email over secure SMTP
+                // 3. Dispatch real-time validation confirmations over SMTP mailer configurations
                 emailService.sendBookingConfirmation(
                         updatedBooking.getCustomer().getEmail(),
                         updatedBooking.getCustomer().getName(),
@@ -143,51 +154,84 @@ public class BookingController {
         return "checkout";
     }
 
-    // 2. REST API ENDPOINTS SECTION (For AJAX / JavaScript Fetch Interactions)
+    /**
+     * ⚡ 2. REST API ENDPOINTS SECTION (For AJAX / JavaScript Fetch Interactions)
+     */
     @PostMapping("/api/bookings")
     @ResponseBody
     public Booking createBooking(@RequestBody BookingRequest request, Principal principal) {
-        LocalDate startDate = LocalDate.parse(request.getStartDate());
-        LocalDate endDate = LocalDate.parse(request.getEndDate());
-        return bookingService.createBooking(principal.getName(), request.getToolId(), startDate, endDate);
+        if (principal == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authenticated session required.");
+        }
+        try {
+            LocalDate startDate = LocalDate.parse(request.getStartDate());
+            LocalDate endDate = LocalDate.parse(request.getEndDate());
+            return bookingService.createBooking(principal.getName(), request.getToolId(), startDate, endDate);
+        } catch (IllegalArgumentException e) {
+            // Converts internal business errors to clean HTTP 400 Bad Request responses instead of ugly 500 errors
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Core runtime error handling registration.");
+        }
     }
 
     @GetMapping("/api/bookings/my")
     @ResponseBody
     public List<Booking> getMyBookings(Principal principal) {
+        if (principal == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
         return bookingService.getBookingsForCustomer(principal.getName());
     }
 
     @GetMapping("/api/bookings/owner")
     @ResponseBody
     public List<Booking> getBookingsForToolOwner(Principal principal) {
+        if (principal == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
         return bookingService.getBookingsForToolOwner(principal.getName());
     }
 
     @PutMapping("/api/bookings/{id}/confirm")
     @ResponseBody
     public Booking confirmBooking(@PathVariable Long id, Principal principal) {
+        if (principal == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
         return bookingService.confirmBooking(id, principal.getName());
     }
 
     @PutMapping("/api/bookings/{id}/reject")
     @ResponseBody
     public Booking rejectBooking(@PathVariable Long id, Principal principal) {
+        if (principal == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
         return bookingService.rejectBooking(id, principal.getName());
     }
 
     @PutMapping("/api/bookings/{id}/cancel")
     @ResponseBody
     public Booking cancelBooking(@PathVariable Long id, Principal principal) {
+        if (principal == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
         return bookingService.cancelBooking(id, principal.getName());
     }
 
     @PutMapping("/api/bookings/{id}/return")
     @ResponseBody
     public Booking markReturned(@PathVariable Long id, Principal principal) {
+        if (principal == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
         return bookingService.markReturned(id, principal.getName());
     }
 
+    /**
+     * DTO Request Wrapper mapping utility definitions
+     */
     public static class BookingRequest {
         private Long toolId;
         private String startDate;

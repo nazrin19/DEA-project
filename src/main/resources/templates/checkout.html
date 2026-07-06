@@ -10,12 +10,21 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     <div class="mx-auto" style="max-width: 640px;">
-        <div class="card border border-light-subtle rounded-4 shadow-sm p-4 p-sm-5">
+
+        <div th:if="${error}" class="alert alert-danger rounded-4 shadow-sm mb-4 border-0 p-3 text-danger fw-semibold" style="background-color: #fff1f2; border: 1px solid #ffe4e6 !important;">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i> <span th:text="${error}">An error occurred.</span>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success rounded-4 shadow-sm mb-4 border-0 p-3 text-success fw-semibold" style="background-color: #f0fdf4; border: 1px solid #dcfce7 !important;">
+            <i class="fa-solid fa-circle-check me-2"></i> <span th:text="${success}">Booking submitted successfully!</span>
+        </div>
+
+        <div class="card border border-light-subtle rounded-4 shadow-sm p-4 p-sm-5 bg-white">
 
             <h1 class="h3 fw-black text-dark mb-4">Confirm Rental Details</h1>
 
             <div class="d-flex align-items-center gap-3 p-3 rounded-4 mb-4" style="background-color:#f8fafc; border:1px solid #e2e8f0;">
-                <img th:src="@{${tool.imageUrl}}" onerror="this.onerror=null; this.src='/images/default-tool.png';"
+                <img th:src="@{${tool.imageUrl}}" onerror="this.onerror=null; this.src='/uploads/default-placeholder.png';"
                      class="bg-white rounded-3 border p-1" style="width: 4rem; height: 4rem; object-fit: contain;">
                 <div>
                     <h3 class="fw-bold text-dark fs-5 mb-0" th:text="${tool.name}">Equipment Name</h3>
@@ -60,37 +69,56 @@
             </form>
         </div>
     </div>
-</div>
 
-<script>
-    const startInput = document.getElementById('startDate');
-    const endInput = document.getElementById('endDate');
-    const daysDisplay = document.getElementById('daysCount');
-    const costDisplay = document.getElementById('totalCost');
-    const dailyRate = parseFloat(document.getElementById('dailyRate').innerText);
+    <script>
+        (function() {
+            function initCalculator() {
+                const startInput = document.getElementById('startDate');
+                const endInput = document.getElementById('endDate');
+                const daysDisplay = document.getElementById('daysCount');
+                const costDisplay = document.getElementById('totalCost');
 
-    function calculateCost() {
-        if (startInput.value && endInput.value) {
-            const start = new Date(startInput.value);
-            const end = new Date(endInput.value);
+                if (!startInput || !endInput) return false;
 
-            // Calculate differences in days
-            const diffTime = end - start;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // including start day
+                function calculateCost() {
+                    if (startInput.value && endInput.value) {
+                        const dailyRateElement = document.getElementById('dailyRate');
+                        if (!dailyRateElement) return;
 
-            if (diffDays > 0) {
-                daysDisplay.innerText = diffDays;
-                costDisplay.innerText = (diffDays * dailyRate).toFixed(2);
-            } else {
-                daysDisplay.innerText = "0";
-                costDisplay.innerText = "0.00";
+                        const dailyRate = parseFloat(dailyRateElement.innerText.replace(/[^0-9.]/g, '')) || 0;
+
+                        // Zero out timezone shifts by using manual split values
+                        const startParts = startInput.value.split('-');
+                        const endParts = endInput.value.split('-');
+
+                        const start = new Date(startParts[0], startParts[1] - 1, startParts[2]);
+                        const end = new Date(endParts[0], endParts[1] - 1, endParts[2]);
+
+                        const diffTime = end.getTime() - start.getTime();
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+                        if (diffDays > 0) {
+                            daysDisplay.innerText = diffDays;
+                            costDisplay.innerText = (diffDays * dailyRate).toFixed(2);
+                        } else {
+                            daysDisplay.innerText = "0";
+                            costDisplay.innerText = "0.00";
+                        }
+                    }
+                }
+
+                startInput.addEventListener('input', calculateCost);
+                endInput.addEventListener('input', calculateCost);
+                startInput.addEventListener('change', calculateCost);
+                endInput.addEventListener('change', calculateCost);
+                return true;
             }
-        }
-    }
 
-    startInput.addEventListener('change', calculateCost);
-    endInput.addEventListener('change', calculateCost);
-</script>
-
-</body>
+            // Execute instantly if DOM layout is ready, otherwise wait for loading phase
+            if (!initCalculator()) {
+                document.addEventListener('DOMContentLoaded', initCalculator);
+            }
+        })();
+    </script>
+</div> </body>
 </html>
