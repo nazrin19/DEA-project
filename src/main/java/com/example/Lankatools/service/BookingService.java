@@ -30,34 +30,29 @@ public class BookingService {
     @Autowired
     private EmailService emailService;
 
-    /**
-     * Fallback finder method used by Controller endpoints
-     */
+
     public Booking findById(Long id) {
         return bookingRepository.findById(id).orElse(null);
     }
 
-    /**
-     * Creates a tool booking after validating overlap checks, updates database, and emails confirmation.
-     */
+
     public Booking createBooking(String customerEmail, Long toolId, LocalDate startDate, LocalDate endDate) {
 
-        // 1. Fetch the Tool entity
+
         Tool tool = toolRepository.findById(toolId)
                 .orElseThrow(() -> new IllegalArgumentException("Tool not found."));
 
-        // 2. Fetch the User entity using the email context
+
         User customer = userService.getUserByEmail(customerEmail);
         if (customer == null) {
             throw new IllegalArgumentException("User account not found for email: " + customerEmail);
         }
 
-        // 3. Simple date sequence validation
+
         if (endDate.isBefore(startDate)) {
             throw new IllegalArgumentException("End date must be the same or after the start date.");
         }
 
-        // 4. Overlap configuration check
         List<BookingStatus> excludedStatuses = Arrays.asList(BookingStatus.REJECTED, BookingStatus.CANCELLED);
 
         boolean hasOverlap = bookingRepository.existsByToolAndStatusNotInAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
@@ -71,11 +66,11 @@ public class BookingService {
             throw new IllegalArgumentException("Selected dates overlap with an active booking for this tool.");
         }
 
-        // 5. Calculate final rental cost metrics (Inclusive: +1 day)
+
         long days = ChronoUnit.DAYS.between(startDate, endDate) + 1;
         double totalCost = days * tool.getDailyRate();
 
-        // 6. Assemble the clean Booking object mappings
+
         Booking booking = new Booking();
         booking.setTool(tool);
         booking.setCustomer(customer);
@@ -84,11 +79,11 @@ public class BookingService {
         booking.setStatus(BookingStatus.PENDING);
         booking.setTotalCost(totalCost);
 
-        // 7. Write to MySQL database
+
         Booking savedBooking = bookingRepository.save(booking);
         System.out.println("🚀 Success: Booking record stored cleanly for " + tool.getName());
 
-        // 8. Centralized call to our dynamic notification sender dispatcher
+
         try {
             sendConfirmationEmail(savedBooking);
         } catch (Exception e) {
@@ -116,7 +111,7 @@ public class BookingService {
         return toolRepository.findByStatus(Toolstatus.APPROVED);
     }
 
-    // --- State lifecycle mapping hooks ---
+
 
     public Booking confirmBooking(Long id, String username) {
         Booking booking = bookingRepository.findById(id)
@@ -146,9 +141,7 @@ public class BookingService {
         return bookingRepository.save(booking);
     }
 
-    /**
-     * Dispatcher helper utilizing your internal rich EmailService template method
-     */
+
     private void sendConfirmationEmail(Booking booking) {
         try {
             if (booking != null && booking.getCustomer() != null && booking.getTool() != null) {

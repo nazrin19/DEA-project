@@ -36,12 +36,12 @@ public class User {
     private String shopAddress;
     private String phone;
 
-    // Keeps DB column as 'is_approved' but fixes Lombok method name to getApproved()
+
     @Column(name = "is_approved", nullable = false)
     @Builder.Default
     private Boolean approved = false;
 
-    // Keeps DB column as 'is_active' but fixes Lombok method name to getActive()
+
     @Column(name = "is_active", nullable = false)
     @Builder.Default
     private Boolean active = true;
@@ -54,7 +54,7 @@ public class User {
         this.createdAt = LocalDateTime.now();
     }
 
-    // Custom constructor safely matching the new fields
+
     public User(String name, String password, Role role, String email, String phone, String shopName, String shopAddress, Boolean active, Boolean approved, LocalDateTime createdAt) {
         this.name = name;
         this.password = password;

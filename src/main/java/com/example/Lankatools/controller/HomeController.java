@@ -27,7 +27,7 @@ public class HomeController {
 
         boolean hasQuery = query != null && !query.trim().isEmpty();
 
-        // 🎯 Filter exclusively by text query (name lookup)
+
         if (hasQuery) {
             toolPage = toolService.searchToolsByNameAndStatusPaginated(query.trim(), activeStatus, page, pageSize);
             model.addAttribute("searchQuery", query);

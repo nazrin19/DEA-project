@@ -24,19 +24,17 @@ public interface ToolRepository extends JpaRepository<Tool, Long> {
 
     List<Tool> findByCategoryContainingIgnoreCase(String category);
 
-    // ==========================================
-    // 🎯 NEW STATUS-FILTERED JPA QUERY METHODS
-    // ==========================================
 
-    // Fetches a paginated list of tools based strictly on their moderation status
+
+
     Page<Tool> findByStatus(Toolstatus status, Pageable pageable);
 
-    // Filters search results by both name keyword AND moderation status
+
     Page<Tool> findByNameContainingIgnoreCaseAndStatus(String name, Toolstatus status, Pageable pageable);
 
-    // Filters category selections by both category keyword AND moderation status
+
     Page<Tool> findByCategoryContainingIgnoreCaseAndStatus(String category, Toolstatus status, Pageable pageable);
 
-    // Counts how many tools are in the database with a specific status
+
     long countByStatus(Toolstatus status);
 }

@@ -15,22 +15,19 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
-    // Serves the Login template page context
+
     @GetMapping("/login")
     public String loginPage() {
         return "login";
     }
 
-    // Serves the Register template page context
+
     @GetMapping("/register")
     public String registerPage() {
         return "register";
     }
 
-    /**
-     * Traditional Form Submission Registration Gateway
-     * Uses @ModelAttribute to bind standard application/x-www-form-urlencoded browser streams.
-     */
+
     @PostMapping("/register")
     public String register(@ModelAttribute User user, RedirectAttributes redirectAttributes) {
         try {

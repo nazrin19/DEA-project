@@ -103,8 +103,6 @@ public class AdminController {
     public String pendingToolsRedirect() {
         return "redirect:/admin/manage-tools";
     }
-
-    // 🎯 NEW: PROCESS TOOL MODERATION APPROVAL / REJECTION ACTIONS
     // Handles form submissions from templates/admin/tools-moderation.html cleanly
     @PostMapping("/tools/{id}/status")
     public String updateToolStatus(

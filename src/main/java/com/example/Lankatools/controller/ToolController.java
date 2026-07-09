@@ -40,10 +40,7 @@ public class ToolController {
         return ResponseEntity.ok(tools);
     }
 
-    /**
-     * Unified Tool Registration Gateway
-     * Accepts text properties alongside binary image streams simultaneously.
-     */
+
     @PostMapping("/save")
     public ResponseEntity<?> saveTool(@RequestParam("name") String name,
                                       @RequestParam("category") String category,
@@ -67,45 +64,45 @@ public class ToolController {
         tool.setDescription(description);
         tool.setOwner(owner);
 
-        // 🛡️ CRITICAL: New tools default to PENDING until the admin approves them
+
         tool.setStatus(Toolstatus.PENDING);
 
-        // Process File Attachment if present
+
         if (file != null && !file.isEmpty()) {
-            // Format Content Validations
+
             String contentType = file.getContentType();
             List<String> allowedTypes = Arrays.asList("image/jpeg", "image/jpg", "image/png");
             if (contentType == null || !allowedTypes.contains(contentType)) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid format! Only JPG, JPEG, and PNG are allowed.");
             }
 
-            // Size Constraint Validations (2MB Limit)
+
             long maxSize = 2 * 1024 * 1024;
             if (file.getSize() > maxSize) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File size is too large! Maximum Limit is 2MB.");
             }
 
             try {
-                // 🔑 FIXED: Target the runtime target folder instead of src/ resources to stop IntelliJ auto-reloading
+
                 String uploadDir = System.getProperty("user.dir") + "/target/classes/static/uploads/";
                 File dir = new File(uploadDir);
                 if (!dir.exists()) {
                     dir.mkdirs();
                 }
 
-                // Append millisecond timestamps to safeguard file names against overriding duplication
+
                 String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
                 String filePath = Paths.get(uploadDir, fileName).toString();
                 file.transferTo(new File(filePath));
 
-                // Assign the web access URL context to your entity
+
                 tool.setImageUrl("/uploads/" + fileName);
 
             } catch (IOException e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Image storage mapping failed: " + e.getMessage());
             }
         } else {
-            // Fallback placeholder asset context if no image was selected
+
             tool.setImageUrl("/uploads/default-placeholder.png");
         }
 

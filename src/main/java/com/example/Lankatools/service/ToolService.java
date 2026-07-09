@@ -92,9 +92,7 @@ public class ToolService {
         return toolRepository.findByNameContainingIgnoreCase(name, pageable);
     }
 
-    // ==========================================
-    // 🎯 NEW STATUS-FILTERED METRIC & PAGINATION METHODS FOR HOMEPAGE
-    // ==========================================
+
 
     public Page<Tool> getToolsByStatusWithPagination(String statusStr, int page, int size, String sortBy, String direction) {
         Toolstatus status = Toolstatus.valueOf(statusStr.toUpperCase());

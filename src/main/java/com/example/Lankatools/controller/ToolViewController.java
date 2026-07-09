@@ -16,7 +16,7 @@ public class ToolViewController {
     @Autowired
     private ToolService toolService;
 
-    // 1. PUBLIC CATALOG VIEW PAGE
+
     @GetMapping("/tools")
     public String viewCatalogPage(
             @RequestParam(defaultValue = "0") int page,
@@ -27,16 +27,16 @@ public class ToolViewController {
 
         Page<Tool> toolsPage = toolService.getToolsWithPagination(page, size, sortBy, direction);
 
-        // Pass the raw content list for easier th:each loops
+
         model.addAttribute("tools", toolsPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", toolsPage.getTotalPages());
 
-        // FIXED: Changed from "tools-list" to "tools" to match your template file name exactly!
+
         return "tools";
     }
 
-    // 2. SINGLE TOOL DEDICATED DETAILS PAGE ROUTE
+
     @GetMapping("/tools/detail/{id}")
     public String showToolDetail(@PathVariable("id") Long id, Model model) {
         // Safe unpacking using .orElseThrow() to match the Service's Optional wrapper

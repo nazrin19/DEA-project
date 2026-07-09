@@ -13,12 +13,12 @@ import java.util.Optional;
 public class DataSeeder implements CommandLineRunner {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder; // Remove this if you don't use a password encoder
+    private final PasswordEncoder passwordEncoder;
 
     // Constructor injection for both beans
     public DataSeeder(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder; // Remove this if you don't use a password encoder
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -29,7 +29,6 @@ public class DataSeeder implements CommandLineRunner {
             User admin = User.builder()
                     .name("Admin")
                     .email("admin@dea.com")
-                    // .password("admin123") -> Use this line instead if you DO NOT use password encoder
                     .password(passwordEncoder.encode("admin123"))
                     .role(Role.ADMIN)
                     .active(true)

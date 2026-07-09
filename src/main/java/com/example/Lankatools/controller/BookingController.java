@@ -36,9 +36,7 @@ public class BookingController {
     @Autowired
     private EmailService emailService;
 
-    /**
-     * 1. STANDARD FORM SUBMISSION GATEWAY (Thymeleaf UI Form Post Action)
-     */
+
     @PostMapping("/bookings")
     public String handleNewBooking(@RequestParam("toolId") Long toolId,
                                    @RequestParam("startDate") String startDate,
@@ -57,15 +55,15 @@ public class BookingController {
             LocalDate parsedStart = LocalDate.parse(startDate);
             LocalDate parsedEnd = LocalDate.parse(endDate);
 
-            // Create the booking entry via core business logic service layer
+
             bookingService.createBooking(principal.getName(), toolId, parsedStart, parsedEnd);
 
-            // Pass a temporary flash attribute success indicator down to the target customer dashboard view
+
             redirectAttributes.addFlashAttribute("success", "Your booking request was submitted successfully! Awaiting owner validation.");
 
         } catch (IllegalArgumentException e) {
             System.err.println("Booking blocked due to business rule validation: " + e.getMessage());
-            // Redirect right back to the calculator page instead of home base, injecting the error alert string
+
             redirectAttributes.addFlashAttribute("error", "The selected dates overlap with an active booking for this tool.");
             return "redirect:/bookings/checkout?toolId=" + toolId;
         } catch (Exception e) {
@@ -77,9 +75,7 @@ public class BookingController {
         return "redirect:/customer/bookings";
     }
 
-    /**
-     * 👑 OWNER FORM ACTION ENDPOINTS (Thymeleaf Dashboard UI Actions)
-     */
+
     @PostMapping("/owner/bookings/{id}/approve")
     public String approveRentalBooking(@PathVariable("id") Long id, Principal principal) {
         if (principal == null) {
@@ -129,9 +125,7 @@ public class BookingController {
         return "redirect:/owner/rental-requests";
     }
 
-    /**
-     * 🎯 DEDICATED THYMELEAF VIEW ROUTE
-     */
+
     @GetMapping("/customer/bookings")
     public String showCustomerBookingsPage(Model model, Principal principal) {
         if (principal == null) {
@@ -154,9 +148,7 @@ public class BookingController {
         return "checkout";
     }
 
-    /**
-     * ⚡ 2. REST API ENDPOINTS SECTION (For AJAX / JavaScript Fetch Interactions)
-     */
+
     @PostMapping("/api/bookings")
     @ResponseBody
     public Booking createBooking(@RequestBody BookingRequest request, Principal principal) {
@@ -229,9 +221,7 @@ public class BookingController {
         return bookingService.markReturned(id, principal.getName());
     }
 
-    /**
-     * DTO Request Wrapper mapping utility definitions
-     */
+
     public static class BookingRequest {
         private Long toolId;
         private String startDate;

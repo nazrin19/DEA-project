@@ -29,7 +29,7 @@ public class UserController {
 
         String rawPassword = request.get("password");
 
-        // IMPORTANT FIX: encode password
+
         user.setPassword(passwordEncoder.encode(rawPassword));
 
         userRepository.save(user);

@@ -30,17 +30,13 @@ public class ShopViewController {
     @Autowired
     private UserRepository userRepository;
 
-    /**
-     * 🎯 UPLOAD NEW TOOL FORM
-     */
+
     @GetMapping("/upload-tool")
     public String showUploadToolForm() {
         return "owner/upload-tool";
     }
 
-    /**
-     * 🎯 VIEW OWNER EQUIPMENT INVENTORY
-     */
+
     @GetMapping({"/tools", "/view-equipment", "/my-tool"})
     public String viewEquipment(Principal principal, Model model) {
         if (principal == null) {
@@ -50,7 +46,6 @@ public class ShopViewController {
         String username = principal.getName();
         User owner = userRepository.findByEmail(username).orElse(null);
 
-        // 🎯 FIX: Solved lambda final variable rule by executing a clean fallback check
         if (owner == null) {
             owner = userRepository.findAll().stream()
                     .filter(u -> username.equals(u.getName()) && u.getRole() == Role.SHOP_OWNER)
@@ -68,9 +63,7 @@ public class ShopViewController {
         return "owner/my-tool";
     }
 
-    /**
-     * 🎯 REVIEW BOOKINGS TIMELINE
-     */
+
     @GetMapping({"/bookings", "/review-bookings", "/rental-requests"})
     public String reviewBookings(Principal principal, Model model) {
         if (principal == null) {
@@ -91,10 +84,10 @@ public class ShopViewController {
             return "redirect:/login";
         }
 
-        // 🎯 Find all tools belonging to this owner first
+
         List<Tool> ownerTools = toolRepository.findByOwner(owner);
 
-        // 🎯 Safely filter bookings whose tools belong to this owner's tool list
+
         List<Booking> allBookings = bookingRepository.findAll();
         List<Booking> ownerBookings = allBookings.stream()
                 .filter(b -> b.getTool() != null && ownerTools.contains(b.getTool()))
